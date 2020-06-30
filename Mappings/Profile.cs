@@ -36,6 +36,8 @@ namespace System_Back_End.Mappings
                 .ForMember(dest => dest.PersPhone, o => o.MapFrom(src => src.PresPhone))
                 .ForMember(dest => dest.LandlinePhone, o => o.MapFrom(src => src.LinePhone))
                 .ForMember(dest => dest.Address, o => o.MapFrom(src => src.Address));
+
+            CreateMap<ComplainToAddModel, Complain>();
         }
     }
 }

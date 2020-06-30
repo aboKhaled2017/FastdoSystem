@@ -42,6 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddTransient<PharmacyRepository>();
             services.AddTransient<StockRepository>();
+            services.AddTransient<IComplainsRepository,ComplainsRepository>();
             return services;
         }
         public static IServiceCollection _AddSystemAuthentication(this IServiceCollection services)

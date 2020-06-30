@@ -17,11 +17,15 @@ namespace System_Back_End.Controllers
         {
             _context = context;
         }
-        [HttpGet]
-        public ActionResult get()
+        [HttpGet("areas/all")]
+        public ActionResult getAllAreas()
         {
 
-            return Ok(_context.LzDrugs.ToList());
+            return Ok(_context.Areas.Select(a=>new { 
+              a.Id,
+              a.Name,
+              a.SuperAreaId
+            }));
         }
     }
 }
