@@ -1,0 +1,23 @@
+[
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b8b111",
+    "Name": "apimol 25",
+    "Quantity": 205,
+    "Discount": 17,
+    "StockId": "72c8b403-615e-4477-870e-fa7621b8b1111"
+  },
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b8b110",
+    "Name": "corofeen",
+    "Quantity":88,
+    "Discount": 7,
+    "StockId": "72c8b403-615e-4477-870e-fa7621b8b1111"
+  },
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b8b112",
+    "Name": "congistal",
+    "Quantity":1125,
+    "Discount": 9,
+    "StockId": "72c8b403-615e-4477-870e-fa7621b8b1111"
+  }
+]

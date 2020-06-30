@@ -1,0 +1,44 @@
+[
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b8b735",
+    "Name": "Dr ahmed hemly",
+    "MgrName": "mohamed khaled soliman",
+    "OwnerName": "mohamed ali ahmed",
+    "LicenseImgSrc": "img1",
+    "CommercialRegImgSrc": "img2",
+    "PersPhone": "01152506434",
+    "LandlinePhone": "442255",
+    "AreaId": 2,
+    "UserName": "ahmed123",
+    "Email": "ahmed2511995@gmail.com",
+    "Password": "AAaa123"
+  },
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b80000",
+    "Name": "Dr samy waleed",
+    "MgrName": "fady khaled domani",
+    "OwnerName": "ahmed ali ahmed",
+    "LicenseImgSrc": "img1",
+    "CommercialRegImgSrc": "img2",
+    "PersPhone": "01152506444",
+    "LandlinePhone": "66688889",
+    "AreaId": 3,
+    "UserName": "samy123",
+    "Email": "samy2511995@gmail.com",
+    "Password": "AAbb123"
+  },
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b80001",
+    "Name": "Dr hafiz fahmy",
+    "MgrName": "hafiz fahmy mohamd",
+    "OwnerName": "abo elsheikh",
+    "LicenseImgSrc": "img1",
+    "CommercialRegImgSrc": "img2",
+    "PersPhone": "01152598658",
+    "LandlinePhone": "66688889",
+    "AreaId": 13,
+    "UserName": "hafiz123",
+    "Email": "hafiz2511995@gmail.com",
+    "Password": "AAcc123"
+  }
+]

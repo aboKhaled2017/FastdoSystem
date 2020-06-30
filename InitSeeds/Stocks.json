@@ -1,0 +1,44 @@
+[
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b8b1111",
+    "Name": "Dr mohamed khaled",
+    "MgrName": "gamil ahmed elbanna",
+    "OwnerName": "gamil ahmed elbanna",
+    "LicenseImgSrc": "img1",
+    "CommercialRegImgSrc": "img2",
+    "PersPhone": "01152506434",
+    "LandlinePhone": "442255",
+    "AreaId": 2,
+    "UserName": "gamil25",
+    "Email": "mohamedkhaled2511995@gmail.com",
+    "Password": "AAaa123"
+  },
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b81110",
+    "Name": "Dr mawadda ibrahim",
+    "MgrName": "mawadda ibrahim mohamed",
+    "OwnerName": "ahmed ali ahmed",
+    "LicenseImgSrc": "img1",
+    "CommercialRegImgSrc": "img2",
+    "PersPhone": "01152506444",
+    "LandlinePhone": "66688889",
+    "AreaId": 3,
+    "UserName": "mawadda125",
+    "Email": "mawadda2511995@gmail.com",
+    "Password": "AAbb123"
+  },
+  {
+    "Id": "72c8b403-615e-4477-870e-fa7621b81112",
+    "Name": "Dr khalid soliman farag",
+    "MgrName": "smaan ahmed samaan",
+    "OwnerName": "samaan waleed ahmed",
+    "LicenseImgSrc": "img1",
+    "CommercialRegImgSrc": "img2",
+    "PersPhone": "01152598658",
+    "LandlinePhone": "66688889",
+    "AreaId": 7,
+    "UserName": "smaan12545",
+    "Email": "smaan2511995@gmail.com",
+    "Password": "AAcc123"
+  }
+]
