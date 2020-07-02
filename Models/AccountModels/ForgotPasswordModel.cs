@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System_Back_End.Utilities;
 
 namespace System_Back_End.Models
 {
@@ -10,6 +11,7 @@ namespace System_Back_End.Models
     {
         [Required(ErrorMessage ="البريد الالكترونى مطلوب")]
         [EmailAddress(ErrorMessage ="البريد الالكترونى غير صالح")]
+        [RequireConfirmedEmail(checkForEmailIfFound:true)]
         public string Email { get; set; }
     }
     public class ForgotAndResetPasswordModel

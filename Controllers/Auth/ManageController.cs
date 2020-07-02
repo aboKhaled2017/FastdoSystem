@@ -15,6 +15,7 @@ using System_Back_End.Models;
 using System_Back_End.Repositories;
 using System_Back_End.Services;
 using System_Back_End.Services.Auth;
+using System_Back_End.Utilities;
 
 namespace System_Back_End.Controllers.Auth
 {
@@ -37,7 +38,7 @@ namespace System_Back_End.Controllers.Auth
             _stockRepository = stockRepository;
         }
 
-        [HttpPost("password")]
+        [HttpPost("password")]       
         public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
         {
             if (!ModelState.IsValid)
