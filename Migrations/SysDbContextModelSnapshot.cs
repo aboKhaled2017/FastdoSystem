@@ -183,6 +183,8 @@ namespace System_Back_End.Migrations
                     b.Property<string>("confirmCode")
                         .HasMaxLength(15);
 
+                    b.Property<string>("willBeNewEmail");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")

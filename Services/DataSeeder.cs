@@ -14,10 +14,10 @@ namespace System_Back_End.Services
 {
     public static class DataSeeder
     {
-        private static readonly SysDbContext context = RequestStaticServices.GetDbContext;
-        private static readonly UserManager<AppUser> _userManager = RequestStaticServices.GetUserManager;
-        private static readonly IHostingEnvironment _env = RequestStaticServices.GetHostingEnv;
-        private static readonly IMapper _mapper = RequestStaticServices.GetMapper;
+        private static readonly SysDbContext context = RequestStaticServices.GetDbContext();
+        private static readonly UserManager<AppUser> _userManager = RequestStaticServices.GetUserManager();
+        private static readonly IHostingEnvironment _env = RequestStaticServices.GetHostingEnv();
+        private static readonly IMapper _mapper = RequestStaticServices.GetMapper();
         public static async Task SeedBasicData()
         {
             if(!context.Areas.Any())
@@ -145,7 +145,8 @@ namespace System_Back_End.Services
                     {
                         Id=ph.Id,
                         Email=ph.Email,
-                        UserName =ph.UserName,                       
+                        UserName =ph.UserName,     
+                        PhoneNumber=ph.PersPhone
                     };
                     var result=_userManager.CreateAsync(newUser, ph.Password);
                     result.Wait();
@@ -171,6 +172,7 @@ namespace System_Back_End.Services
                         Id=stk.Id,
                         Email=stk.Email,
                         UserName = stk.UserName,
+                        PhoneNumber = stk.PersPhone
                     };
                     var result=_userManager.CreateAsync(newUser, stk.Password);
                     result.Wait();

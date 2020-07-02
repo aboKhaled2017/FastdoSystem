@@ -10,6 +10,14 @@ namespace Microsoft.AspNetCore.Identity
 {
     public static class IdentityEF
     {
+        public async static Task<bool> AnyEmailSync(this UserManager<AppUser> userManager, string email)
+        {
+            return await userManager.Users.AnyAsync(u => u.Email == email);
+        }
+        public async static Task<bool> AnyPhoneSync(this UserManager<AppUser> userManager, string phone)
+        {
+            return await userManager.Users.AnyAsync(u => u.PhoneNumber == phone);
+        }
         public static async Task _addRoles(this RoleManager<IdentityRole> _roleManager, List<string> roles)
         {
             foreach (var name in roles)

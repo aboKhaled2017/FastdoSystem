@@ -13,7 +13,7 @@ namespace System_Back_End.Utilities
         private SysDbContext _context { get;}
         public ValidateAreaId()
         {
-            _context = RequestStaticServices.GetDbContext;
+            _context = RequestStaticServices.GetDbContext();
         }
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {

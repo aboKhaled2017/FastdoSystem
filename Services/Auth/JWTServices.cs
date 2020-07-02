@@ -15,20 +15,21 @@ namespace System_Back_End.Services
     public class JWThandlerService
     {
         public readonly IConfiguration _configuration;
-        private readonly IConfigurationSection _JWT = RequestStaticServices.GetConfiguration.GetSection("JWT");
+        private readonly IConfigurationSection _JWT = RequestStaticServices.GetConfiguration().GetSection("JWT");
         public JWThandlerService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
-        public TokenModel CreateAccessToken(AppUser user, string role)
+        public TokenModel CreateAccessToken(AppUser user, string role,string compName)
         {
-            var now = DateTime.UtcNow;
             var claims = new Claim[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub,user.Id),
                 new Claim("UserId",user.Id),
                 new Claim("Email",user.Email),
+                new Claim(ClaimTypes.Name,compName),
                 new Claim("Phone",user.PhoneNumber),
+                new Claim("IsEmailConfirmed",user.EmailConfirmed.ToString()),
                 new Claim("UserName",user.UserName),
                 new Claim(ClaimTypes.Role,role),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
@@ -68,11 +69,11 @@ namespace System_Back_End.Services
                 );
         private static TokenModel CreateTokenModel(string token, long expiry)
             => new TokenModel { token = token, expiry = expiry };
-        public AuthTokensModel GetAuthTokensModel(AppUser user, string role)
+        public AuthTokensModel GetAuthTokensModel(AppUser user, string role,string compName)
         {
             return new AuthTokensModel
             {
-                accessToken = CreateAccessToken(user, role),
+                accessToken = CreateAccessToken(user, role,compName),
                 refreshToken = CreateRefreshToken(user)
             };
         }

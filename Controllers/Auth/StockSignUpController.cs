@@ -16,29 +16,29 @@ using System_Back_End.Services.Auth;
 
 namespace System_Back_End.Controllers.Auth
 {
-    [Route("api/stock/signup")]
+    [Route("api/stk/signup")]
     [ApiController]
     [AllowAnonymous]
     public class StockSignUpController : SharedAPIController
     {
         private HandlingProofImgsServices _handlingProofImgsServices { get; }
-        private IMapper _mapper { get; }
-        public StockRepository _stockRepository { get; }
+        private StockRepository _stockRepository { get; }
+        public IExecuterDelayer _executerDelayer { get; }
 
         public StockSignUpController(
             UserManager<AppUser> userManager,
-            IEmailSender emailSender,
+            IEmailSender emailSender, 
             AccountService accountService,
-            TransactionService transactionService,
-            HandlingProofImgsServices handlingProofImgsServices,
             IMapper mapper,
-            StockRepository stockRepository
-            ) 
-            : base(userManager, emailSender, accountService, transactionService)
+            HandlingProofImgsServices handlingProofImgsServices,
+            StockRepository stockRepository,
+            IExecuterDelayer executerDelayer,
+            TransactionService transactionService)
+            : base(userManager, emailSender, accountService, mapper, transactionService)
         {
             _handlingProofImgsServices = handlingProofImgsServices;
-            _mapper = mapper;
             _stockRepository = stockRepository;
+            _executerDelayer = executerDelayer;
         }
 
         [HttpPost]
@@ -46,49 +46,41 @@ namespace System_Back_End.Controllers.Auth
         {           
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
-            ISigningResponseModel response = null;
+            SigningStockClientInResponseModel response = null;
             try
             {
                 var stockModel = _mapper.Map<Stock>(model);
                 _transactionService.Begin();
-                 response = await _accountService.SignUpStockAsync(model, (anyErrors, resultError,user)
-                    => {
-                        if (anyErrors)
-                            AddErrors(resultError);
-                        else stockModel.Id = user.Id;
-                    });
+                 response = await _accountService.SignUpStockAsync(model,_executerDelayer) as SigningStockClientInResponseModel;
                 if (response == null)
                 {
-                    _transactionService.RollBackChanges();
-                    return new UnprocessableEntityObjectResult(ModelState);
+                    _transactionService.RollBackChanges().End();
+                    return BadRequest(Functions.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
                 }
+                stockModel.Id = response.user.Id;               
                 var savingImgsResponse = _handlingProofImgsServices
                     .SavePharmacyProofImgs(model.LicenseImg, model.CommerialRegImg, stockModel.Id);
                 if(!savingImgsResponse.Status)
                 {
-                    ModelState.AddModelError("general", "لا يمكن حفظ الصور,حاول مرة اخرى");
-                    _transactionService.RollBackChanges();
-                    return new UnprocessableEntityObjectResult(ModelState);
+                    _transactionService.RollBackChanges().End();
+                    return BadRequest(Functions.MakeError("لا يمكن حفظ الصور,حاول مرة اخرى"));
                 }
                 stockModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                 stockModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
-                var res=_stockRepository.Add(stockModel);
+                var res=await _stockRepository.AddAsync(stockModel);
                 if(!res)
                 {
-                    _transactionService.RollBackChanges();
-                    return BadRequest();
+                    _transactionService.RollBackChanges().End();
+                    return BadRequest(Functions.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
                 }
-                _transactionService.CommitChanges();               
+                _executerDelayer.Execute();
+                _transactionService.CommitChanges().End();               
 
             }
             catch (Exception ex)
             {
-                _transactionService.RollBackChanges();
+                _transactionService.RollBackChanges().End();
                 return BadRequest(new { err = ex.Message });
-            }
-            finally
-            {
-                _transactionService.End();
             }
             return Ok(response);
 

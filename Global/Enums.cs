@@ -16,4 +16,9 @@ namespace System_Back_End
         pharmacier,
         stocker
     }
+    public enum ModelType
+    {
+        add,
+        update
+    }
 }

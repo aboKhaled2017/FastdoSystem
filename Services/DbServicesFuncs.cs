@@ -9,9 +9,9 @@ namespace System_Back_End.Services
 {
     public static class DbServicesFuncs
     {
-        private static readonly SysDbContext context = RequestStaticServices.GetDbContext;
-        private static readonly UserManager<AppUser> _userManager = RequestStaticServices.GetUserManager;
-        private static readonly RoleManager<IdentityRole> _roleManager = RequestStaticServices.GetRoleManager;
+        private static readonly SysDbContext context = RequestStaticServices.GetDbContext();
+        private static readonly UserManager<AppUser> _userManager = RequestStaticServices.GetUserManager();
+        private static readonly RoleManager<IdentityRole> _roleManager = RequestStaticServices.GetRoleManager();
         public static async Task ResetData()
         {
             var roles =_roleManager.Roles.ToList();

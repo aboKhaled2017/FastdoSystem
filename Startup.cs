@@ -51,6 +51,7 @@ namespace System_Back_End
             services._AddAutoMapper();
             services._AddSystemServices();
             services._AddSystemAuthentication();
+            services._AddSystemAuthorizations();
             services.AddMvc(options=> { 
             
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

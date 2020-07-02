@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Models;
@@ -12,10 +13,35 @@ namespace System_Back_End.Repositories
         {
         }
 
-        public bool Add(Pharmacy pharmacy)
+        public async Task<bool> AddAsync(Pharmacy pharmacy)
         {
             _context.Pharmacies.Add(pharmacy);
-            return _context.SaveChanges() > 0;
+            return (await _context.SaveChangesAsync()) > 0;
         }
+        public IQueryable GetAllAsync()
+        {
+            return _context.Pharmacies;
+        }
+        public async Task<bool> UpdateAsync(Pharmacy pharmacy)
+        {
+            _context.Entry(pharmacy).State = EntityState.Modified;
+            return (await _context.SaveChangesAsync()) > 0;
+        }
+        public async Task<Pharmacy>GetByIdAsync(string id)
+        {
+            return await _context.Pharmacies.FindAsync(id);
+        }
+        public async Task<Pharmacy> DeleteAsync(string id)
+        {
+            var pharmacy =await  _context.Pharmacies.FindAsync(id);
+            bool res=false;
+            if(pharmacy!=null)
+            {
+                _context.Pharmacies.Remove(pharmacy);
+                 res=await _context.SaveChangesAsync()>0;
+            }
+            return res ? pharmacy : null;
+        }
+
     }
 }

@@ -21,11 +21,11 @@ namespace System_Back_End.Models
         [Required(ErrorMessage = "الاسم مطلوب")]
         [MaxLength(50, ErrorMessage = "الاسم لا يجب ان يتعدى 60 حرف")]
         [RegularExpression("^[a-zA-Z]{3,15}(?: [a-zA-Z]+){1,3}$", ErrorMessage = "ادخل اسم صحيح, وان يكون ثنائى على الاقل")]
-        public string mgrName { get; set; }
+        public string MgrName { get; set; }
         [Required(ErrorMessage = "الاسم مطلوب")]
         [MaxLength(50, ErrorMessage = "الاسم لا يجب ان يتعدى 60 حرف")]
         [RegularExpression("^[a-zA-Z]{3,15}(?: [a-zA-Z]+){1,3}$", ErrorMessage = "ادخل اسم صحيح, وان يكون ثنائى على الاقل")]
-        public string ownerName { get; set; }
+        public string OwnerName { get; set; }
 
         [Required(ErrorMessage = "الصورة مطلوبة")]
         [DataType(DataType.Upload)]
@@ -38,10 +38,11 @@ namespace System_Back_End.Models
         public IFormFile LicenseImg { get; set; }
         [Required(ErrorMessage = "رقم الهاتف مطلوب")]
         [RegularExpression("^((010)|(011)|(012)|(015)|(017))[0-9]{8}$", ErrorMessage = "رقم هاتف غير صالح")]
-        [CheckIfUserPropValueIsExixts("PresPhone", UserPropertyType.phone)]
-        public string PresPhone { get; set; }
+        [CheckIfUserPropValueIsExixts("PersPhone", UserPropertyType.phone)]
+        public string PersPhone { get; set; }
         [Required(ErrorMessage = "رقم التليفون الارضى مطلوب")]
-        [StringLength(15, MinimumLength = 4, ErrorMessage = "رقم تليفون غير صالح")]
+        [RegularExpression("^[0-9]{4,}$", ErrorMessage = "رقم تليفون غير صحيح")]
+        [StringLength(15, MinimumLength = 4, ErrorMessage = "رقم تليفون من 4 الى 15 رقم")]
         public string LinePhone { get; set; }
         public string Address { get; set; }
         [Required(ErrorMessage = "البريد الالكترونى مطلوب")]

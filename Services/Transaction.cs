@@ -38,13 +38,15 @@ namespace System_Back_End.Services
             }
             return this;
         }
-        public void CommitChanges()
+        public TransactionService CommitChanges()
         {
             _actionOnDbTransaction.Commit();
+            return this;
         }
-        public void RollBackChanges()
+        public TransactionService RollBackChanges()
         {
             _actionOnDbTransaction.Rollback();
+            return this;
         }
         public void Begin()
         {

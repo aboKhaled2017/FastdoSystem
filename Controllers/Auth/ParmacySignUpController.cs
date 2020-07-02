@@ -16,29 +16,29 @@ using System_Back_End.Services.Auth;
 
 namespace System_Back_End.Controllers.Auth
 {
-    [Route("api/pharmacy/signup")]
+    [Route("api/ph/signup")]
     [ApiController]
     [AllowAnonymous]
     public class ParmacySignUpController : SharedAPIController
     {
         private HandlingProofImgsServices _handlingProofImgsServices { get; }
-        private IMapper _mapper { get; }
-        public PharmacyRepository _pharmacyRepository { get; }
+        private PharmacyRepository _pharmacyRepository { get; }
+        public IExecuterDelayer _executerDelayer { get; }
 
         public ParmacySignUpController(
-            UserManager<AppUser> userManager,
-            IEmailSender emailSender,
-            AccountService accountService,
-            TransactionService transactionService,
-            HandlingProofImgsServices handlingProofImgsServices,
-            IMapper mapper,
-            PharmacyRepository pharmacyRepository
-            ) 
-            : base(userManager, emailSender, accountService, transactionService)
+             UserManager<AppUser> userManager,
+             IEmailSender emailSender,
+             AccountService accountService,
+             IMapper mapper,
+             HandlingProofImgsServices handlingProofImgsServices,
+             PharmacyRepository pharmacyRepository,
+             IExecuterDelayer executerDelayer,
+             TransactionService transactionService)
+             : base(userManager, emailSender, accountService, mapper, transactionService)
         {
             _handlingProofImgsServices = handlingProofImgsServices;
-            _mapper = mapper;
             _pharmacyRepository = pharmacyRepository;
+            _executerDelayer = executerDelayer;
         }
 
 
@@ -50,55 +50,46 @@ namespace System_Back_End.Controllers.Auth
         /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> SignUp([FromForm]PharmacyClientRegisterModel model)
-        {           
+        {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
-            ISigningResponseModel response = null;
+            SigningPharmacyClientInResponseModel response = null;
             try
             {
                 var pharmacyModel = _mapper.Map<Pharmacy>(model);
                 _transactionService.Begin();
-                response = await _accountService.SignUpPharmacyAsync(model, (anyErrors, resultError,user)
-                    => {
-                        if (anyErrors)
-                            AddErrors(resultError);
-                        else pharmacyModel.Id = user.Id;
-                    });
+                response = await _accountService.SignUpPharmacyAsync(model, _executerDelayer) as SigningPharmacyClientInResponseModel;
                 if (response == null)
                 {
-                    _transactionService.RollBackChanges();
-                    return new UnprocessableEntityObjectResult(ModelState);
+                    _transactionService.RollBackChanges().End();
+                    return BadRequest(Functions.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
                 }
+                pharmacyModel.Id = response.user.Id;
                 var savingImgsResponse = _handlingProofImgsServices
                     .SavePharmacyProofImgs(model.LicenseImg, model.CommerialRegImg, pharmacyModel.Id);
-                if(!savingImgsResponse.Status)
+                if (!savingImgsResponse.Status)
                 {
-                    ModelState.AddModelError("general", "لا يمكن حفظ الصور,حاول مرة اخرى");
-                    _transactionService.RollBackChanges();
-                    return new UnprocessableEntityObjectResult(ModelState);
+                    _transactionService.RollBackChanges().End();
+                    return BadRequest(Functions.MakeError("لا يمكن حفظ الصور,حاول مرة اخرى"));
                 }
                 pharmacyModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                 pharmacyModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
-                var res=_pharmacyRepository.Add(pharmacyModel);
-                if(!res)
+                var res = await _pharmacyRepository.AddAsync(pharmacyModel);
+                if (!res)
                 {
-                    _transactionService.RollBackChanges();
-                    return BadRequest();
+                    _transactionService.RollBackChanges().End();
+                    return BadRequest(Functions.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
                 }
-                _transactionService.CommitChanges();               
+                _executerDelayer.Execute();
+                _transactionService.CommitChanges().End();
 
             }
             catch (Exception ex)
             {
-                _transactionService.RollBackChanges();
+                _transactionService.RollBackChanges().End();
                 return BadRequest(new { err = ex.Message });
             }
-            finally
-            {
-                _transactionService.End();
-            }
             return Ok(response);
-
         }
 
         [HttpPost("step1")]

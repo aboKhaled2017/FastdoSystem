@@ -13,7 +13,7 @@ namespace System_Back_End.Utilities
         {
             _propertyNameToBeChecked = propertyNameToBeChecked;
             _userPropertyType = userPropertyType;
-            _Context = RequestStaticServices.GetDbContext;
+            _Context = RequestStaticServices.GetDbContext();
         }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)

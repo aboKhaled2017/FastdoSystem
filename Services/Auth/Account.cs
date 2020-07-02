@@ -24,7 +24,7 @@ namespace System_Back_End.Services.Auth
 
         private HttpContext _httpContext { get; set; }
         private IUrlHelper _Url { get; set; }
-        private readonly IConfigurationSection _JWT = RequestStaticServices.GetConfiguration.GetSection("JWT");
+        private readonly IConfigurationSection _JWT = RequestStaticServices.GetConfiguration().GetSection("JWT");
 
         public AccountService(
             IEmailSender emailSender,
@@ -49,7 +49,7 @@ namespace System_Back_End.Services.Auth
                 return new SigningPharmacyClientInResponseModel
                 {
                     user = _mapper.MergeInto<PharmacyClientResponseModel>(user, pharmacy),
-                    accessToken = _jWThandlerService.CreateAccessToken(user,Variables.pharmacier)
+                    accessToken = _jWThandlerService.CreateAccessToken(user,Variables.pharmacier,pharmacy.Name)
                 };   
                       
         }
@@ -58,13 +58,13 @@ namespace System_Back_End.Services.Auth
             return new SigningStockClientInResponseModel
             {
                 user = _mapper.MergeInto<StockClientResponseModel>(user, stock),
-                accessToken = _jWThandlerService.CreateAccessToken(user, Variables.stocker)
+                accessToken = _jWThandlerService.CreateAccessToken(user, Variables.stocker,stock.Name)
             };
         }
 
         public async Task<ISigningResponseModel> GetSigningInResponseModelForCurrentUser(AppUser user)
         {
-            var userType = Properties.CurrentUserType;
+            var userType = Functions.CurrentUserType();
             if (userType == UserType.pharmacier)
             {
                 var pharmacy = await _context.Pharmacies.FindAsync(user.Id);
@@ -88,52 +88,61 @@ namespace System_Back_End.Services.Auth
             return GetSigningInResponseModelForStock(user, stock);
         }
 
-        public async Task<ISigningResponseModel> SignUpPharmacyAsync(PharmacyClientRegisterModel model, Action<bool, IdentityResult,AppUser> ActionOnResult)
+        public async Task<ISigningResponseModel> SignUpPharmacyAsync(PharmacyClientRegisterModel model, IExecuterDelayer executerDelayer)
         {
             //the email is already checked at validation if it was existed before for any user
-            var user = new AppUser { UserName = model.Email, Email = model.Email, PhoneNumber = model.PresPhone };
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
+            var user = new AppUser
             {
-                result = await _userManager.AddToRoleAsync(user, Variables.pharmacier);
-                if (result.Succeeded)
-                {
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = _Url.EmailConfirmationLink(user.Id.ToString(), code, _httpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email,"تأكيد البريد الالكترونى لفاست دو", $"لتأكيد بريدك الالكترونى <a href='{callbackUrl}'>اضغط هنا</a>");
-                    ActionOnResult(false, result,user);
-                    var pharmacy = _mapper.Map<Pharmacy>(model);
-                    pharmacy.Id = user.Id;
-                    return GetSigningInResponseModelForPharmacy(user,pharmacy);
-                }
-            }
-            ActionOnResult(true, result,user);
-            return null;
+                UserName = model.Email,
+                Email = model.Email,
+                PhoneNumber = model.PersPhone,
+                confirmCode = Functions.GenerateConfirmationTokenCode()
+            };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+                return null;
+            result = await _userManager.AddToRoleAsync(user, Variables.pharmacier);
+            if (!result.Succeeded)
+                return null;
+            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var callbackUrl = _Url.EmailConfirmationLink(user.Id.ToString(), code, _httpContext.Request.Scheme);
+            executerDelayer.OnExecuting = async () =>
+            {
+                await _emailSender.SendEmailAsync(
+                    user.Email,
+                    "كود تأكيد البريد الالكترونى", $"كود التأكيد الخاص بك هو: {user.confirmCode}");
+            };
+            //ActionOnResult(false, result, user);
+            var pharmacy = _mapper.Map<Pharmacy>(model);
+            pharmacy.Id = user.Id;
+            return GetSigningInResponseModelForPharmacy(user, pharmacy);
         }
-        public async Task<ISigningResponseModel> SignUpStockAsync(StockClientRegisterModel model, Action<bool, IdentityResult, AppUser> ActionOnResult)
+        public async Task<ISigningResponseModel> SignUpStockAsync(StockClientRegisterModel model,IExecuterDelayer executerDelayer)
         {
             //the email is already checked at validation if it was existed before for any user
-            var user = new AppUser { UserName = model.Email, Email = model.Email, PhoneNumber = model.PresPhone };
+            var user = new AppUser {
+                UserName = model.Email,
+                Email = model.Email, 
+                PhoneNumber = model.PersPhone,
+                confirmCode=Functions.GenerateConfirmationTokenCode() };
             var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
+            if (!result.Succeeded)
+                return null;
+                result = await _userManager.AddToRoleAsync(user, Variables.stocker);
+            if (!result.Succeeded)
+                return null;
+            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var callbackUrl = _Url.EmailConfirmationLink(user.Id.ToString(), code, _httpContext.Request.Scheme);
+            executerDelayer.OnExecuting = async() =>
             {
-                result = await _userManager.AddToRoleAsync(user, Variables.pharmacier);
-                if (result.Succeeded)
-                {
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = _Url.EmailConfirmationLink(user.Id.ToString(), code, _httpContext.Request.Scheme);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = System.Web.HttpUtility.UrlEncode(code);
-                    await _emailSender.SendEmailAsync(model.Email, "get code to confirm your email", $"the code to confirm email is {code}");
-                    //await RegisterCustomerUser(user, model);
-                    ActionOnResult(false, result, user);
-                    var stock = _mapper.Map<Stock>(model);
-                    stock.Id = user.Id;
-                    return GetSigningInResponseModelForStock(user,stock);
-                }
-            }
-            ActionOnResult(true, result, user);
-            return null;
+                await _emailSender.SendEmailAsync(
+                    user.Email,
+                    "كود تأكيد البريد الالكترونى", $"كود التأكيد الخاص بك هو: {user.confirmCode}");
+            };
+            //ActionOnResult(false, result, user);
+            var stock = _mapper.Map<Stock>(model);
+            stock.Id = user.Id;
+            return GetSigningInResponseModelForStock(user,stock);
         }
 
         public async Task SendEmailConfirmationAsync(string email, string callbackUrl)

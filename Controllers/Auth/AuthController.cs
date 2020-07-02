@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Models;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -19,7 +21,7 @@ namespace System_Back_End.Controllers.Auth
     [ApiController]
     public class AuthController : SharedAPIController
     {
-        public AuthController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, TransactionService transactionService) : base(userManager, emailSender, accountService, transactionService)
+        public AuthController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
         {
         }
 
@@ -45,20 +47,21 @@ namespace System_Back_End.Controllers.Auth
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 if (await _userManager.UserIdentityExists(user, model.Password,model.UserType))
                 {
-                    if (!user.EmailConfirmed)
+                    //user can continue with confirming
+                    /*if (!user.EmailConfirmed)
                     {
-                        return Unauthorized(new { err = "البريد الالكترونى غير مؤكد" });
-                    }
+                        return Unauthorized(Functions.MakeError("البريد الالكترونى غير مفعل ,من فضلك قم بتأكيد بريدك الالكترونى"));
+                    }*/
                     var response = model.UserType == UserType.pharmacier
                         ?await _accountService.GetSigningInResponseModelForPharmacy(user)
                         :await _accountService.GetSigningInResponseModelForStock(user);
                     return Ok(response);
                 }
-                return NotFound(new {err= "البريد الالكترونى او كلمة السر غير صحيحة" });
+                return NotFound(Functions.MakeError("البريد الالكترونى او كلمة السر غير صحيحة" ));
             }
             catch (Exception ex)
             {
-                return BadRequest(new {err=ex.Message});
+                return BadRequest(Functions.MakeError(ex.Message));
             }
 
         }
@@ -67,39 +70,47 @@ namespace System_Back_End.Controllers.Auth
         #region for email settings
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> SendMeEmailConfirmCode(string email)
+        public async Task<IActionResult> SendMeEmailConfirmCodeAgain([EmailAddress(ErrorMessage ="email is not valid")][Required(ErrorMessage ="email is required")]string email)
         {
+
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
-            {
                 return NotFound();
-            }
+            if (user.EmailConfirmed)
+                return BadRequest(Functions.MakeError("Email", "هذا الايميل بالفعل مفعل!"));
 
-            var code =await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var code =await _userManager.GenerateEmailConfirmationTokenAsync(user);
             //var callbackUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/auth/confirmemail?userId={user.Id}&code={code}";
-            var callbackUrl = Url.EmailConfirmationLink(user.Id, code, HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(user.Email, "كود تأكيد البريد الالكترونى", $"اضغط <a href='{callbackUrl}'>هنا</a> لتأكيد البريد الالكترونى");
+            //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, HttpContext.Request.Scheme);
+            /*user.confirmCode = Functions.GenerateConfirmationTokenCode();
+            var res = await _userManager.UpdateAsync(user);
+            if (!res.Succeeded)
+                return BadRequest(Functions.MakeError("Email","حدثت مشكلة فى السيرفر,حاول مرة اخرى"));*/
+            await _emailSender.SendEmailAsync(user.Email, "كود تأكيد البريد الالكترونى", $"كود التأكيد الخاص بك هو: {user.confirmCode}");
             return Ok();
         }
-        [HttpGet]
+        [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailModel model)
         {
-            if (userId == null || code == null)
-            {
-                return BadRequest();
-            }
-            var user = await _userManager.FindByIdAsync(userId);
+            if (!ModelState.IsValid)
+                return new UnprocessableEntityObjectResult(ModelState);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-            {
                 return NotFound();
-            }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            if (result.Succeeded)
-            {
-                return Ok("تم تأكيد بريدك الالكترونى, ارجع الى الموقع مرة اخرى وقم بتحديث الصفحة");
-            }
-            else return BadRequest(new { err = "error occured on confirming your email" });
+            if (user.EmailConfirmed)
+                return BadRequest(Functions.MakeError("Email", "هذا البريد الالكترونى بفعل بالفعل"));
+            if (user.confirmCode==null || !user.confirmCode.Equals(model.Code))
+                return NotFound(new { err = "الكود الذى ادخلتة غير صحيح" });
+            user.confirmCode = null;
+            var res =await _userManager.UpdateAsync(user);
+            if (!res.Succeeded)
+                return BadRequest(Functions.MakeError("Email", "فشلت العملية,حاول مرة اخرى"));
+            var token =await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            res = await _userManager.ConfirmEmailAsync(user, token);
+            if(!res.Succeeded)
+                return BadRequest(Functions.MakeError("Email", "فشلت العملية,حاول مرة اخرى"));
+            return Ok();
         }
         #endregion
         #region for password setting
@@ -124,7 +135,7 @@ namespace System_Back_End.Controllers.Auth
                 // Don't reveal that the user does not exist or is not confirmed
                 return new NotConfirmedEmailResult();
             }
-            user.confirmCode=Functions.GetRandomDigits(15);
+            user.confirmCode=Functions.GenerateConfirmationTokenCode();
             var res = await _userManager.UpdateAsync(user);
             //var code =await _userManager.GeneratePasswordResetTokenAsync(user);
             //var callbackUrl = Url.ResetPasswordCallbackLink(user.Id.ToString(), code,model.NewPassword, Request.Scheme);
@@ -147,18 +158,20 @@ namespace System_Back_End.Controllers.Auth
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
                 return NotFound();
+            if (user.confirmCode == null)
+                return BadRequest();
             if (!user.confirmCode.Equals(model.Code))
-                return NotFound();
+                return NotFound(Functions.MakeError("Code","الكود الذى ادخلته غير صحيح"));
+            user.confirmCode = null;
+            var res = await _userManager.UpdateAsync(user);
+            if (!res.Succeeded)
+                return BadRequest(Functions.MakeError("فشلت العملية ,حاول مرة اخرى" ));
             //var result = await _userManager.ResetPasswordAsync(user, model.Code, model.NewPassword);
-            var code =await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user,code, model.NewPassword);
-            if (result.Succeeded)
-                return Ok();
-            else
-            {
-                ModelState.AddModelError("code", "الكود الذى ادخلتة غير صحيح");
-                return new UnprocessableEntityObjectResult(ModelState);
-            }       
+            var token =await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user,token, model.NewPassword);
+            if (!result.Succeeded)
+                return BadRequest(Functions.MakeError("فشلت العملية ,حاول مرة اخرى"));
+            return Ok();      
         }
         #endregion
     }

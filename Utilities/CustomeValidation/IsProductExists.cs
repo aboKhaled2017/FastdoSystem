@@ -14,7 +14,7 @@ namespace System_Back_End.Utilities
         {
             var productId = Guid.Empty;
             if (Guid.TryParse(value.ToString(), out productId) &&
-               RequestStaticServices.GetDbContext.LzDrugs.Any(p => p.Id == productId))
+               RequestStaticServices.GetDbContext().LzDrugs.Any(p => p.Id == productId))
                 return ValidationResult.Success;
             return new ValidationResult(string.Format("the product id ${0} was not found",value));
         }

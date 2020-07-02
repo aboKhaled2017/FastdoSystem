@@ -18,7 +18,7 @@ namespace System_Back_End.Services
     }
     public class HandlingProofImgsServices
     {
-        private static readonly IHostingEnvironment _env = RequestStaticServices.GetHostingEnv;
+        private static readonly IHostingEnvironment _env = RequestStaticServices.GetHostingEnv();
         public HandlingImgResponse SavePharmacyProofImgs(IFormFile licenseImg,IFormFile commerialRegImg,object Id)
         {
             var response = new HandlingImgResponse();

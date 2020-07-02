@@ -7,8 +7,8 @@ namespace System_Back_End.Models
     public class Phr_RegisterModel_Identity : IPhr_RegisterModel_Identity
     {
         public string Name { get;set; }
-        public string mgrName { get;set; }
-        public string ownerName { get;set; }
+        public string MgrName { get;set; }
+        public string OwnerName { get;set; }
         public byte CityId { get ; set; }
         public byte AreaId { get ; set; }
     }

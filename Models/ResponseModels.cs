@@ -13,6 +13,7 @@ namespace System_Back_End.Models
         public string Name { get; set; }
         public string PersPhone { get; set; }
         public string LandlinePhone { get; set; }
+        public bool EmailConfirmed { get; set; }
     }
     public class PharmacyClientResponseModel:GeneralResponseModel
     {

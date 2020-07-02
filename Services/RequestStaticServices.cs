@@ -25,53 +25,46 @@ namespace System_Back_End.Services
             _serviceProvider = serviceProvider;
             _serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
         }
-        public static HttpContext GetCurrentHttpContext
+        public static HttpContext GetCurrentHttpContext()
         {
-            get { return _serviceScope.ServiceProvider.GetService<IHttpContextAccessor>().HttpContext; }
-            private set { }
+           return _serviceScope.ServiceProvider.GetService<IHttpContextAccessor>().HttpContext; 
         }
-        public static SysDbContext GetDbContext
+        public static SysDbContext GetDbContext()
         {
-            get {return _serviceScope.ServiceProvider.GetService<SysDbContext>();}
+            return _serviceScope.ServiceProvider.GetService<SysDbContext>();
         }
-        public static IHostingEnvironment GetHostingEnv
+        public static IHostingEnvironment GetHostingEnv()
         {
-            get { return _serviceScope.ServiceProvider.GetService<IHostingEnvironment>(); }
-            private set { }
+            return _serviceScope.ServiceProvider.GetService<IHostingEnvironment>(); 
         }
         public static ILogger<T> GetLogger<T>()
         {
             return _serviceScope.ServiceProvider.GetService<ILogger<T>>();
         }
-        public static UserManager<AppUser> GetUserManager
+        public static UserManager<AppUser> GetUserManager()
         {
-            get { return _serviceScope.ServiceProvider.GetService<UserManager<AppUser>>(); }
-            private set { }
-}
-        public static RoleManager<IdentityRole> GetRoleManager
+             return _serviceScope.ServiceProvider.GetService<UserManager<AppUser>>(); 
+        }
+        public static RoleManager<IdentityRole> GetRoleManager()
         {
-            get { return _serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>(); }
-            private set { }
+             return _serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>(); 
         }       
-        public static IConfiguration GetConfiguration
+        public static IConfiguration GetConfiguration()
         {
-            get { return _serviceScope.ServiceProvider.GetService<IConfiguration>(); }
-            private set { }
+            return _serviceScope.ServiceProvider.GetService<IConfiguration>(); 
         }
-        public static TransactionHelper GetTransactionHelper
+        public static TransactionHelper GetTransactionHelper()
         {
-            get { return _serviceScope.ServiceProvider.GetService<TransactionHelper>(); }
-            private set{ }
+            return _serviceScope.ServiceProvider.GetService<TransactionHelper>();          
         }
-        public static IMapper GetMapper {
-            get {
+        public static IMapper GetMapper ()
+        {
                 var mappingConfig = new MapperConfiguration(mc =>
                 {
                     mc.AddProfile(new MappingProfile());
                 });
 
-                return mappingConfig.CreateMapper();
-            } 
+                return mappingConfig.CreateMapper();            
         }
     }
 }

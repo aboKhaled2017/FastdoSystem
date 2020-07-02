@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System_Back_End;
 using System_Back_End.Mappings;
 using System_Back_End.Repositories;
 using System_Back_End.Services;
@@ -36,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<TransactionService>();
             services.AddSingleton<HandlingProofImgsServices>();
             services.AddSingleton<IEmailSender,EmailSender>();
+            services.AddScoped<IExecuterDelayer, ExecuterDelayer>();
             return services;
         }
         public static IServiceCollection _AddRepositories(this IServiceCollection services)
@@ -43,6 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<PharmacyRepository>();
             services.AddTransient<StockRepository>();
             services.AddTransient<IComplainsRepository,ComplainsRepository>();
+            services.AddTransient<IAreaRepository, AreaRepository>();
             return services;
         }
         public static IServiceCollection _AddSystemAuthentication(this IServiceCollection services)
@@ -51,11 +54,11 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;           
+            })            
            .AddJwtBearer(options =>
            {
-               var JWTSection = RequestStaticServices.GetConfiguration.GetSection("JWT");
+               var JWTSection = RequestStaticServices.GetConfiguration().GetSection("JWT");
                options.SaveToken = true;
                options.RequireHttpsMetadata = false;//disabled only in developement
                 options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
@@ -67,6 +70,20 @@ namespace Microsoft.Extensions.DependencyInjection
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSection.GetValue<string>("signingKey")))
                };
            });
+            return services;
+        }
+        public static IServiceCollection _AddSystemAuthorizations(this IServiceCollection services)
+        {
+            services.AddAuthorization(opts => {
+                opts.AddPolicy(Variables.PharmacyPolicy, policy => {
+                    policy.RequireRole(Variables.pharmacier)
+                           .RequireAuthenticatedUser();
+                });
+                opts.AddPolicy(Variables.StockPolicy, policy => {
+                    policy.RequireRole(Variables.stocker)
+                           .RequireAuthenticatedUser();
+                });
+            });
             return services;
         }
     }
