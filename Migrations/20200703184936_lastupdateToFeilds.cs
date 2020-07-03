@@ -2,7 +2,7 @@
 
 namespace System_Back_End.Migrations
 {
-    public partial class upd : Migration
+    public partial class lastupdateToFeilds : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

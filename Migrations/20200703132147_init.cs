@@ -26,15 +26,14 @@ namespace System_Back_End.Migrations
                 {
                     Id = table.Column<byte>(nullable: false),
                     Name = table.Column<string>(nullable: false),
-                    SuperArea = table.Column<byte>(nullable: true),
-                    AreaId = table.Column<byte>(nullable: true)
+                    SuperAreaId = table.Column<byte>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Areas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Areas_Areas_AreaId",
-                        column: x => x.AreaId,
+                        name: "FK_Areas_Areas_SuperAreaId",
+                        column: x => x.SuperAreaId,
                         principalTable: "Areas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -72,11 +71,28 @@ namespace System_Back_End.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    confirmCode = table.Column<string>(maxLength: 15, nullable: true),
+                    willBeNewEmail = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Complains",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    Subject = table.Column<string>(nullable: true),
+                    Message = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Complains", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,8 +141,8 @@ namespace System_Back_End.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -170,8 +186,8 @@ namespace System_Back_End.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -194,10 +210,10 @@ namespace System_Back_End.Migrations
                     Name = table.Column<string>(nullable: false),
                     MgrName = table.Column<string>(nullable: false),
                     OwnerName = table.Column<string>(nullable: false),
-                    PhrLicenseImgSrc = table.Column<string>(nullable: false),
-                    PhrCommercialRegImgSrc = table.Column<string>(nullable: false),
+                    LicenseImgSrc = table.Column<string>(nullable: false),
+                    CommercialRegImgSrc = table.Column<string>(nullable: false),
                     PersPhone = table.Column<string>(nullable: false),
-                    PhrPhone = table.Column<string>(nullable: false),
+                    LandlinePhone = table.Column<string>(nullable: false),
                     Address = table.Column<string>(nullable: true),
                     AreaId = table.Column<byte>(nullable: false)
                 },
@@ -230,7 +246,7 @@ namespace System_Back_End.Migrations
                     Status = table.Column<int>(nullable: false),
                     CommercialRegImgSrc = table.Column<string>(nullable: false),
                     PersPhone = table.Column<string>(nullable: false),
-                    StPhone = table.Column<string>(nullable: false),
+                    LandlinePhone = table.Column<string>(nullable: false),
                     Address = table.Column<string>(nullable: true),
                     AreaId = table.Column<byte>(nullable: false)
                 },
@@ -292,17 +308,17 @@ namespace System_Back_End.Migrations
                 {
                     table.PrimaryKey("PK_PharmaciesInStocks", x => new { x.PharmacyId, x.StockId });
                     table.ForeignKey(
-                        name: "S_A_P_PhID",
+                        name: "FK_PharmaciesInStocks_Pharmacies_PharmacyId",
                         column: x => x.PharmacyId,
                         principalTable: "Pharmacies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "S_A_P_SID",
+                        name: "FK_PharmaciesInStocks_Stocks_StockId",
                         column: x => x.StockId,
                         principalTable: "Stocks",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -326,10 +342,36 @@ namespace System_Back_End.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "LzDrugRequests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    PharmacyId = table.Column<string>(nullable: false),
+                    LzDrugId = table.Column<Guid>(nullable: false),
+                    Status = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LzDrugRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LzDrugRequests_LzDrugs_LzDrugId",
+                        column: x => x.LzDrugId,
+                        principalTable: "LzDrugs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LzDrugRequests_Pharmacies_PharmacyId",
+                        column: x => x.PharmacyId,
+                        principalTable: "Pharmacies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_Areas_AreaId",
+                name: "IX_Areas_SuperAreaId",
                 table: "Areas",
-                column: "AreaId");
+                column: "SuperAreaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -369,6 +411,17 @@ namespace System_Back_End.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LzDrugRequests_PharmacyId",
+                table: "LzDrugRequests",
+                column: "PharmacyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LzDrugRequests_LzDrugId_PharmacyId",
+                table: "LzDrugRequests",
+                columns: new[] { "LzDrugId", "PharmacyId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_LzDrugs_PharmacyId",
@@ -417,7 +470,10 @@ namespace System_Back_End.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "LzDrugs");
+                name: "Complains");
+
+            migrationBuilder.DropTable(
+                name: "LzDrugRequests");
 
             migrationBuilder.DropTable(
                 name: "PharmaciesInStocks");
@@ -429,10 +485,13 @@ namespace System_Back_End.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Pharmacies");
+                name: "LzDrugs");
 
             migrationBuilder.DropTable(
                 name: "Stocks");
+
+            migrationBuilder.DropTable(
+                name: "Pharmacies");
 
             migrationBuilder.DropTable(
                 name: "Areas");

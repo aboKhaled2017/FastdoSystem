@@ -35,7 +35,7 @@ namespace System_Back_End.Controllers
 
         // GET: api/Complains/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetComplain(string id)
+        public async Task<IActionResult> GetComplain(Guid id)
         {
             var complain = await _complainsRepository.GetById(id);
 
@@ -49,7 +49,7 @@ namespace System_Back_End.Controllers
 
         // PUT: api/Complains/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComplain(string id, Complain complain)
+        public async Task<IActionResult> PutComplain(Guid id, Complain complain)
         {
             if (id != complain.Id)
             {
@@ -81,7 +81,6 @@ namespace System_Back_End.Controllers
         public async Task<IActionResult> PostComplain(ComplainToAddModel model)
         {
             var complain = _mapper.Map<Complain>(model);
-            complain.Id = Guid.NewGuid().ToString();
             await _complainsRepository.Add(complain);
 
             return CreatedAtAction("GetComplain", new { id = complain.Id }, complain);
@@ -89,7 +88,7 @@ namespace System_Back_End.Controllers
 
         // DELETE: api/Complains/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Complain>> DeleteComplain(string id)
+        public async Task<ActionResult<Complain>> DeleteComplain(Guid id)
         {
             var complain = await _complainsRepository.Delete(id);
             if (complain==null)

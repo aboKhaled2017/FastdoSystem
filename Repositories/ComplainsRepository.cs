@@ -19,12 +19,12 @@ namespace System_Back_End.Repositories
             return (await _context.SaveChangesAsync()) > 0;
         }
 
-        public async Task<bool> ComplainExists(string id)
+        public async Task<bool> ComplainExists(Guid id)
         {
             return await _context.Complains.AnyAsync(e => e.Id == id);
         }
 
-        public async Task<Complain> Delete(string id)
+        public async Task<Complain> Delete(Guid id)
         {
             var complain = await _context.Complains.FindAsync(id);
             if (complain!=null)
@@ -40,7 +40,7 @@ namespace System_Back_End.Repositories
             return _context.Complains.AsQueryable();
         }
 
-        public async Task<Complain> GetById(string id)
+        public async Task<Complain> GetById(Guid id)
         {
             return await _context.Complains.FindAsync(id);
         }

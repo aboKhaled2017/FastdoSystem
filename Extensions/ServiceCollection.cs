@@ -45,6 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<PharmacyRepository>();
             services.AddTransient<StockRepository>();
             services.AddTransient<LzDrugRepository>();
+            services.AddTransient<PhrDrgRequestsRepository>();
             services.AddTransient<IComplainsRepository,ComplainsRepository>();
             services.AddTransient<IAreaRepository, AreaRepository>();
             return services;

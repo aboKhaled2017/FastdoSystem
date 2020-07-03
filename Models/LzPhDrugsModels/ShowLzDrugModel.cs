@@ -19,5 +19,6 @@ namespace System_Back_End.Models
         public LzDrugPriceState PriceType { get; set; } 
         public LzDrugUnitType UnitType { get; set; }
         public string Desc { get; set; }
+        public int RequestCount { get; set; }
     }
 }

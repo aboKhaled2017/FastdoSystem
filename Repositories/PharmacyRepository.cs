@@ -12,25 +12,25 @@ namespace System_Back_End.Repositories
         public PharmacyRepository(SysDbContext context) : base(context)
         {
         }
-
-        public async Task<bool> AddAsync(Pharmacy pharmacy)
-        {
-            _context.Pharmacies.Add(pharmacy);
-            return (await _context.SaveChangesAsync()) > 0;
-        }
         public IQueryable GetAllAsync()
         {
             return _context.Pharmacies;
         }
+        public async Task<Pharmacy> GetByIdAsync(string id)
+        {
+            return await _context.Pharmacies.FindAsync(id);
+        }
+        //public async Task<>
+        public async Task<bool> AddAsync(Pharmacy pharmacy)
+        {
+            _context.Pharmacies.Add(pharmacy);
+            return (await _context.SaveChangesAsync()) > 0;
+        }        
         public async Task<bool> UpdateAsync(Pharmacy pharmacy)
         {
             _context.Entry(pharmacy).State = EntityState.Modified;
             return (await _context.SaveChangesAsync()) > 0;
-        }
-        public async Task<Pharmacy>GetByIdAsync(string id)
-        {
-            return await _context.Pharmacies.FindAsync(id);
-        }
+        }       
         public async Task<Pharmacy> DeleteAsync(string id)
         {
             var pharmacy =await  _context.Pharmacies.FindAsync(id);

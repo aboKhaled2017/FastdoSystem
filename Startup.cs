@@ -31,13 +31,13 @@ namespace System_Back_End
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<SysDbContext>(options => {
-                options.UseSqlServer(Configuration.GetConnectionString("localSql"),
+                /*options.UseSqlServer(Configuration.GetConnectionString("localSql"),
                     builder=> {
                     builder.MigrationsAssembly("System_Back_End");
-                });
-                /*options.UseSqlite(Configuration.GetConnectionString("sysSqlite"),builder=> {
-                    builder.MigrationsAssembly("System_Back_End");
                 });*/
+                options.UseSqlite(Configuration.GetConnectionString("sysSqlite"),builder=> {
+                    builder.MigrationsAssembly("System_Back_End");
+                });
             });
             services._AddRepositories();
             services

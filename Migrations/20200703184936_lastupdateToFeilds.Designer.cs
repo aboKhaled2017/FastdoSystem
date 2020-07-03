@@ -3,23 +3,20 @@ using System;
 using System.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace System_Back_End.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    [Migration("20200630120824_ch")]
-    partial class ch
+    [Migration("20200703184936_lastupdateToFeilds")]
+    partial class lastupdateToFeilds
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -39,8 +36,7 @@ namespace System_Back_End.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -48,8 +44,7 @@ namespace System_Back_End.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -68,8 +63,7 @@ namespace System_Back_End.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -185,6 +179,8 @@ namespace System_Back_End.Migrations
                     b.Property<string>("confirmCode")
                         .HasMaxLength(15);
 
+                    b.Property<string>("willBeNewEmail");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -192,8 +188,7 @@ namespace System_Back_End.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -212,6 +207,24 @@ namespace System_Back_End.Migrations
                     b.HasIndex("SuperAreaId");
 
                     b.ToTable("Areas");
+                });
+
+            modelBuilder.Entity("System.Models.Complain", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("Message");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Subject");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Complains");
                 });
 
             modelBuilder.Entity("System.Models.LzDrug", b =>
@@ -249,6 +262,30 @@ namespace System_Back_End.Migrations
                     b.HasIndex("PharmacyId");
 
                     b.ToTable("LzDrugs");
+                });
+
+            modelBuilder.Entity("System.Models.LzDrugRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("LzDrugId");
+
+                    b.Property<string>("PharmacyId")
+                        .IsRequired();
+
+                    b.Property<bool>("Seen");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PharmacyId");
+
+                    b.HasIndex("LzDrugId", "PharmacyId")
+                        .IsUnique();
+
+                    b.ToTable("LzDrugRequests");
                 });
 
             modelBuilder.Entity("System.Models.Pharmacy", b =>
@@ -426,6 +463,19 @@ namespace System_Back_End.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("System.Models.LzDrugRequest", b =>
+                {
+                    b.HasOne("System.Models.LzDrug", "LzDrug")
+                        .WithMany("RequestingPharms")
+                        .HasForeignKey("LzDrugId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("System.Models.Pharmacy", "Pharmacy")
+                        .WithMany("RequestedLzDrugs")
+                        .HasForeignKey("PharmacyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("System.Models.Pharmacy", b =>
                 {
                     b.HasOne("System.Models.Area", "Area")
@@ -444,14 +494,12 @@ namespace System_Back_End.Migrations
                     b.HasOne("System.Models.Pharmacy", "Pharmacy")
                         .WithMany("GoinedStocks")
                         .HasForeignKey("PharmacyId")
-                        .HasConstraintName("S_A_P_PhID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("System.Models.Stock", "Stock")
                         .WithMany("GoinToPharmacies")
                         .HasForeignKey("StockId")
-                        .HasConstraintName("S_A_P_SID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("System.Models.StkDrug", b =>

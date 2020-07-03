@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace System_Back_End.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    [Migration("20200630114928_change_in_appUser")]
-    partial class change_in_appUser
+    [Migration("20200703132147_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -183,7 +183,9 @@ namespace System_Back_End.Migrations
                         .HasMaxLength(256);
 
                     b.Property<string>("confirmCode")
-                        .HasMaxLength(8);
+                        .HasMaxLength(15);
+
+                    b.Property<string>("willBeNewEmail");
 
                     b.HasKey("Id");
 
@@ -212,6 +214,24 @@ namespace System_Back_End.Migrations
                     b.HasIndex("SuperAreaId");
 
                     b.ToTable("Areas");
+                });
+
+            modelBuilder.Entity("System.Models.Complain", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("Message");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Subject");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Complains");
                 });
 
             modelBuilder.Entity("System.Models.LzDrug", b =>
@@ -249,6 +269,28 @@ namespace System_Back_End.Migrations
                     b.HasIndex("PharmacyId");
 
                     b.ToTable("LzDrugs");
+                });
+
+            modelBuilder.Entity("System.Models.LzDrugRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("LzDrugId");
+
+                    b.Property<string>("PharmacyId")
+                        .IsRequired();
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PharmacyId");
+
+                    b.HasIndex("LzDrugId", "PharmacyId")
+                        .IsUnique();
+
+                    b.ToTable("LzDrugRequests");
                 });
 
             modelBuilder.Entity("System.Models.Pharmacy", b =>
@@ -426,6 +468,19 @@ namespace System_Back_End.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("System.Models.LzDrugRequest", b =>
+                {
+                    b.HasOne("System.Models.LzDrug", "LzDrug")
+                        .WithMany("RequestingPharms")
+                        .HasForeignKey("LzDrugId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("System.Models.Pharmacy", "Pharmacy")
+                        .WithMany("RequestedLzDrugs")
+                        .HasForeignKey("PharmacyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("System.Models.Pharmacy", b =>
                 {
                     b.HasOne("System.Models.Area", "Area")
@@ -444,14 +499,12 @@ namespace System_Back_End.Migrations
                     b.HasOne("System.Models.Pharmacy", "Pharmacy")
                         .WithMany("GoinedStocks")
                         .HasForeignKey("PharmacyId")
-                        .HasConstraintName("S_A_P_PhID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("System.Models.Stock", "Stock")
                         .WithMany("GoinToPharmacies")
                         .HasForeignKey("StockId")
-                        .HasConstraintName("S_A_P_SID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("System.Models.StkDrug", b =>

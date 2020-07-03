@@ -9,10 +9,10 @@ namespace System_Back_End.Repositories
     public interface IComplainsRepository
     {
         IQueryable<Complain> GetAll();
-        Task<Complain> GetById(string id);
+        Task<Complain> GetById(Guid id);
         Task<bool> Add(Complain complain);
-        Task<Complain> Delete(string id);
+        Task<Complain> Delete(Guid id);
         Task<bool> Update(Complain complain);
-        Task<bool> ComplainExists(string id);
+        Task<bool> ComplainExists(Guid id);
     }
 }

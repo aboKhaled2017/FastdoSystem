@@ -11,24 +11,14 @@ using System_Back_End.Services;
 namespace System_Back_End.Repositories
 {
     public class LzDrugRepository:MainRepository
-    {
-        private UserManager<AppUser> _userManager { get; }
-        private string PharmacyId
-        {
-            get
-            {
-                return _userManager.GetUserId(RequestStaticServices.GetCurrentHttpContext().User);
-            }
-        }
+    {     
 
-        public LzDrugRepository(SysDbContext context,UserManager<AppUser>userManager) : base(context)
+        public LzDrugRepository(SysDbContext context) : base(context)
         {
-            _userManager = userManager;
         }
 
         public void Add(LzDrug drug)
         {
-            drug.Id = Guid.NewGuid();
             drug.PharmacyId = PharmacyId;
             _context.LzDrugs.Add(drug);
         }
@@ -69,10 +59,11 @@ namespace System_Back_End.Repositories
                 ValideDate = d.ValideDate,
                 ConsumeType = d.ConsumeType,
                 Discount = d.Discount,
-                Desc = d.Desc
+                Desc = d.Desc,
+                RequestCount=d.RequestingPharms.Count
             });
         }
-        public IQueryable<object> GetAllShownOfUser(string userId)
+        public IQueryable<ShowLzDrugModel> GetAllShownOfUser(string userId)
         {
             return GetAllAsync()
             .Where(d => d.PharmacyId == userId)
@@ -88,7 +79,8 @@ namespace System_Back_End.Repositories
                 ValideDate = d.ValideDate,
                 ConsumeType = d.ConsumeType,
                 Discount = d.Discount,
-                Desc = d.Desc
+                Desc = d.Desc,
+                RequestCount=d.RequestingPharms.Count
             });
         }
         public void Update(LzDrug drug)

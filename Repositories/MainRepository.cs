@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Models;
 using System.Threading.Tasks;
+using System_Back_End.Services;
 
 namespace System_Back_End.Repositories
 {
@@ -15,6 +16,13 @@ namespace System_Back_End.Repositories
         public MainRepository(SysDbContext context)
         {
             _context = context;
+        }
+        protected string PharmacyId
+        {
+            get
+            {
+                return RequestStaticServices.GetUserManager().GetUserId(RequestStaticServices.GetCurrentHttpContext().User);
+            }
         }
         public bool Save()
         {
