@@ -43,6 +43,10 @@ namespace System_Back_End.Mappings
             CreateMap<Stk_Contacts_Update, Stock>();
 
             CreateMap<ComplainToAddModel, Complain>();
+
+            CreateMap<AddLzDrugModel, LzDrug>();
+            CreateMap<LzDrug, ShowLzDrugModel>();
+            CreateMap<UpdateLzDrugModel, LzDrug>();
         }
     }
 }

@@ -16,6 +16,14 @@ namespace System_Back_End.Repositories
         {
             _context = context;
         }
+        public bool Save()
+        {
+            return _context.SaveChanges()>0;
+        }
+        public async Task<bool> SaveAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
         public async Task<bool> UpdateFields<T>(
            T entity,
             params Expression<Func<T, object>>[] updatedProperties)

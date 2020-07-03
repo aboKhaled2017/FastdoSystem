@@ -71,5 +71,9 @@ namespace System_Back_End
                     ? UserType.pharmacier
                     : UserType.stocker;
         }
+        public static string GetUserId()
+        {
+            return RequestStaticServices.GetUserManager().GetUserId(RequestStaticServices.GetCurrentHttpContext().User);
+        }
     }
 }

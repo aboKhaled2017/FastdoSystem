@@ -4,6 +4,7 @@ using System.Linq;
 using System.Models;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,11 @@ namespace System_Back_End.Controllers
             _accountService = accountService;
             _mapper = mapper;
             _userManager = userManager;
+        }
+        [Authorize]
+        protected string GetUserId()
+        {
+            return _userManager.GetUserId(User);
         }
         protected void AddErrors(IdentityResult result)
         {
