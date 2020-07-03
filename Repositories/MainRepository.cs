@@ -17,7 +17,7 @@ namespace System_Back_End.Repositories
         {
             _context = context;
         }
-        protected string PharmacyId
+        protected string UserId
         {
             get
             {

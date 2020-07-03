@@ -22,12 +22,12 @@ namespace System_Back_End.Controllers
     [Authorize(Policy = "PharmacyPolicy")]
     public class LzDrugsController : SharedAPIController
     {
-        public LzDrugRepository _lzDrugsRepository { get; }
-
+        public ILzDrugRepository _lzDrugsRepository { get; }
+        private const int maximumLzDrugPageSize= 3;
         public LzDrugsController(
             UserManager<AppUser> userManager, IEmailSender emailSender,
             AccountService accountService, IMapper mapper,
-            LzDrugRepository lzDrugsRepository,
+            ILzDrugRepository lzDrugsRepository,
             TransactionService transactionService) 
             : base(userManager, emailSender, accountService, mapper, transactionService)
         {
@@ -35,9 +35,9 @@ namespace System_Back_End.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllDrugsOfMy()
+        public async Task<IActionResult> GetAllDrugs(LzDrugResourceParameters lzDrugResourceParameters)
         {
-            var allDrugs = await _lzDrugsRepository.GetAllShownOfUser(GetUserId()).ToListAsync();
+            var allDrugs = await _lzDrugsRepository.GetAll_BM(lzDrugResourceParameters).ToListAsync();
             return Ok(allDrugs);
         }
 
@@ -45,7 +45,7 @@ namespace System_Back_End.Controllers
         [HttpGet("{id}", Name = "GetDrugById")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var drug = await _lzDrugsRepository.GetShownModelByIdAsync(id);
+            var drug = await _lzDrugsRepository.Get_BM_ByIdAsync(id);
             if (drug == null)
                 return NotFound();
             return Ok(drug);

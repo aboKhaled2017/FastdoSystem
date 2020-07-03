@@ -14,11 +14,11 @@ namespace System_Back_End.Repositories
         }
         public IQueryable<LzDrugRequest> GetMadeRequestsByUser()
         {
-            return _context.LzDrugRequests.Where(d => d.PharmacyId == PharmacyId);
+            return _context.LzDrugRequests.Where(d => d.PharmacyId == UserId);
         }
         public IQueryable<LzDrugRequest> GetSentRequestsForUser()
         {
-            return _context.LzDrugRequests.Where(d =>d.LzDrug.PharmacyId==PharmacyId);
+            return _context.LzDrugRequests.Where(d =>d.LzDrug.PharmacyId==UserId);
         }
         public IQueryable<LzDrugRequest> GetNotSeenRequestsByUser()
         {
@@ -38,13 +38,13 @@ namespace System_Back_End.Repositories
         }
         public async Task<LzDrugRequest> AddForUserAsync(Guid drugId)
         {
-            if (await _context.LzDrugs.AnyAsync(d => d.Id == drugId&&d.PharmacyId==PharmacyId))
+            if (await _context.LzDrugs.AnyAsync(d => d.Id == drugId&&d.PharmacyId== UserId))
                 return null;
-            if (await _context.LzDrugRequests.AnyAsync(r => r.PharmacyId == PharmacyId && r.LzDrugId == drugId))
+            if (await _context.LzDrugRequests.AnyAsync(r => r.PharmacyId == UserId && r.LzDrugId == drugId))
                 return null;
             var req = new LzDrugRequest
             {
-                PharmacyId = PharmacyId,
+                PharmacyId = UserId,
                 LzDrugId = drugId
             };
             _context.LzDrugRequests.Add(req);
@@ -65,11 +65,11 @@ namespace System_Back_End.Repositories
         }
         public async Task<LzDrugRequest>GetRquestIfExistsForUser(Guid reqId)
         {
-            return await _context.LzDrugRequests.FirstOrDefaultAsync(r=>r.Id== reqId && r.PharmacyId==PharmacyId);
+            return await _context.LzDrugRequests.FirstOrDefaultAsync(r=>r.Id== reqId && r.PharmacyId== UserId);
         }
         public async Task<LzDrugRequest> GetSentRquestIfExistsForUser(Guid reqId)
         {
-            return await _context.LzDrugRequests.FirstOrDefaultAsync(r => r.Id == reqId && r.LzDrug.PharmacyId == PharmacyId);
+            return await _context.LzDrugRequests.FirstOrDefaultAsync(r => r.Id == reqId && r.LzDrug.PharmacyId == UserId);
         }
     }
 }
