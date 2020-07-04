@@ -100,14 +100,14 @@ namespace System_Back_End.Controllers
             patchDoc.ApplyTo(requestToPatch);
             //ad validation
             _mapper.Map(requestToPatch, req);
-            var isSuccessfulluUpdated = await _lzDrgRequestsRepository.Patch_UpdateSync(req);
+            var isSuccessfulluUpdated = await _lzDrgRequestsRepository.Patch_Update_Request_Sync(req);
             if (!isSuccessfulluUpdated)
                 return StatusCode(500, Functions.MakeError("لقد حدثت مشكلة اثناء معالجة طلبك , من فضلك حاول مرة اخرى"));
             return NoContent();
         }
 
         [HttpDelete("made/{reqId}")]
-        public async Task<IActionResult> Cancel_Request_I_Made(Guid reqId)
+        public async Task<IActionResult> Cancel_Request_I_Made([FromRoute]Guid reqId)
         {
             var req = await _lzDrgRequestsRepository.Get_Request_I_Made_IfExistsForUser(reqId);
             if (req == null)
@@ -122,24 +122,51 @@ namespace System_Back_End.Controllers
 
         #region (handle/cancel) List Of LzDrug Requests
 
-        [HttpPatch("/M{reqId}")]
-        public async Task<IActionResult> Patchss(Guid reqId, [FromBody] JsonPatchDocument<LzDrgRequest_ForUpdate_BM> patchDoc)
+        [HttpDelete("Made/all")]
+        public async Task<IActionResult> Delete_AllRequests_I_Made()
         {
-            if (patchDoc == null)
-                return BadRequest();
-            var req = await _lzDrgRequestsRepository.Get_Request_I_Received_IfExistsForUser(reqId);
-            if (req == null)
-                return NotFound();
-            var requestToPatch = _mapper.Map<LzDrgRequest_ForUpdate_BM>(req);
-            patchDoc.ApplyTo(requestToPatch);
-            //ad validation
-            _mapper.Map(requestToPatch, req);
-            var isSuccessfulluUpdated = await _lzDrgRequestsRepository.Patch_UpdateSync(req);
-            if (isSuccessfulluUpdated)
+            _lzDrgRequestsRepository.Delete_AllRequests_I_Made();
+            if (!await _lzDrgRequestsRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("لقد حدثت مشكلة اثناء معالجة طلبك , من فضلك حاول مرة اخرى"));
             return NoContent();
         }
 
+        [HttpDelete("Made")]
+        public async Task<IActionResult> Delete_AllRequests_I_Made([FromBody] IEnumerable<Guid>Ids)
+        {
+            if (!await _lzDrgRequestsRepository.User_Made_These_Requests(Ids))
+                return NotFound();
+            _lzDrgRequestsRepository.Delete_SomeRequests_I_Made(Ids);
+            if (!await _lzDrgRequestsRepository.SaveAsync())
+                return StatusCode(500, Functions.MakeError("لقد حدثت مشكلة اثناء معالجة طلبك , من فضلك حاول مرة اخرى"));
+            return NoContent();
+        }
+
+        [HttpPatch("received/({ids})")]
+        public async Task<IActionResult> Patch_HandleSomeRequests_I_Received(
+            [ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid>Ids, 
+            [FromBody] JsonPatchDocument<LzDrgRequest_ForUpdate_BM> patchDoc)
+        {
+            if (patchDoc == null)
+                return BadRequest();
+            if (!await _lzDrgRequestsRepository.User_Received_These_Requests(Ids))
+                return NotFound();
+            var reqs = await _lzDrgRequestsRepository.Get_Group_Of_Requests_I_Received(Ids);
+            if (reqs.Count()==0)
+                return NotFound();
+            reqs.ToList().ForEach(req =>
+            {
+                var requestToPatch = _mapper.Map<LzDrgRequest_ForUpdate_BM>(req);
+                patchDoc.ApplyTo(requestToPatch);
+                //ad validation
+                _mapper.Map(requestToPatch, req);
+
+            });
+            _lzDrgRequestsRepository.Patch_Update_Group_Of_Requests_Sync(reqs);
+            if (!await _lzDrgRequestsRepository.SaveAsync())
+                return StatusCode(500, Functions.MakeError("لقد حدثت مشكلة اثناء معالجة طلبك , من فضلك حاول مرة اخرى"));
+            return NoContent();
+        }
         #endregion
 
 

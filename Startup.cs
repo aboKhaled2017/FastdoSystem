@@ -91,7 +91,7 @@ namespace System_Back_End
                     appBuilder.Run(async context =>
                     {
                         context.Response.StatusCode = 500;
-                        await context.Response.WriteAsync("unhandled exception happend,try again");
+                        await context.Response.WriteJsonAsync(Functions.MakeError("unhandled exception happend,try again"));
                     });
                 });
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.

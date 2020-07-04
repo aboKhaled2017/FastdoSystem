@@ -55,6 +55,11 @@ namespace System_Back_End.Repositories
                 });
             return await PagedList<NotSeen_PhDrgRequest_MB>.CreateAsync(items, _params);
         }
+        public async Task<IEnumerable<LzDrugRequest>> Get_Group_Of_Requests_I_Received(IEnumerable<Guid> reqIds)
+        {
+            return await _context.LzDrugRequests
+                .Where(r => r.LzDrug.PharmacyId == UserId && reqIds.Contains(r.Id)).ToListAsync();
+        }
         public async Task<LzDrugRequest> GetByIdAsync(Guid id)
         {
             return await _context.LzDrugRequests.FindAsync(id);
@@ -77,19 +82,48 @@ namespace System_Back_End.Repositories
             _context.LzDrugRequests.Add(req);
             return req;
         }
-        public async Task<bool> Patch_UpdateSync(LzDrugRequest lzDrugRequest)
+        public async Task<bool> Patch_Update_Request_Sync(LzDrugRequest lzDrugRequest)
         {
             return await UpdateFieldsAsync_And_Save<LzDrugRequest>(lzDrugRequest, prop => prop.Seen, prop => prop.Status);
+        }
+        public void Patch_Update_Group_Of_Requests_Sync(IEnumerable<LzDrugRequest> lzDrugRequests)
+        {
+            lzDrugRequests.ToList().ForEach(req =>
+            {
+                UpdateFields<LzDrugRequest>(req, prop => prop.Seen, prop => prop.Status);
+            });
         }
         public async Task<bool> Make_RequestSeen(LzDrugRequest lzDrugRequest)
         {
             lzDrugRequest.Seen = true;
             return await UpdateFieldsAsync_And_Save<LzDrugRequest>(lzDrugRequest, prop => prop.Seen);
         }
+
         public void Delete(LzDrugRequest lzDrugRequest)
         {
             _context.LzDrugRequests.Remove(lzDrugRequest);
         }
+        public void Delete_AllRequests_I_Made()
+        {
+            var reqs = _context.LzDrugRequests.Where(r => r.PharmacyId == UserId);
+            _context.LzDrugRequests.RemoveRange(reqs);
+        }
+        public void Delete_SomeRequests_I_Made(IEnumerable<Guid> Ids)
+        {
+            var reqs = _context.LzDrugRequests.Where(r =>Ids.Contains(r.Id));
+            _context.LzDrugRequests.RemoveRange(reqs);
+        }
+        public async Task<bool> User_Made_These_Requests(IEnumerable<Guid> Ids)
+        {
+            return (await _context.LzDrugRequests
+                .CountAsync(r =>r.PharmacyId==UserId && Ids.Contains(r.Id))) == Ids.Count();
+        }
+        public async Task<bool> User_Received_These_Requests(IEnumerable<Guid> Ids)
+        {
+            return (await _context.LzDrugRequests
+                .CountAsync(r => r.LzDrug.PharmacyId == UserId && Ids.Contains(r.Id))) == Ids.Count();
+        }
+
         public async Task<LzDrugRequest> Get_IfExists(Guid reqId)
         {
             return await _context.LzDrugRequests.FindAsync(reqId);
@@ -102,6 +136,7 @@ namespace System_Back_End.Repositories
         {
             return await _context.LzDrugRequests.FirstOrDefaultAsync(r => r.Id == reqId && r.LzDrug.PharmacyId == UserId);
         }
+        
 
     }
 }
