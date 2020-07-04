@@ -9,6 +9,6 @@ namespace System_Back_End.Models
     public class LzDrgRequest_ForUpdate_BM
     {
         public bool Seen { get; set; }
-        public PharmacyRequestStatus Status { get; set; }
+        public LzDrugRequestStatus Status { get; set; }
     }
 }

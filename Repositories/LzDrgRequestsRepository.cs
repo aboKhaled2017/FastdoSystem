@@ -77,10 +77,14 @@ namespace System_Back_End.Repositories
             _context.LzDrugRequests.Add(req);
             return req;
         }
+        public async Task<bool> PatchUpdateSync(LzDrugRequest lzDrugRequest)
+        {
+            return await UpdateFieldsAsync_And_Save<LzDrugRequest>(lzDrugRequest, prop => prop.Seen, prop => prop.Status);
+        }
         public async Task<bool> MakeRequestSeen(LzDrugRequest lzDrugRequest)
         {
             lzDrugRequest.Seen = true;
-            return await UpdateFields<LzDrugRequest>(lzDrugRequest, prop => prop.Seen);
+            return await UpdateFieldsAsync_And_Save<LzDrugRequest>(lzDrugRequest, prop => prop.Seen);
         }
         public void Delete(LzDrugRequest lzDrugRequest)
         {
@@ -98,5 +102,7 @@ namespace System_Back_End.Repositories
         {
             return await _context.LzDrugRequests.FirstOrDefaultAsync(r => r.Id == reqId && r.LzDrug.PharmacyId == UserId);
         }
+
+        
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace System_Back_End.Repositories
 {
-    public class PharmacyRepository:MainRepository
+    public class PharmacyRepository:MainRepository,IPharmacyRepository
     {
         public PharmacyRepository(SysDbContext context) : base(context)
         {
@@ -42,6 +42,20 @@ namespace System_Back_End.Repositories
             }
             return res ? pharmacy : null;
         }
-
+        public void UpdatePhone(Pharmacy pharmacy)
+        {
+            UpdateFields<Pharmacy>(pharmacy, prop => prop.PersPhone);
+        }
+        public void UpdateName(Pharmacy pharmacy)
+        {
+            UpdateFields<Pharmacy>(pharmacy, prop => prop.Name);
+        }
+        public void UpdateContacts(Pharmacy pharmacy)
+        {
+            UpdateFields<Pharmacy>(pharmacy,
+                prop => prop.PersPhone,
+                prop => prop.LandlinePhone,
+                prop => prop.Address);
+        }
     }
 }

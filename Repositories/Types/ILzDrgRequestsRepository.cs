@@ -8,7 +8,7 @@ using System_Back_End.Models;
 
 namespace System_Back_End.Repositories
 {
-    public interface ILzDrgRequestsRepository : IMainRepository
+    public interface ILzDrgRequestsRepository :IMainRepository
     {
          Task<PagedList<Made_LzDrgRequest_MB>> GetMadeRequestsByUser(LzDrgReqResourceParameters _params);
          Task<PagedList<Sent_LzDrgRequest_MB>> GetSentRequestsForUser(LzDrgReqResourceParameters _params);
@@ -16,6 +16,7 @@ namespace System_Back_End.Repositories
          Task<LzDrugRequest> GetByIdAsync(Guid id);
          void Add(LzDrugRequest lzDrugRequest);
          Task<LzDrugRequest> AddForUserAsync(Guid drugId);
+         Task<bool> PatchUpdateSync(LzDrugRequest lzDrugRequest);
          Task<bool> MakeRequestSeen(LzDrugRequest lzDrugRequest);
          void Delete(LzDrugRequest lzDrugRequest);
          Task<LzDrugRequest> GetIfExists(Guid reqId);

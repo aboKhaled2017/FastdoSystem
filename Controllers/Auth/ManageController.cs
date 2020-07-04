@@ -24,14 +24,14 @@ namespace System_Back_End.Controllers.Auth
     [Authorize]
     public class ManageController : SharedAPIController
     {
-        public PharmacyRepository _pharmacyRepository { get; }
-        public StockRepository _stockRepository { get; }
+        public IPharmacyRepository _pharmacyRepository { get; }
+        public IStockRepository _stockRepository { get; }
 
         public ManageController(
             UserManager<AppUser> userManager, 
             IEmailSender emailSender, AccountService accountService, 
             IMapper mapper, TransactionService transactionService,
-            PharmacyRepository pharmacyRepository,StockRepository stockRepository)
+            IPharmacyRepository pharmacyRepository,IStockRepository stockRepository)
             : base(userManager, emailSender, accountService, mapper, transactionService)
         {
             _pharmacyRepository = pharmacyRepository;
@@ -71,8 +71,8 @@ namespace System_Back_End.Controllers.Auth
                 return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
             }
             pharmacy.PersPhone = model.NewPhone;
-            var result = await _pharmacyRepository.UpdateFields<Pharmacy>(pharmacy, props => props.PersPhone);
-            if (!result)
+            _pharmacyRepository.UpdatePhone(pharmacy);
+            if (!await _pharmacyRepository.SaveAsync())
             {
                 _transactionService.RollBackChanges().End();
                 return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
@@ -102,8 +102,8 @@ namespace System_Back_End.Controllers.Auth
                 return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
             }
             stock.PersPhone = model.NewPhone;
-            var result = await _stockRepository.UpdateFields<Stock>(stock, props => props.PersPhone);
-            if (!result)
+            _stockRepository.UpdatePhone(stock);
+            if (!await _stockRepository.SaveAsync())
             {
                 _transactionService.RollBackChanges().End();
                 return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));

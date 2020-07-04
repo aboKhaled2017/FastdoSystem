@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace System_Back_End.Repositories
 {
-    public class StockRepository:MainRepository
+    public class StockRepository:MainRepository,IStockRepository
     {
         public StockRepository(SysDbContext context) : base(context)
         {
@@ -41,6 +41,21 @@ namespace System_Back_End.Repositories
                 res = await _context.SaveChangesAsync() > 0;
             }
             return res ? stock : null;
+        }
+        public void UpdatePhone(Stock stock)
+        {
+            UpdateFields<Stock>(stock, prop => prop.PersPhone);
+        }
+        public void UpdateName(Stock stock)
+        {
+            UpdateFields<Stock>(stock, prop => prop.Name);
+        }
+        public void UpdateContacts(Stock stock)
+        {
+            UpdateFields<Stock>(stock, 
+                prop => prop.PersPhone,
+                prop => prop.LandlinePhone,
+                prop => prop.Address);
         }
     }
 }

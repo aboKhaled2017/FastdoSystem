@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System_Back_End.Repositories
 {
-    public interface IComplainsRepository
+    public interface IComplainsRepository:IMainRepository
     {
         IQueryable<Complain> GetAll();
         Task<Complain> GetById(Guid id);

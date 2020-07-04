@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System_Back_End.Repositories
 {
-   public interface IAreaRepository
+   public interface IAreaRepository:IMainRepository
     {
         IQueryable<Area> GetAll();
         Task<Area> GetById(byte id);

@@ -22,7 +22,7 @@ namespace System_Back_End.Controllers.Auth
     public class StockSignUpController : SharedAPIController
     {
         private HandlingProofImgsServices _handlingProofImgsServices { get; }
-        private StockRepository _stockRepository { get; }
+        private IStockRepository _stockRepository { get; }
         public IExecuterDelayer _executerDelayer { get; }
 
         public StockSignUpController(
@@ -31,7 +31,7 @@ namespace System_Back_End.Controllers.Auth
             AccountService accountService,
             IMapper mapper,
             HandlingProofImgsServices handlingProofImgsServices,
-            StockRepository stockRepository,
+            IStockRepository stockRepository,
             IExecuterDelayer executerDelayer,
             TransactionService transactionService)
             : base(userManager, emailSender, accountService, mapper, transactionService)

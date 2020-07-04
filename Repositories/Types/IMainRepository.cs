@@ -10,9 +10,5 @@ namespace System_Back_End.Repositories
     {
         Task<bool> SaveAsync();
         bool Save();
-        Task<bool> UpdateFields<T>(
-           T entity,
-            params Expression<Func<T, object>>[] updatedProperties)
-            where T : class;
     }
 }

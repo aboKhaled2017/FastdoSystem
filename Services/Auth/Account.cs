@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using System.Text;
 using System_Back_End.Models;
 using AutoMapper;
+using System_Back_End.Repositories;
 
 namespace System_Back_End.Services.Auth
 {
@@ -18,8 +19,11 @@ namespace System_Back_End.Services.Auth
     {
         private readonly JWThandlerService _jWThandlerService;
         private readonly IEmailSender _emailSender;
+
+        private IPharmacyRepository _pharmacyRepository { get; }
+        private IStockRepository _stockRepository { get;}
+
         private readonly UserManager<AppUser> _userManager;
-        private readonly SysDbContext _context;
         private readonly IMapper _mapper;
 
         private HttpContext _httpContext { get; set; }
@@ -31,12 +35,14 @@ namespace System_Back_End.Services.Auth
             JWThandlerService jWThandlerService,
             UserManager<AppUser> userManager,
             IMapper mapper,
-            SysDbContext context)
+            IStockRepository stockRepository,
+            IPharmacyRepository pharmacyRepository)
         {
             _jWThandlerService = jWThandlerService;
             _userManager = userManager;
             _emailSender = emailSender;
-            _context = context;
+            _pharmacyRepository = pharmacyRepository;
+            _stockRepository = stockRepository;
             _mapper = mapper;
         }
         public void SetCurrentContext(HttpContext httpContext, IUrlHelper url)
@@ -67,24 +73,24 @@ namespace System_Back_End.Services.Auth
             var userType = Functions.CurrentUserType();
             if (userType == UserType.pharmacier)
             {
-                var pharmacy = await _context.Pharmacies.FindAsync(user.Id);
+                var pharmacy = await _pharmacyRepository.GetByIdAsync(user.Id);
                 return GetSigningInResponseModelForPharmacy(user, pharmacy);
             }
             else
             {
-                var stock = await _context.Stocks.FindAsync(user.Id);
+                var stock = await _stockRepository.GetByIdAsync(user.Id);
                 return GetSigningInResponseModelForStock(user, stock);
             }
         }
         public async Task<ISigningResponseModel> GetSigningInResponseModelForPharmacy(AppUser user)
         {
-            var pharmacy =await _context.Pharmacies.FindAsync(user.Id);
+            var pharmacy = await _pharmacyRepository.GetByIdAsync(user.Id);
             return GetSigningInResponseModelForPharmacy(user, pharmacy);
         }
 
         public async Task<ISigningResponseModel> GetSigningInResponseModelForStock(AppUser user)
         {
-            var stock = await _context.Stocks.FindAsync(user.Id);
+            var stock = await _stockRepository.GetByIdAsync(user.Id);
             return GetSigningInResponseModelForStock(user, stock);
         }
 

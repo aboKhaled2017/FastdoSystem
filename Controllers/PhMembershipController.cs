@@ -19,13 +19,13 @@ namespace System_Back_End.Controllers
     [Authorize(Policy ="PharmacyPolicy")]
     public class PhMembershipController : SharedAPIController
     {
-        public PharmacyRepository _pharmacyRepository { get; }
+        public IPharmacyRepository _pharmacyRepository { get; }
 
         public PhMembershipController(
             AccountService accountService,
             IMapper mapper,
             UserManager<AppUser>userManager,
-            PharmacyRepository pharmacyRepository) 
+            IPharmacyRepository pharmacyRepository) 
             : base(accountService, mapper,userManager)
         {
             _pharmacyRepository = pharmacyRepository;
@@ -37,8 +37,8 @@ namespace System_Back_End.Controllers
                 return new UnprocessableEntityObjectResult(ModelState);
             var pharmacy =await _pharmacyRepository.GetByIdAsync(_userManager.GetUserId(User));
             pharmacy.Name = model.NewName.Trim();
-            var res = await _pharmacyRepository.UpdateFields<Pharmacy>(pharmacy, prop => prop.Name);
-                if(!res) return BadRequest(Functions.MakeError("لقد فشلت العملية ,حاول مرة اخرى"));
+            _pharmacyRepository.UpdateName(pharmacy);
+                if(!await _pharmacyRepository.SaveAsync()) return BadRequest(Functions.MakeError("لقد فشلت العملية ,حاول مرة اخرى"));
             var user =await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             var response = await _accountService.GetSigningInResponseModelForCurrentUser(user);
             return Ok(response);
@@ -51,12 +51,8 @@ namespace System_Back_End.Controllers
                 return new UnprocessableEntityObjectResult(ModelState);
             var pharmacy = await _pharmacyRepository.GetByIdAsync(_userManager.GetUserId(User));
             pharmacy=_mapper.Map(model, pharmacy);
-            var res = await _pharmacyRepository.UpdateFields<Pharmacy>(pharmacy,
-                prop => prop.PersPhone,
-                prop=>prop.LandlinePhone,
-                prop=>prop.Address
-                );
-            if (!res) return BadRequest(Functions.MakeError("لقد فشلت العملية ,حاول مرة اخرى"));
+             _pharmacyRepository.UpdateContacts(pharmacy);
+            if (!await _pharmacyRepository.SaveAsync()) return BadRequest(Functions.MakeError("لقد فشلت العملية ,حاول مرة اخرى"));
             var user = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             var response = await _accountService.GetSigningInResponseModelForCurrentUser(user);
             return Ok(response);

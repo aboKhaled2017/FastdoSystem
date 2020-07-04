@@ -50,10 +50,10 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         public static IServiceCollection _AddRepositories(this IServiceCollection services)
         {
-            services.AddScoped<PharmacyRepository>();
-            services.AddScoped<StockRepository>();
+            services.AddScoped<IPharmacyRepository,PharmacyRepository>();
+            services.AddScoped<IStockRepository,StockRepository>();
             services.AddScoped<ILzDrugRepository,LzDrugRepository>();
-            services.AddScoped<LzDrgRequestsRepository>();
+            services.AddScoped<ILzDrgRequestsRepository,LzDrgRequestsRepository>();
             services.AddScoped<IComplainsRepository,ComplainsRepository>();
             services.AddScoped<IAreaRepository, AreaRepository>();
             return services;

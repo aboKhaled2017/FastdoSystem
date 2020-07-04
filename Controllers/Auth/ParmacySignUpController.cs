@@ -22,7 +22,7 @@ namespace System_Back_End.Controllers.Auth
     public class ParmacySignUpController : SharedAPIController
     {
         private HandlingProofImgsServices _handlingProofImgsServices { get; }
-        private PharmacyRepository _pharmacyRepository { get; }
+        private IPharmacyRepository _pharmacyRepository { get; }
         public IExecuterDelayer _executerDelayer { get; }
 
         public ParmacySignUpController(
@@ -31,7 +31,7 @@ namespace System_Back_End.Controllers.Auth
              AccountService accountService,
              IMapper mapper,
              HandlingProofImgsServices handlingProofImgsServices,
-             PharmacyRepository pharmacyRepository,
+             IPharmacyRepository pharmacyRepository,
              IExecuterDelayer executerDelayer,
              TransactionService transactionService)
              : base(userManager, emailSender, accountService, mapper, transactionService)
