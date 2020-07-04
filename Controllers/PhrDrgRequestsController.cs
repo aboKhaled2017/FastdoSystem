@@ -62,16 +62,6 @@ namespace System_Back_End.Controllers
                 .ToListAsync();
             return Ok(data);
         }
-
-        // GET: api/PhrDrgRequests/5
-        [HttpGet("{id}", Name = "GetRequestById")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var req =await _phrDrgRequestsRepository.GetByIdAsync(id);
-            if (req == null)
-                return NotFound();
-            return Ok(req);
-        }
         [HttpGet("notseen")]
         public async Task<IActionResult> GetNotSeenRequestes()
         {
@@ -87,6 +77,15 @@ namespace System_Back_End.Controllers
                 })
                 .ToListAsync();
             return Ok(data);
+        }
+        // GET: api/PhrDrgRequests/5
+        [HttpGet("{id}", Name = "GetRequestById")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var req =await _phrDrgRequestsRepository.GetByIdAsync(id);
+            if (req == null)
+                return NotFound();
+            return Ok(req);
         }
 
         // POST: api/PhrDrgRequests

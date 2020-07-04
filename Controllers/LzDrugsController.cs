@@ -22,23 +22,30 @@ namespace System_Back_End.Controllers
     [Authorize(Policy = "PharmacyPolicy")]
     public class LzDrugsController : SharedAPIController
     {
-        public ILzDrugRepository _lzDrugsRepository { get; }
-        private const int maximumLzDrugPageSize= 3;
+        private ILzDrugRepository _lzDrugsRepository { get; }
+        private IUrlHelper _urlHelper { get; }
+
         public LzDrugsController(
             UserManager<AppUser> userManager, IEmailSender emailSender,
             AccountService accountService, IMapper mapper,
             ILzDrugRepository lzDrugsRepository,
+            IUrlHelper urlHelper,
             TransactionService transactionService) 
             : base(userManager, emailSender, accountService, mapper, transactionService)
         {
             _lzDrugsRepository = lzDrugsRepository;
+            _urlHelper = urlHelper;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllDrugs(LzDrugResourceParameters lzDrugResourceParameters)
+        [HttpGet(Name ="GetAllLzDrugsForCurrentUser")]
+        public IActionResult GetAllDrugs([FromQuery]LzDrugResourceParameters _params)
         {
-            var allDrugs = await _lzDrugsRepository.GetAll_BM(lzDrugResourceParameters).ToListAsync();
-            return Ok(allDrugs);
+            var allDrugsData =  _lzDrugsRepository.GetAll_BM(_params).Result;
+            var paginationMetaData = new PaginationMetaDataGenerator<ShowLzDrugModel, LzDrugResourceParameters>(
+                allDrugsData, "GetAllLzDrugsForCurrentUser", _params, Create_BMs_ResourceUri
+                ).Generate();
+            Response.Headers.Add(Variables.X_PaginationHeader,paginationMetaData);
+            return Ok(allDrugsData);
         }
 
         // GET: api/LzDrugs/5

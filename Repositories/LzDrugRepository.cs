@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,20 +12,17 @@ using System_Back_End.Services;
 namespace System_Back_End.Repositories
 {
     public class LzDrugRepository:MainRepository,ILzDrugRepository
-    {     
-
+    {
         public LzDrugRepository(SysDbContext context) : base(context)
         {
         }
-      
-        public IQueryable<ShowLzDrugModel> GetAll_BM(LzDrugResourceParameters param)
+
+        public async Task<PagedList<ShowLzDrugModel>> GetAll_BM(LzDrugResourceParameters param)
         {
-            return 
-            _context.LzDrugs
+
+            var sourceData=_context.LzDrugs
             .Where(d => d.PharmacyId == UserId)
             .OrderBy(d=>d.Name)
-            .Skip(param.PageSize*(param.PageNumber-1))
-            .Take(param.PageSize)
             .Select(d => new ShowLzDrugModel
             {
                 Id = d.Id,
@@ -40,6 +38,7 @@ namespace System_Back_End.Repositories
                 Desc = d.Desc,
                 RequestCount=d.RequestingPharms.Count
             });
+            return await PagedList<ShowLzDrugModel>.CreateAsync(sourceData, param.PageNumber, param.PageSize);
         }
         public async Task<ShowLzDrugModel> Get_BM_ByIdAsync(Guid id)
         {

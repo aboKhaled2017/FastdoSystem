@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -37,17 +40,22 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<TransactionService>();
             services.AddSingleton<HandlingProofImgsServices>();
             services.AddSingleton<IEmailSender,EmailSender>();
+            services.AddSingleton<IActionContextAccessor,ActionContextAccessor>();
+            services.AddScoped<IUrlHelper,UrlHelper>(implementationFactory=> {
+                var actionContext = implementationFactory.GetService<IActionContextAccessor>().ActionContext;
+                return new UrlHelper(actionContext);
+            });
             services.AddScoped<IExecuterDelayer, ExecuterDelayer>();
             return services;
         }
         public static IServiceCollection _AddRepositories(this IServiceCollection services)
         {
-            services.AddTransient<PharmacyRepository>();
-            services.AddTransient<StockRepository>();
-            services.AddTransient<ILzDrugRepository>();
-            services.AddTransient<PhrDrgRequestsRepository>();
-            services.AddTransient<IComplainsRepository,ComplainsRepository>();
-            services.AddTransient<IAreaRepository, AreaRepository>();
+            services.AddScoped<PharmacyRepository>();
+            services.AddScoped<StockRepository>();
+            services.AddScoped<ILzDrugRepository,LzDrugRepository>();
+            services.AddScoped<PhrDrgRequestsRepository>();
+            services.AddScoped<IComplainsRepository,ComplainsRepository>();
+            services.AddScoped<IAreaRepository, AreaRepository>();
             return services;
         }
         public static IServiceCollection _AddSystemAuthentication(this IServiceCollection services)

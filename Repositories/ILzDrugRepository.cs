@@ -12,7 +12,7 @@ namespace System_Back_End.Repositories
     {
          void Add(LzDrug drug);
 
-         IQueryable<ShowLzDrugModel> GetAll_BM(LzDrugResourceParameters lzDrugResourceParameters);
+         Task<PagedList<ShowLzDrugModel>> GetAll_BM(LzDrugResourceParameters lzDrugResourceParameters);
 
          void Update(LzDrug drug);
 

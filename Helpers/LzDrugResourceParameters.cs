@@ -7,9 +7,9 @@ namespace System_Back_End
 {
     public class LzDrugResourceParameters
     {
-        private const int maxPageSize= 4;
-        private int _pageSize = 2;
-        public int PageNumber { get; set; } = 1;
+        private const int maxPageSize=10;
+        private int _pageSize =10;
+        public int PageNumber { get;  set;} = 1;       
         public int PageSize 
         {
             get
@@ -18,7 +18,7 @@ namespace System_Back_End
             }
             set
             {
-                _pageSize = (value > maxPageSize) ? maxPageSize : _pageSize;
+                _pageSize = (value > maxPageSize) ? maxPageSize : value;
             }
         }
     }
