@@ -17,7 +17,7 @@ namespace System_Back_End.Repositories
         {
         }
 
-        public async Task<PagedList<LzDrugModel_BM>> GetAll_BM(LzDrugResourceParameters _params)
+        public async Task<PagedList<LzDrugModel_BM>> GetAll_BM(LzDrgResourceParameters _params)
         {
 
             var sourceData=_context.LzDrugs

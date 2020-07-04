@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System_Back_End.Models;
@@ -18,45 +19,45 @@ namespace System_Back_End.Controllers
     [Route("api/phrdrgrequests")]
     [ApiController]
     [Authorize(Policy = "PharmacyPolicy")]
-    public class PhrDrgRequestsController : SharedAPIController
+    public class LzDrgRequestsController : SharedAPIController
     {
-        public PhrDrgRequestsRepository _phrDrgRequestsRepository { get; private set; }
+        public LzDrgRequestsRepository _phrDrgRequestsRepository { get; private set; }
 
-        public PhrDrgRequestsController(
+        public LzDrgRequestsController(
             AccountService accountService, IMapper mapper,
-            PhrDrgRequestsRepository phrDrgRequestsRepository,
-            UserManager<AppUser> userManager) 
+            LzDrgRequestsRepository phrDrgRequestsRepository,
+            UserManager<AppUser> userManager)
             : base(accountService, mapper, userManager)
         {
             _phrDrgRequestsRepository = phrDrgRequestsRepository;
         }
 
         // GET: api/PhrDrgRequests
-        [HttpGet("made",Name ="GetMadeLzDrugRequests")]
-        public async Task<IActionResult> RequestsMadeByMe([FromQuery]LzDrReqResourceParameters _params)
+        [HttpGet("made", Name = "GetMadeLzDrugRequests")]
+        public async Task<IActionResult> RequestsMadeByMe([FromQuery]LzDrgReqResourceParameters _params)
         {
-            var requests =await _phrDrgRequestsRepository.GetMadeRequestsByUser(_params);
-            var paginationMetaData = new PaginationMetaDataGenerator<Made_PhDrgRequest_MB, LzDrReqResourceParameters>(
+            var requests = await _phrDrgRequestsRepository.GetMadeRequestsByUser(_params);
+            var paginationMetaData = new PaginationMetaDataGenerator<Made_LzDrgRequest_MB, LzDrgReqResourceParameters>(
                 requests, "GetMadeLzDrugRequests", _params, Create_BMs_ResourceUri
                 ).Generate();
             Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
             return Ok(requests);
         }
         [HttpGet(Name = "GetSentLzDrugRequests")]
-        public async Task<IActionResult> RequestsSentToMe([FromQuery]LzDrReqResourceParameters _params)
+        public async Task<IActionResult> RequestsSentToMe([FromQuery]LzDrgReqResourceParameters _params)
         {
             var requests = await _phrDrgRequestsRepository.GetSentRequestsForUser(_params);
-            var paginationMetaData = new PaginationMetaDataGenerator<Sent_PhDrgRequest_MB, LzDrReqResourceParameters>(
+            var paginationMetaData = new PaginationMetaDataGenerator<Sent_LzDrgRequest_MB, LzDrgReqResourceParameters>(
                 requests, "GetSentLzDrugRequests", _params, Create_BMs_ResourceUri
                 ).Generate();
             Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
             return Ok(requests);
         }
-        [HttpGet("notseen",Name = "GetNotSeenLzDrugRequests")]
-        public async Task<IActionResult> GetNotSeenRequestes([FromQuery]LzDrReqResourceParameters _params)
+        [HttpGet("notseen", Name = "GetNotSeenLzDrugRequests")]
+        public async Task<IActionResult> GetNotSeenRequestes([FromQuery]LzDrgReqResourceParameters _params)
         {
             var requests = await _phrDrgRequestsRepository.GetNotSeenRequestsByUser(_params);
-            var paginationMetaData = new PaginationMetaDataGenerator<NotSeen_PhDrgRequest_MB, LzDrReqResourceParameters>(
+            var paginationMetaData = new PaginationMetaDataGenerator<NotSeen_PhDrgRequest_MB, LzDrgReqResourceParameters>(
                 requests, "GetNotSeenLzDrugRequests", _params, Create_BMs_ResourceUri
                 ).Generate();
             Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
@@ -66,7 +67,7 @@ namespace System_Back_End.Controllers
         [HttpGet("{id}", Name = "GetRequestById")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var req =await _phrDrgRequestsRepository.GetByIdAsync(id);
+            var req = await _phrDrgRequestsRepository.GetByIdAsync(id);
             if (req == null)
                 return NotFound();
             return Ok(req);
@@ -76,21 +77,31 @@ namespace System_Back_End.Controllers
         [HttpPost("{drugId}")]
         public async Task<IActionResult> Post(Guid drugId)
         {
-            var req =await _phrDrgRequestsRepository.AddForUserAsync(drugId);
+            var req = await _phrDrgRequestsRepository.AddForUserAsync(drugId);
             if (req == null)
-                return BadRequest();
+                return NotFound();
             if (!await _phrDrgRequestsRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
             return CreatedAtRoute(routeName: "GetRequestById", routeValues: new { id = req.Id }, req);
         }
+        [HttpPatch("{reqId}")]
+        public async Task<IActionResult> Patch(Guid reqId,[FromBody] JsonPatchDocument<LzDrgRequest_ForUpdate_BM> patchDoc)
+        {
+            if (patchDoc == null)
+                return BadRequest();
+            var req = await _phrDrgRequestsRepository.GetSentRquestIfExistsForUser(reqId);
+            if (req == null)
+                return NotFound();
+            return NoContent();
+        }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{reqId}")]
-        public async Task<IActionResult> Delete(Guid reqId)
+        public async Task<IActionResult> Cancel(Guid reqId)
         {
-            var req =await _phrDrgRequestsRepository.GetRquestIfExistsForUser(reqId);
+            var req =await _phrDrgRequestsRepository.GetMadeRquestIfExistsForUser(reqId);
             if (req == null)
-                return BadRequest();
+                return NotFound();
             _phrDrgRequestsRepository.Delete(req);
             if(! await _phrDrgRequestsRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
@@ -102,7 +113,7 @@ namespace System_Back_End.Controllers
         {
             var req = await _phrDrgRequestsRepository.GetSentRquestIfExistsForUser(reqId);
             if (req == null)
-                return BadRequest();
+                return NotFound();
             var res=await _phrDrgRequestsRepository.MakeRequestSeen(req);
             if (!res)
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));

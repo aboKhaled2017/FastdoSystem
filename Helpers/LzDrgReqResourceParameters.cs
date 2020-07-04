@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace System_Back_End
 {
-    public class LzDrReqResourceParameters: ResourceParameters
+    public class LzDrgReqResourceParameters: ResourceParameters
     {
         private const int maxPageSize=10;
         private int _pageSize =10;

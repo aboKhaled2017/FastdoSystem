@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<PharmacyRepository>();
             services.AddScoped<StockRepository>();
             services.AddScoped<ILzDrugRepository,LzDrugRepository>();
-            services.AddScoped<PhrDrgRequestsRepository>();
+            services.AddScoped<LzDrgRequestsRepository>();
             services.AddScoped<IComplainsRepository,ComplainsRepository>();
             services.AddScoped<IAreaRepository, AreaRepository>();
             return services;

@@ -38,10 +38,10 @@ namespace System_Back_End.Controllers
         }
 
         [HttpGet(Name ="GetAllLzDrugsForCurrentUser")]
-        public async Task<IActionResult> GetAllDrugs([FromQuery]LzDrugResourceParameters _params)
+        public async Task<IActionResult> GetAllDrugs([FromQuery]LzDrgResourceParameters _params)
         {
             var allDrugsData =await  _lzDrugsRepository.GetAll_BM(_params);
-            var paginationMetaData = new PaginationMetaDataGenerator<LzDrugModel_BM, LzDrugResourceParameters>(
+            var paginationMetaData = new PaginationMetaDataGenerator<LzDrugModel_BM, LzDrgResourceParameters>(
                 allDrugsData, "GetAllLzDrugsForCurrentUser", _params, Create_BMs_ResourceUri
                 ).Generate();
             Response.Headers.Add(Variables.X_PaginationHeader,paginationMetaData);

@@ -8,16 +8,16 @@ using System_Back_End.Models;
 
 namespace System_Back_End.Repositories
 {
-    public class PhrDrgRequestsRepository : MainRepository,IPhrDrgRequestsRepository
+    public class LzDrgRequestsRepository : MainRepository,ILzDrgRequestsRepository
     {
-        public PhrDrgRequestsRepository(SysDbContext context) : base(context)
+        public LzDrgRequestsRepository(SysDbContext context) : base(context)
         {
         }
-        public async Task<PagedList<Made_PhDrgRequest_MB>> GetMadeRequestsByUser(LzDrReqResourceParameters _params)
+        public async Task<PagedList<Made_LzDrgRequest_MB>> GetMadeRequestsByUser(LzDrgReqResourceParameters _params)
         {
             var items = _context.LzDrugRequests
                 .Where(d => d.PharmacyId == UserId)
-                .Select(r => new Made_PhDrgRequest_MB
+                .Select(r => new Made_LzDrgRequest_MB
                 {
                     Id=r.Id,
                     LzDrugId=r.LzDrugId,
@@ -25,13 +25,13 @@ namespace System_Back_End.Repositories
                     PharmacyId=r.LzDrug.PharmacyId,
                     PhName=r.LzDrug.Pharmacy.Name
                 });
-            return await PagedList<Made_PhDrgRequest_MB>.CreateAsync(items, _params);
+            return await PagedList<Made_LzDrgRequest_MB>.CreateAsync(items, _params);
         }
-        public async Task<PagedList<Sent_PhDrgRequest_MB>> GetSentRequestsForUser(LzDrReqResourceParameters _params)
+        public async Task<PagedList<Sent_LzDrgRequest_MB>> GetSentRequestsForUser(LzDrgReqResourceParameters _params)
         {
             var items = _context.LzDrugRequests
                 .Where(d => d.LzDrug.PharmacyId == UserId)
-                .Select(r => new Sent_PhDrgRequest_MB
+                .Select(r => new Sent_LzDrgRequest_MB
                 {
                     Id = r.Id,
                     LzDrugId = r.LzDrugId,
@@ -39,9 +39,9 @@ namespace System_Back_End.Repositories
                     PharmacyId = r.PharmacyId,
                     PhName = r.Pharmacy.Name
                 });
-            return await PagedList<Sent_PhDrgRequest_MB>.CreateAsync(items, _params);
+            return await PagedList<Sent_LzDrgRequest_MB>.CreateAsync(items, _params);
         }
-        public async Task<PagedList<NotSeen_PhDrgRequest_MB>> GetNotSeenRequestsByUser(LzDrReqResourceParameters _params)
+        public async Task<PagedList<NotSeen_PhDrgRequest_MB>> GetNotSeenRequestsByUser(LzDrgReqResourceParameters _params)
         {
             var items = _context.LzDrugRequests
                 .Where(r => r.LzDrug.PharmacyId == UserId&&!r.Seen)
@@ -90,7 +90,7 @@ namespace System_Back_End.Repositories
         {
             return await _context.LzDrugRequests.FindAsync(reqId);
         }
-        public async Task<LzDrugRequest>GetRquestIfExistsForUser(Guid reqId)
+        public async Task<LzDrugRequest>GetMadeRquestIfExistsForUser(Guid reqId)
         {
             return await _context.LzDrugRequests.FirstOrDefaultAsync(r=>r.Id== reqId && r.PharmacyId== UserId);
         }

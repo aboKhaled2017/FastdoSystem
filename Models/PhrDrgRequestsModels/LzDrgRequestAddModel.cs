@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System_Back_End.Models
 {
-    public class PhrDrgRequestAddModel
+    public class LzDrgRequestAddModel
     {
         [Required]
         public string PharmacyId { get; set; }
