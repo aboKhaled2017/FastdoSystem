@@ -49,6 +49,7 @@ namespace System_Back_End.Mappings
             CreateMap<UpdateLzDrugModel, LzDrug>();
 
             CreateMap<LzDrugRequest,LzDrgRequest_ForUpdate_BM>();
+            CreateMap<LzDrgRequest_ForUpdate_BM, LzDrugRequest>();
         }
     }
 }

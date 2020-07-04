@@ -10,17 +10,17 @@ namespace System_Back_End.Repositories
 {
     public interface ILzDrgRequestsRepository :IMainRepository
     {
-         Task<PagedList<Made_LzDrgRequest_MB>> GetMadeRequestsByUser(LzDrgReqResourceParameters _params);
-         Task<PagedList<Sent_LzDrgRequest_MB>> GetSentRequestsForUser(LzDrgReqResourceParameters _params);
-         Task<PagedList<NotSeen_PhDrgRequest_MB>> GetNotSeenRequestsByUser(LzDrgReqResourceParameters _params);
+         Task<PagedList<Made_LzDrgRequest_MB>> Get_AllRequests_I_Made(LzDrgReqResourceParameters _params);
+         Task<PagedList<Sent_LzDrgRequest_MB>> Get_AllRequests_I_Received(LzDrgReqResourceParameters _params);
+         Task<PagedList<NotSeen_PhDrgRequest_MB>> Get_AllRequests_I_Received_INS(LzDrgReqResourceParameters _params);
          Task<LzDrugRequest> GetByIdAsync(Guid id);
          void Add(LzDrugRequest lzDrugRequest);
          Task<LzDrugRequest> AddForUserAsync(Guid drugId);
-         Task<bool> PatchUpdateSync(LzDrugRequest lzDrugRequest);
-         Task<bool> MakeRequestSeen(LzDrugRequest lzDrugRequest);
+         Task<bool> Patch_UpdateSync(LzDrugRequest lzDrugRequest);
+         Task<bool> Make_RequestSeen(LzDrugRequest lzDrugRequest);
          void Delete(LzDrugRequest lzDrugRequest);
-         Task<LzDrugRequest> GetIfExists(Guid reqId);
-         Task<LzDrugRequest> GetMadeRquestIfExistsForUser(Guid reqId);
-         Task<LzDrugRequest> GetSentRquestIfExistsForUser(Guid reqId);
+         Task<LzDrugRequest> Get_IfExists(Guid reqId);
+         Task<LzDrugRequest> Get_Request_I_Made_IfExistsForUser(Guid reqId);
+         Task<LzDrugRequest> Get_Request_I_Received_IfExistsForUser(Guid reqId);
     }
 }
