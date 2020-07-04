@@ -26,20 +26,21 @@ namespace System_Back_End
                 return CurrentPage < TotalPages;
             }
         }
-        public PagedList(List<T>items,int count,int pageNumber,int pageSize)
+        public PagedList(List<T>items,int count,ResourceParameters _params)
         {
             TotalCount = count;
-            PageSize = pageSize;
-            CurrentPage = pageNumber;
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            PageSize =_params.PageSize;
+            CurrentPage = _params.PageNumber;
+            TotalPages = (int)Math.Ceiling(count / (double)_params.PageSize);
             AddRange(items);
         }
-        public static async Task<PagedList<T>>CreateAsync(IQueryable<T> source,int pageNumber,int pageSize)
+        public static async Task<PagedList<T>>CreateAsync(IQueryable<T> source,ResourceParameters _params)
         {
             int count = source.Count();
-            var items =await source.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
+            var items =await source.Skip(_params.PageSize * (_params.PageNumber - 1))
+                .Take(_params.PageSize).ToListAsync();
             return new PagedList<T>(
-                items,count,pageNumber,pageSize
+                items,count, _params
             );
         }
     }

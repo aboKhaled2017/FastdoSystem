@@ -17,13 +17,13 @@ namespace System_Back_End.Repositories
         {
         }
 
-        public async Task<PagedList<ShowLzDrugModel>> GetAll_BM(LzDrugResourceParameters param)
+        public async Task<PagedList<LzDrugModel_BM>> GetAll_BM(LzDrugResourceParameters _params)
         {
 
             var sourceData=_context.LzDrugs
             .Where(d => d.PharmacyId == UserId)
             .OrderBy(d=>d.Name)
-            .Select(d => new ShowLzDrugModel
+            .Select(d => new LzDrugModel_BM
             {
                 Id = d.Id,
                 Name = d.Name,
@@ -38,13 +38,13 @@ namespace System_Back_End.Repositories
                 Desc = d.Desc,
                 RequestCount=d.RequestingPharms.Count
             });
-            return await PagedList<ShowLzDrugModel>.CreateAsync(sourceData, param.PageNumber, param.PageSize);
+            return await PagedList<LzDrugModel_BM>.CreateAsync(sourceData, _params);
         }
-        public async Task<ShowLzDrugModel> Get_BM_ByIdAsync(Guid id)
+        public async Task<LzDrugModel_BM> Get_BM_ByIdAsync(Guid id)
         {
             return await _context.LzDrugs
                 .Where(d => d.Id == id)
-                .Select(d => new ShowLzDrugModel
+                .Select(d => new LzDrugModel_BM
                 {
                     Id = d.Id,
                     Name = d.Name,

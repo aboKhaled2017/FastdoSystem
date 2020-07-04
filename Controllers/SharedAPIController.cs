@@ -51,27 +51,30 @@ namespace System_Back_End.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
-        protected string Create_BMs_ResourceUri(LzDrugResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        protected string Create_BMs_ResourceUri(
+            ResourceParameters _params,
+            ResourceUriType resourceUriType,
+            string routeName) 
         {
             switch (resourceUriType)
             {
                 case ResourceUriType.PreviousPage:
                     return Url.Link(routeName,
-                    new LzDrugResourceParameters
+                    new 
                     {
                         PageNumber = _params.PageNumber - 1,
                         PageSize = _params.PageSize
                     });
                 case ResourceUriType.NextPage:
                     return Url.Link(routeName,
-                    new LzDrugResourceParameters
+                    new 
                     {
                         PageNumber = _params.PageNumber + 1,
                         PageSize = _params.PageSize
                     });
                 default:
                     return Url.Link(routeName,
-                    new LzDrugResourceParameters
+                    new 
                     {
                         PageNumber = _params.PageNumber,
                         PageSize = _params.PageSize

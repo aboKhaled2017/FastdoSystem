@@ -74,6 +74,20 @@ namespace System_Back_End.Controllers
             pharmacies=pharmacyUsers
             });
         }
+        [HttpGet("users/{userId}")]
+        public async Task<ActionResult> getUserById(string userId)
+        {
+
+            var user = await _userManager.Users               
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Email,
+                    u.PhoneNumber,
+                    u.EmailConfirmed
+                }).FirstOrDefaultAsync(u=>u.Id==userId);
+            return Ok(user);
+        }
 
         [HttpGet("test")]
         public HttpResponseMessage test(ConfirmEmailModel model)

@@ -12,11 +12,11 @@ namespace System_Back_End.Repositories
     {
          void Add(LzDrug drug);
 
-         Task<PagedList<ShowLzDrugModel>> GetAll_BM(LzDrugResourceParameters lzDrugResourceParameters);
+         Task<PagedList<LzDrugModel_BM>> GetAll_BM(LzDrugResourceParameters lzDrugResourceParameters);
 
          void Update(LzDrug drug);
 
-         Task<ShowLzDrugModel> Get_BM_ByIdAsync(Guid id);
+         Task<LzDrugModel_BM> Get_BM_ByIdAsync(Guid id);
 
          Task<LzDrug> GetByIdAsync(Guid id);
 

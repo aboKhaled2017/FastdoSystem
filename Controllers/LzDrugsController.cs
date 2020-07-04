@@ -38,10 +38,10 @@ namespace System_Back_End.Controllers
         }
 
         [HttpGet(Name ="GetAllLzDrugsForCurrentUser")]
-        public IActionResult GetAllDrugs([FromQuery]LzDrugResourceParameters _params)
+        public async Task<IActionResult> GetAllDrugs([FromQuery]LzDrugResourceParameters _params)
         {
-            var allDrugsData =  _lzDrugsRepository.GetAll_BM(_params).Result;
-            var paginationMetaData = new PaginationMetaDataGenerator<ShowLzDrugModel, LzDrugResourceParameters>(
+            var allDrugsData =await  _lzDrugsRepository.GetAll_BM(_params);
+            var paginationMetaData = new PaginationMetaDataGenerator<LzDrugModel_BM, LzDrugResourceParameters>(
                 allDrugsData, "GetAllLzDrugsForCurrentUser", _params, Create_BMs_ResourceUri
                 ).Generate();
             Response.Headers.Add(Variables.X_PaginationHeader,paginationMetaData);
@@ -71,7 +71,7 @@ namespace System_Back_End.Controllers
             return CreatedAtRoute(
                 routeName: "GetDrugById",
                 routeValues: new { id = drug.Id}, 
-                _mapper.Map<ShowLzDrugModel>(drug));
+                _mapper.Map<LzDrugModel_BM>(drug));
         }
 
         // PUT: api/LzDrugs/5

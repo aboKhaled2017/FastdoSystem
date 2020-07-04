@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System_Back_End.Models;
 using System_Back_End.Repositories;
 using System_Back_End.Services.Auth;
 
@@ -31,52 +32,35 @@ namespace System_Back_End.Controllers
         }
 
         // GET: api/PhrDrgRequests
-        [HttpGet("made")]
-        public async Task<IActionResult> RequestsMadeByMe()
+        [HttpGet("made",Name ="GetMadeLzDrugRequests")]
+        public async Task<IActionResult> RequestsMadeByMe([FromQuery]LzDrReqResourceParameters _params)
         {
-            var data=await _phrDrgRequestsRepository
-                .GetMadeRequestsByUser()
-                .Select(r=>new
-                {
-                    r.Id,
-                    r.LzDrugId,
-                    r.Status,
-                    PhName=r.LzDrug.Pharmacy.Name
-                })
-                .ToListAsync();
-            return Ok(data);
+            var requests =await _phrDrgRequestsRepository.GetMadeRequestsByUser(_params);
+            var paginationMetaData = new PaginationMetaDataGenerator<Made_PhDrgRequest_MB, LzDrReqResourceParameters>(
+                requests, "GetMadeLzDrugRequests", _params, Create_BMs_ResourceUri
+                ).Generate();
+            Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
+            return Ok(requests);
         }
-        [HttpGet]
-        public async Task<IActionResult> RequestsSentToMe()
+        [HttpGet(Name = "GetSentLzDrugRequests")]
+        public async Task<IActionResult> RequestsSentToMe([FromQuery]LzDrReqResourceParameters _params)
         {
-            var data = await _phrDrgRequestsRepository
-                .GetSentRequestsForUser()
-                .Select(r => new
-                {
-                    r.Id,
-                    r.LzDrugId,
-                    r.PharmacyId,
-                    RequesterName=r.Pharmacy.Name,
-                    r.Status
-                })
-                .ToListAsync();
-            return Ok(data);
+            var requests = await _phrDrgRequestsRepository.GetSentRequestsForUser(_params);
+            var paginationMetaData = new PaginationMetaDataGenerator<Sent_PhDrgRequest_MB, LzDrReqResourceParameters>(
+                requests, "GetSentLzDrugRequests", _params, Create_BMs_ResourceUri
+                ).Generate();
+            Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
+            return Ok(requests);
         }
-        [HttpGet("notseen")]
-        public async Task<IActionResult> GetNotSeenRequestes()
+        [HttpGet("notseen",Name = "GetNotSeenLzDrugRequests")]
+        public async Task<IActionResult> GetNotSeenRequestes([FromQuery]LzDrReqResourceParameters _params)
         {
-            var data = await _phrDrgRequestsRepository
-                .GetNotSeenRequestsByUser()
-                .Select(r => new
-                {
-                    r.Id,
-                    r.LzDrugId,
-                    r.PharmacyId,
-                    RequesterName = r.Pharmacy.Name,
-                    r.Status
-                })
-                .ToListAsync();
-            return Ok(data);
+            var requests = await _phrDrgRequestsRepository.GetNotSeenRequestsByUser(_params);
+            var paginationMetaData = new PaginationMetaDataGenerator<NotSeen_PhDrgRequest_MB, LzDrReqResourceParameters>(
+                requests, "GetNotSeenLzDrugRequests", _params, Create_BMs_ResourceUri
+                ).Generate();
+            Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
+            return Ok(requests);
         }
         // GET: api/PhrDrgRequests/5
         [HttpGet("{id}", Name = "GetRequestById")]

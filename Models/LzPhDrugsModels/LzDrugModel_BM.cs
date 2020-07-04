@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System_Back_End.Models
 {
-    public class ShowLzDrugModel
+    public class LzDrugModel_BM
     {
         public Guid Id { get; set; }
         public string Name { get; set; }       
