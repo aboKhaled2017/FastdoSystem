@@ -50,6 +50,10 @@ namespace System_Back_End.Mappings
 
             CreateMap<LzDrugRequest,LzDrgRequest_ForUpdate_BM>();
             CreateMap<LzDrgRequest_ForUpdate_BM, LzDrugRequest>();
+
+            /*CreateMap<LzDrug, LzDrugCard_Info_BM>();
+            CreateMap<Pharmacy,LzDrugCard_Info_BM>()
+                .ForMember(dest=>dest.PharmName)*/
         }
     }
 }

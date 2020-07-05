@@ -78,12 +78,12 @@ namespace System_Back_End.Controllers
         #endregion
 
         #region (Add/handle/cancel) Single LzDrug Request
-        [HttpPost("{drugId}")]
+        [HttpPost("{drugId}",Name ="Add_LzDrug_Request_For_User")]
         public async Task<IActionResult> Post_NewRequest(Guid drugId)
         {
             var req = await _lzDrgRequestsRepository.AddForUserAsync(drugId);
             if (req == null)
-                return NotFound();
+                return BadRequest();
             if (!await _lzDrgRequestsRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
             return CreatedAtRoute(routeName: "GetRequestById", routeValues: new { id = req.Id }, req);
