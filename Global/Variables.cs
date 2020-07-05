@@ -40,14 +40,14 @@ namespace System_Back_End
             {
                 get
                 {
-                    return Path.Combine(RequestStaticServices.GetHostingEnv().ContentRootPath, "Images", "Stocks", "Identity", "License");
+                    return Path.Combine(RequestStaticServices.GetHostingEnv().WebRootPath, "Images", "Stocks", "Identity", "License");
                 }
             }
             public static string StockCommertialRegImgSrc
             {
                 get
                 {
-                    return Path.Combine(RequestStaticServices.GetHostingEnv().ContentRootPath,"Images", "Stocks", "Identity", "CommerialReg");
+                    return Path.Combine(RequestStaticServices.GetHostingEnv().WebRootPath,"Images", "Stocks", "Identity", "CommerialReg");
                 }
             }
         }

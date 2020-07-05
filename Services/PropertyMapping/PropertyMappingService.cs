@@ -29,5 +29,26 @@ namespace System_Back_End.Services
                 return matchingMapping.First()._mappingDictionary;
             throw new Exception(Functions.MakeError("mapping error").ToString());
         }
+        public bool validMappingExistsFor<TSource,TDestination>(string fields)
+        {
+            var propMapping = GetPropertyMapping<TSource, TDestination>();
+            if (string.IsNullOrWhiteSpace(fields))
+                return true;
+            var fieldsAfterSplit = fields.Split(",");
+
+            foreach (var field in fieldsAfterSplit)
+            {
+                var trimmedField = field.Trim();
+                var indexOfFirstWhitespace = trimmedField.IndexOf(" ");
+
+                var propertName = indexOfFirstWhitespace == -1
+                    ? trimmedField : trimmedField.Remove(indexOfFirstWhitespace);
+
+                //finding the matching property
+                if (!propMapping.ContainsKey(propertName))
+                    return false;
+            }
+            return true;
+        }
     }
 }

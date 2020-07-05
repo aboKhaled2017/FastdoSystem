@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System_Back_End.Models;
 using System_Back_End.Repositories;
+using System_Back_End.Services;
 using System_Back_End.Services.Auth;
 
 namespace System_Back_End.Controllers
@@ -20,13 +21,17 @@ namespace System_Back_End.Controllers
     public class LzDrugSearchController : SharedAPIController
     {
         public ILzDrg_Search_Repository _lzDrg_Search_Repository { get; }
+        public IpropertyMappingService _propertyMappingService { get; }
+
         public LzDrugSearchController(
             AccountService accountService, IMapper mapper,
             ILzDrg_Search_Repository lzDrg_Search_Repository,
+            IpropertyMappingService propertyMappingService,
             UserManager<AppUser> userManager) 
             : base(accountService, mapper, userManager)
         {
             _lzDrg_Search_Repository = lzDrg_Search_Repository;
+            _propertyMappingService = propertyMappingService;
         }
 
         #region override methods from parent class
@@ -84,6 +89,8 @@ namespace System_Back_End.Controllers
         [HttpGet(Name ="GetAll_LzDrug_CardInfo_BMs")]
         public async Task<IActionResult> GetAll([FromQuery]LzDrg_Card_Info_BM_ResourceParameters _params)
         {
+            if (!_propertyMappingService.validMappingExistsFor<LzDrugCard_Info_BM, LzDrug>(_params.OrderBy))
+                return BadRequest();
             var BM_Cards =await _lzDrg_Search_Repository.Get_All_LzDrug_Cards_BMs(_params);
             BM_Cards.ForEach(BM_Card =>
             {
