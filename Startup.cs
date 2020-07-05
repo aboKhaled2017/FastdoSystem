@@ -113,7 +113,7 @@ namespace System_Back_End
             }
             app.UseHttpsRedirection();
             app._UseServicesStarter(serviceProvider);
-            app._UseMyDbConfigStarter(env);
+            //app._UseMyDbConfigStarter(env);
             app.UseCors(Variables.corePolicy);
             app.UseStaticFiles();
             app.UseAuthentication();

@@ -312,7 +312,7 @@ namespace System_Back_End.Migrations
                         column: x => x.PharmacyId,
                         principalTable: "Pharmacies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_PharmaciesInStocks_Stocks_StockId",
                         column: x => x.StockId,
@@ -360,7 +360,7 @@ namespace System_Back_End.Migrations
                         column: x => x.LzDrugId,
                         principalTable: "LzDrugs",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_LzDrugRequests_Pharmacies_PharmacyId",
                         column: x => x.PharmacyId,

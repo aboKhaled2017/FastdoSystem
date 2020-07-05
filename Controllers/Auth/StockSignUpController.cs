@@ -59,7 +59,7 @@ namespace System_Back_End.Controllers.Auth
                 }
                 stockModel.Id = response.user.Id;               
                 var savingImgsResponse = _handlingProofImgsServices
-                    .SavePharmacyProofImgs(model.LicenseImg, model.CommerialRegImg, stockModel.Id);
+                    .SaveStockProofImgs(model.LicenseImg, model.CommerialRegImg, stockModel.Id);
                 if(!savingImgsResponse.Status)
                 {
                     _transactionService.RollBackChanges().End();

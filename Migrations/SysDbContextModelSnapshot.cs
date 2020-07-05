@@ -499,12 +499,12 @@ namespace System_Back_End.Migrations
                     b.HasOne("System.Models.Pharmacy", "Pharmacy")
                         .WithMany("GoinedStocks")
                         .HasForeignKey("PharmacyId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("System.Models.Stock", "Stock")
                         .WithMany("GoinToPharmacies")
                         .HasForeignKey("StockId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("System.Models.StkDrug", b =>
