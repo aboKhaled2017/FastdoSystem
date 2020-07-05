@@ -51,7 +51,7 @@ namespace System_Back_End.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
-        protected string Create_BMs_ResourceUri(
+        public virtual string Create_BMs_ResourceUri(
             ResourceParameters _params,
             ResourceUriType resourceUriType,
             string routeName) 

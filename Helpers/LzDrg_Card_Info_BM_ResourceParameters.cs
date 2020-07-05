@@ -21,5 +21,10 @@ namespace System_Back_End
                 _pageSize = (value > maxPageSize) ? maxPageSize : value;
             }
         }
+        public string S { get; set; }
+        public byte CityId { get; set; }
+        public byte AreaId { get; set; }
+        public string PhramId { get; set; }
+        public DateTime ValidBefore { get; set; }=default(DateTime);
     }
 }

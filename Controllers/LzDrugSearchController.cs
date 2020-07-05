@@ -29,6 +29,55 @@ namespace System_Back_End.Controllers
             _lzDrg_Search_Repository = lzDrg_Search_Repository;
         }
 
+        #region override methods from parent class
+        public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        {
+            var _cardParams = _params as LzDrg_Card_Info_BM_ResourceParameters;
+            switch (resourceUriType)
+            {
+                case ResourceUriType.PreviousPage:
+                    return Url.Link(routeName,
+                    new LzDrg_Card_Info_BM_ResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber - 1,
+                        PageSize = _cardParams.PageSize,
+                        S= _cardParams.S,
+                        PhramId=_cardParams.PhramId,
+                        AreaId=_cardParams.AreaId,
+                        CityId=_cardParams.CityId,
+                        ValidBefore=_cardParams.ValidBefore
+                    });
+                case ResourceUriType.NextPage:
+                    return Url.Link(routeName,
+                    new LzDrg_Card_Info_BM_ResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber + 1,
+                        PageSize = _cardParams.PageSize,
+                        S=_cardParams.S,
+                        PhramId = _cardParams.PhramId,
+                        AreaId = _cardParams.AreaId,
+                        CityId = _cardParams.CityId,
+                        ValidBefore = _cardParams.ValidBefore
+                    });
+                default:
+                    return Url.Link(routeName,
+                    new LzDrg_Card_Info_BM_ResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber,
+                        PageSize = _cardParams.PageSize,
+                        S=_cardParams.S,
+                        PhramId = _cardParams.PhramId,
+                        AreaId = _cardParams.AreaId,
+                        CityId = _cardParams.CityId,
+                        ValidBefore = _cardParams.ValidBefore
+                    });
+            }
+        }
+
+
+        #endregion
+
+        #region Get All LzDrugs Cards For Search
         [HttpGet(Name ="GetAll_LzDrug_CardInfo_BMs")]
         public async Task<IActionResult> GetAll([FromQuery]LzDrg_Card_Info_BM_ResourceParameters _params)
         {
@@ -44,6 +93,8 @@ namespace System_Back_End.Controllers
             Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
             return Ok(BM_Cards);
         }
-        
+
+        #endregion
+
     }
 }

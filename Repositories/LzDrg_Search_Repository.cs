@@ -12,32 +12,70 @@ namespace System_Back_End.Repositories
         public LzDrg_Search_Repository(SysDbContext context) : base(context)
         {
         }
+        
         public async Task<PagedList<LzDrugCard_Info_BM>> Get_All_LzDrug_Cards_BMs(LzDrg_Card_Info_BM_ResourceParameters _params)
         {
-            var items = _context.LzDrugs
-                .Where(d=>d.PharmacyId!=UserId)
-                .Select(d => new LzDrugCard_Info_BM { 
-            Id=d.Id,
-            Name=d.Name,
-            Desc=d.Desc,
-            Discount=d.Discount,
-            PharmacyId=d.PharmacyId,
-            Price=d.Price,
-            PriceType=d.PriceType,
-            Quantity=d.Quantity,
-            Type=d.Type,
-            UnitType=d.UnitType,
-            ValideDate=d.ValideDate,
-            PharmName=d.Pharmacy.Name,
-            PharmLocation=d.Pharmacy.Area.SuperArea.Name +"/"+d.Pharmacy.Area.Name,
-            RequestsCount=d.RequestingPharms.Count,
-            IsMadeRequest= (d.RequestingPharms.Count > 0 && d.RequestingPharms.Any(r => r.PharmacyId == UserId)),
-            Status =
-              (d.RequestingPharms.Count>0 && d.RequestingPharms.Any(r=>r.PharmacyId==UserId))
-            ?d.RequestingPharms.FirstOrDefault(r=>r.PharmacyId==UserId).Status
-            :0
-            });
-            return await PagedList<LzDrugCard_Info_BM>.CreateAsync(items, _params);
+            var generalQuerableData_BeforePaging = _context.LzDrugs
+                .Where(d => d.PharmacyId != UserId);
+                
+            if (!string.IsNullOrEmpty(_params.S))
+            {
+                var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
+                generalQuerableData_BeforePaging = generalQuerableData_BeforePaging
+                     .Where(d => d.Name.ToLowerInvariant().Contains(searchQueryForWhereClause));
+            }
+            if (_params.ValidBefore != default(DateTime))
+            {
+                generalQuerableData_BeforePaging = generalQuerableData_BeforePaging
+                   .Where(d =>
+                        (d.ValideDate.Year>_params.ValidBefore.Year)
+                        ||
+                        (d.ValideDate.Year==_params.ValidBefore.Year && d.ValideDate.Month>_params.ValidBefore.Month)
+                          );
+            }
+            if(!string.IsNullOrEmpty(_params.PhramId))
+            {
+                generalQuerableData_BeforePaging = generalQuerableData_BeforePaging
+                    .Where(d => d.PharmacyId == _params.PhramId);
+            }
+            else
+            {
+                if(_params.AreaId != 0)
+                {
+                    generalQuerableData_BeforePaging = generalQuerableData_BeforePaging
+                    .Where(d => d.Pharmacy.AreaId == _params.AreaId);
+                }
+                else if (_params.CityId != 0)
+                {
+                    generalQuerableData_BeforePaging = generalQuerableData_BeforePaging
+                    .Where(d => d.Pharmacy.Area.SuperAreaId == _params.CityId);
+                }
+
+            }
+            var PagedData=generalQuerableData_BeforePaging
+                .Select(d => new LzDrugCard_Info_BM
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Desc = d.Desc,
+                    Discount = d.Discount,
+                    PharmacyId = d.PharmacyId,
+                    Price = d.Price,
+                    PriceType = d.PriceType,
+                    Quantity = d.Quantity,
+                    Type = d.Type,
+                    UnitType = d.UnitType,
+                    ValideDate = d.ValideDate.Year+"-"+d.ValideDate.Month,
+                    PharmName = d.Pharmacy.Name,
+                    PharmLocation = d.Pharmacy.Area.SuperArea.Name + "/" + d.Pharmacy.Area.Name,
+                    RequestsCount = d.RequestingPharms.Count,
+                    IsMadeRequest = (d.RequestingPharms.Count > 0 && d.RequestingPharms.Any(r => r.PharmacyId == UserId)),
+                    Status =
+              (d.RequestingPharms.Count > 0 && d.RequestingPharms.Any(r => r.PharmacyId == UserId))
+            ? d.RequestingPharms.FirstOrDefault(r => r.PharmacyId == UserId).Status
+            : 0
+                });
+            return await PagedList<LzDrugCard_Info_BM>.CreateAsync(PagedData, _params);
         }
     }
 }

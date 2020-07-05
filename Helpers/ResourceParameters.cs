@@ -11,6 +11,6 @@ namespace System_Back_End
         virtual public int PageSize
         {
             get;set;
-        }
+        }       
     }
 }
