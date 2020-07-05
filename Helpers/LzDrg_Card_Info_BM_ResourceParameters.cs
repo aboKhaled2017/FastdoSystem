@@ -26,5 +26,6 @@ namespace System_Back_End
         public byte AreaId { get; set; }
         public string PhramId { get; set; }
         public DateTime ValidBefore { get; set; }=default(DateTime);
+        public string OrderBy { get; set; } = "Name";
     }
 }

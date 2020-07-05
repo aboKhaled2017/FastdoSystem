@@ -8,6 +8,57 @@
     <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>-->
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\026b0c91-e19a-4ffb-b21e-8c8961f0068f..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\1aa7b0b7-c1aa-42ee-a0f0-f36878122f0b..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\1b026463-c2ce-4204-a588-87dc89d3fa96..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\1b9a72b8-1cac-4769-bba0-2fd100bc7629..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\2befc963-b168-4660-bbaa-36df7a410a00..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\3262fc85-c7dd-459c-b8b1-ee2f939da2d7..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\36b602f0-88e3-451e-8d2c-f87e7915b693..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\3b146446-a7ef-435f-90fc-301b23d319a7..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\3be4643a-4c75-41ee-aec6-cb4ec3d5617e..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\443dc09f-807e-4b85-97bc-dccbf51aa660..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\465cbac7-a507-4ae6-b323-e1b07af6c224..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\47aa45f3-579a-4cdf-84fd-2a0148bd0052..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\50ecac99-5aa5-4bdc-83f1-e0b6dd42c342..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\5b599862-bc0d-4036-a659-6185a92e963f..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\6d9be3ef-85cf-4f52-a38f-813249fab5ea..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\76c08198-3b37-4c11-a8e0-d73047e03284..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\81a9cb62-86d8-4547-a819-0d2093981e8d..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\8c6eec2c-90e4-4d51-b2f2-a1dc67216876..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\957f4999-d8c8-4a37-a53a-c70a38e13dc3..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\9b186380-c5df-48e6-b7cf-d1b56a1b07f3..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\a25c0f76-0669-4d32-8ed2-28442fc0a9c4..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\d59c5a27-26df-49d2-8526-817a482a3c2f..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\db21fadf-2568-43e5-a195-0253e175ca2c..png" />
+    <Content Include="Images\Pharmacies\Identity\CommerialReg\f0e0cbbc-1852-4a95-a46b-c987871eac00..png" />
+    <Content Include="Images\Pharmacies\Identity\License\026b0c91-e19a-4ffb-b21e-8c8961f0068f..png" />
+    <Content Include="Images\Pharmacies\Identity\License\1aa7b0b7-c1aa-42ee-a0f0-f36878122f0b..png" />
+    <Content Include="Images\Pharmacies\Identity\License\1b026463-c2ce-4204-a588-87dc89d3fa96..png" />
+    <Content Include="Images\Pharmacies\Identity\License\1b9a72b8-1cac-4769-bba0-2fd100bc7629..png" />
+    <Content Include="Images\Pharmacies\Identity\License\2befc963-b168-4660-bbaa-36df7a410a00..png" />
+    <Content Include="Images\Pharmacies\Identity\License\3262fc85-c7dd-459c-b8b1-ee2f939da2d7..png" />
+    <Content Include="Images\Pharmacies\Identity\License\36b602f0-88e3-451e-8d2c-f87e7915b693..png" />
+    <Content Include="Images\Pharmacies\Identity\License\3b146446-a7ef-435f-90fc-301b23d319a7..png" />
+    <Content Include="Images\Pharmacies\Identity\License\3be4643a-4c75-41ee-aec6-cb4ec3d5617e..png" />
+    <Content Include="Images\Pharmacies\Identity\License\443dc09f-807e-4b85-97bc-dccbf51aa660..png" />
+    <Content Include="Images\Pharmacies\Identity\License\465cbac7-a507-4ae6-b323-e1b07af6c224..png" />
+    <Content Include="Images\Pharmacies\Identity\License\47aa45f3-579a-4cdf-84fd-2a0148bd0052..png" />
+    <Content Include="Images\Pharmacies\Identity\License\50ecac99-5aa5-4bdc-83f1-e0b6dd42c342..png" />
+    <Content Include="Images\Pharmacies\Identity\License\5b599862-bc0d-4036-a659-6185a92e963f..png" />
+    <Content Include="Images\Pharmacies\Identity\License\6d9be3ef-85cf-4f52-a38f-813249fab5ea..png" />
+    <Content Include="Images\Pharmacies\Identity\License\76c08198-3b37-4c11-a8e0-d73047e03284..png" />
+    <Content Include="Images\Pharmacies\Identity\License\81a9cb62-86d8-4547-a819-0d2093981e8d..png" />
+    <Content Include="Images\Pharmacies\Identity\License\8c6eec2c-90e4-4d51-b2f2-a1dc67216876..png" />
+    <Content Include="Images\Pharmacies\Identity\License\957f4999-d8c8-4a37-a53a-c70a38e13dc3..png" />
+    <Content Include="Images\Pharmacies\Identity\License\9b186380-c5df-48e6-b7cf-d1b56a1b07f3..png" />
+    <Content Include="Images\Pharmacies\Identity\License\a25c0f76-0669-4d32-8ed2-28442fc0a9c4..png" />
+    <Content Include="Images\Pharmacies\Identity\License\d59c5a27-26df-49d2-8526-817a482a3c2f..png" />
+    <Content Include="Images\Pharmacies\Identity\License\db21fadf-2568-43e5-a195-0253e175ca2c..png" />
+    <Content Include="Images\Pharmacies\Identity\License\f0e0cbbc-1852-4a95-a46b-c987871eac00..png" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
@@ -27,6 +78,7 @@
     <PackageReference Include="NHibernate" Version="5.2.7" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.5" />
   </ItemGroup>
 
 
@@ -36,10 +88,9 @@
 
 
   <ItemGroup>
-    <Folder Include="Images\Pharmacies\Identity\License\" />
-    <Folder Include="Images\Pharmacies\Identity\CommerialReg\" />
     <Folder Include="Images\Stocks\Identity\CommerialReg\" />
     <Folder Include="Images\Stocks\Identity\License\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

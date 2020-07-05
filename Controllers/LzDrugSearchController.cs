@@ -45,7 +45,8 @@ namespace System_Back_End.Controllers
                         PhramId=_cardParams.PhramId,
                         AreaId=_cardParams.AreaId,
                         CityId=_cardParams.CityId,
-                        ValidBefore=_cardParams.ValidBefore
+                        ValidBefore=_cardParams.ValidBefore,
+                        OrderBy=_cardParams.OrderBy
                     });
                 case ResourceUriType.NextPage:
                     return Url.Link(routeName,
@@ -57,7 +58,8 @@ namespace System_Back_End.Controllers
                         PhramId = _cardParams.PhramId,
                         AreaId = _cardParams.AreaId,
                         CityId = _cardParams.CityId,
-                        ValidBefore = _cardParams.ValidBefore
+                        ValidBefore = _cardParams.ValidBefore,
+                        OrderBy = _cardParams.OrderBy
                     });
                 default:
                     return Url.Link(routeName,
@@ -69,7 +71,8 @@ namespace System_Back_End.Controllers
                         PhramId = _cardParams.PhramId,
                         AreaId = _cardParams.AreaId,
                         CityId = _cardParams.CityId,
-                        ValidBefore = _cardParams.ValidBefore
+                        ValidBefore = _cardParams.ValidBefore,
+                        OrderBy = _cardParams.OrderBy
                     });
             }
         }

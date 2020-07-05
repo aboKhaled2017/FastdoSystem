@@ -35,6 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         public static IServiceCollection _AddSystemServices(this IServiceCollection services)
         {
+            services.AddTransient<IpropertyMappingService,PropertyMappingService>();
             services.AddTransient<JWThandlerService>();          
             services.AddTransient<AccountService>();
             services.AddTransient<TransactionService>();

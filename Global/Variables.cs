@@ -26,14 +26,14 @@ namespace System_Back_End
             {
                 get 
                 { 
-                    return Path.Combine(RequestStaticServices.GetHostingEnv().ContentRootPath, "Images", "Pharmacies","Identity", "License");
+                    return Path.Combine(RequestStaticServices.GetHostingEnv().WebRootPath, "Images", "Pharmacies","Identity", "License");
                 } 
             }
             public static string PharmacyCommertialRegImgSrc
             {
                 get
                 {
-                    return Path.Combine(RequestStaticServices.GetHostingEnv().ContentRootPath, "Images", "Pharmacies", "Identity", "CommerialReg");
+                    return Path.Combine(RequestStaticServices.GetHostingEnv().WebRootPath, "Images", "Pharmacies", "Identity", "CommerialReg");
                 }
             }
             public static string StockLicenseImgSrc

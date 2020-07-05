@@ -4,18 +4,24 @@ using System.Linq;
 using System.Models;
 using System.Threading.Tasks;
 using System_Back_End.Models;
+using System_Back_End.Services;
 
 namespace System_Back_End.Repositories
 {
     public class LzDrg_Search_Repository : MainRepository, ILzDrg_Search_Repository
     {
-        public LzDrg_Search_Repository(SysDbContext context) : base(context)
+        private IpropertyMappingService _propertyMappingService;
+        public LzDrg_Search_Repository(SysDbContext context,IpropertyMappingService propertyMappingService) 
+            : base(context)
         {
+            _propertyMappingService = propertyMappingService;
         }
         
         public async Task<PagedList<LzDrugCard_Info_BM>> Get_All_LzDrug_Cards_BMs(LzDrg_Card_Info_BM_ResourceParameters _params)
         {
             var generalQuerableData_BeforePaging = _context.LzDrugs
+                .ApplySort(_params.OrderBy,
+                  _propertyMappingService.GetPropertyMapping<LzDrugCard_Info_BM, LzDrug>())
                 .Where(d => d.PharmacyId != UserId);
                 
             if (!string.IsNullOrEmpty(_params.S))
