@@ -20,24 +20,38 @@ namespace System_Back_End
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration,IHostingEnvironment env)
         {
             Configuration = configuration;
+            Env = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Env { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<SysDbContext>(options => {
-                /*options.UseSqlServer(Configuration.GetConnectionString("localSql"),
+            services.AddDbContext<SysDbContext>(options => 
+            {
+                if(Env.IsDevelopment())
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("localSql"),
                     builder=> {
                     builder.MigrationsAssembly("System_Back_End");
-                });*/
-                options.UseSqlite(Configuration.GetConnectionString("sysSqlite"),builder=> {
-                    builder.MigrationsAssembly("System_Back_End");
-                });
+                    });
+                    /*options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
+                        builder.MigrationsAssembly("System_Back_End");
+                    });*/
+                }
+                else
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("productionSql"), builder => {
+                        builder.MigrationsAssembly("System_Back_End");
+                    });
+                }
+                
+                
             });
             services._AddRepositories();
             services
@@ -99,7 +113,7 @@ namespace System_Back_End
             }
             app.UseHttpsRedirection();
             app._UseServicesStarter(serviceProvider);
-            //app._UseMyDbConfigStarter(env);
+            app._UseMyDbConfigStarter(env);
             app.UseCors(Variables.corePolicy);
             app.UseStaticFiles();
             app.UseAuthentication();

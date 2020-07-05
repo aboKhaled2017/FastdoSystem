@@ -15,7 +15,7 @@ namespace System_Back_End
         public static string adminer="adminer";
         public static string pharmacier = "pharmacier";
         public static string corePolicy = "corePolicy";
-        public static string AdminConfigSectionName = "AdminData";
+        public static string AdminerConfigSectionName = "Administrator";
         public static string EmailSettingSectionName = "EmailSetting";
         public static string PharmacyPolicy = "PharmacyPolicy";
         public static string StockPolicy = "StockPolicy";

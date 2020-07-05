@@ -16,10 +16,18 @@ namespace Microsoft.AspNetCore.Builder
             RequestStaticServices.Init(serviceProvider);
             return app;
         }
-        private static async Task<IApplicationBuilder> _UseInitalSeeds(this IApplicationBuilder app)
+        private static async Task<IApplicationBuilder> _UseInitalSeeds_In_Developement(this IApplicationBuilder app)
         {
+            //add areas and adminerUser
             await DataSeeder.SeedBasicData();
+            //add default data to system
             await DataSeeder.SeedDefaultData();
+            return app;
+        }
+        private static async Task<IApplicationBuilder> _UseInitalSeeds_In_Production(this IApplicationBuilder app)
+        {
+            //add areas and adminerUser
+            await DataSeeder.SeedBasicData();
             return app;
         }
         public static IApplicationBuilder _UseMyDbConfigStarter(this IApplicationBuilder app, IHostingEnvironment env)
@@ -30,17 +38,12 @@ namespace Microsoft.AspNetCore.Builder
             _roleManager._addRoles(new List<string> { Variables.adminer, Variables.pharmacier, Variables.stocker }).Wait();
             if (env.IsDevelopment())
             {               
-                app._UseInitalSeeds().Wait();
+                app._UseInitalSeeds_In_Developement().Wait();
             }
             else if(env.IsProduction())
             {
-                app._UseInitalSeeds().Wait();
+                app._UseInitalSeeds_In_Production().Wait();
             }
-            return app;
-        }
-        public static IApplicationBuilder _UseAutoMapper(this IApplicationBuilder app)
-        {
-            
             return app;
         }
     }

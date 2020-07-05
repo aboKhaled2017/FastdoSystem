@@ -7,6 +7,7 @@ using System.Linq;
 using System.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System_Back_End.Global;
 using System_Back_End.Services;
 
 namespace System_Back_End
@@ -14,18 +15,18 @@ namespace System_Back_End
     public static class Properties
     {
         
-        private static AppUser _getMainAdminUser()
-        {
-            string mainAdminUserName = RequestStaticServices.GetConfiguration()
-                .GetSection(Variables.AdminConfigSectionName)
-                .GetValue<string>("userName");
-            return RequestStaticServices.GetUserManager().Users.FirstOrDefault(a => a.UserName == mainAdminUserName);
-        }
         private static IConfigurationSection EmailConfingSection
         {
             get
             {
                 return RequestStaticServices.GetConfiguration().GetSection(Variables.EmailSettingSectionName);
+            }
+        }
+        private static IConfigurationSection MainAdministratorConfigSection
+        {
+            get
+            {
+                return RequestStaticServices.GetConfiguration().GetSection(Variables.AdminerConfigSectionName);
             }
         }
         public static EmailSetting EmailConfig
@@ -39,8 +40,18 @@ namespace System_Back_End
                     writeAsFile = EmailConfingSection.GetValue<bool>("writeAsFile")
                 };
             }
-            private set { }
-        }        
-        
+        }
+        public static AdministratorInfo MainAdministratorInfo
+        {
+            get
+            {
+                return new AdministratorInfo
+                {
+                    Email = EmailConfingSection.GetValue<string>("email"),
+                    Password = EmailConfingSection.GetValue<string>("password")
+                };
+            }
+        }
+
     }
 }

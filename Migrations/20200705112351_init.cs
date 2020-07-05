@@ -84,7 +84,7 @@ namespace System_Back_End.Migrations
                 name: "Complains",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     Subject = table.Column<string>(nullable: true),
@@ -349,7 +349,8 @@ namespace System_Back_End.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     PharmacyId = table.Column<string>(nullable: false),
                     LzDrugId = table.Column<Guid>(nullable: false),
-                    Status = table.Column<int>(nullable: false)
+                    Status = table.Column<int>(nullable: false),
+                    Seen = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

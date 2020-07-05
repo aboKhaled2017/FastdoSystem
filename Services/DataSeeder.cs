@@ -22,6 +22,7 @@ namespace System_Back_End.Services
         {
             if(!context.Areas.Any())
             await SeedAreas();
+            await SeedDefaultAdminstrator();
         }
         public static async Task SeedDefaultData()
         {
@@ -29,6 +30,22 @@ namespace System_Back_End.Services
            await SeedStocks();
            await SeedLzDrugs();
            await SeedStkDrugs();
+        }
+        public static async Task SeedDefaultAdminstrator()
+        {
+            var user = await _userManager.FindByEmailAsync(Properties.MainAdministratorInfo.Email);
+            if (user != null)
+                return;
+            user = new AppUser
+            {
+                Email = Properties.MainAdministratorInfo.Email,
+                UserName = Properties.MainAdministratorInfo.Email,
+                EmailConfirmed=true
+            };
+            var res = await _userManager.CreateAsync(user, Properties.MainAdministratorInfo.Password);
+            if (!res.Succeeded)
+                throw new Exception("cannot add the default administrator");
+            await _userManager.AddToRoleAsync(user, Variables.adminer);
         }
         private static async Task SeedAreas()
         {

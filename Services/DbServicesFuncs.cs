@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Hosting;
 
 namespace System_Back_End.Services
 {
@@ -12,8 +13,10 @@ namespace System_Back_End.Services
         private static readonly SysDbContext context = RequestStaticServices.GetDbContext();
         private static readonly UserManager<AppUser> _userManager = RequestStaticServices.GetUserManager();
         private static readonly RoleManager<IdentityRole> _roleManager = RequestStaticServices.GetRoleManager();
+        private static readonly IHostingEnvironment env= RequestStaticServices.GetHostingEnv();
         public static async Task ResetData()
         {
+            if (env.IsProduction()) return;
             var roles =_roleManager.Roles.ToList();
             roles.ForEach( role =>
             {
