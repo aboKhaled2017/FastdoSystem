@@ -70,7 +70,7 @@ namespace System_Back_End.Controllers.Auth
                 if (!savingImgsResponse.Status)
                 {
                     _transactionService.RollBackChanges().End();
-                    return BadRequest(Functions.MakeError("لا يمكن حفظ الصور,حاول مرة اخرى"));
+                    return BadRequest(Functions.MakeError($"{savingImgsResponse.errorMess}"));
                 }
                 pharmacyModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                 pharmacyModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;

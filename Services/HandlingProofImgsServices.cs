@@ -12,6 +12,7 @@ namespace System_Back_End.Services
     public class HandlingImgResponse
     {
         public bool Status { get; set; } = false;
+        public string errorMess { get; set; }
         public string LicenseImgPath { get; set; }
         public string CommertialRegImgPath { get; set; }
 
@@ -63,8 +64,9 @@ namespace System_Back_End.Services
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                response.errorMess = ex.Message;
                 return response;
             }
             response.Status = true;
@@ -90,7 +92,7 @@ namespace System_Back_End.Services
                 var file1 = licenseImg.OpenReadStream();
                 if (file1.Length > 0)
                 {
-                    response.LicenseImgPath = Variables.ImagesPaths.StockLicenseImgSrc + $@"/{Id}.{licenseImgExt}";
+                    response.LicenseImgPath = Variables.ImagesPaths.StockLicenseImgSrc + $@"/{Id}{licenseImgExt}";
                     if (File.Exists(response.LicenseImgPath))
                         File.Delete(response.LicenseImgPath);
                     using (FileStream fs = System.IO.File.Create(response.LicenseImgPath))
@@ -103,7 +105,7 @@ namespace System_Back_End.Services
                 var file2 = commerialRegImg.OpenReadStream();
                 if (file2.Length > 0)
                 {
-                    response.CommertialRegImgPath = Variables.ImagesPaths.StockCommertialRegImgSrc + $@"/{Id}.{licenseImgExt}";
+                    response.CommertialRegImgPath = Variables.ImagesPaths.StockCommertialRegImgSrc + $@"/{Id}{licenseImgExt}";
                     if (File.Exists(response.CommertialRegImgPath))
                         File.Delete(response.CommertialRegImgPath);
                     using (FileStream fs = System.IO.File.Create(response.CommertialRegImgPath))
@@ -114,8 +116,9 @@ namespace System_Back_End.Services
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                response.errorMess = ex.Message;
                 return response;
             }
             response.Status = true;
