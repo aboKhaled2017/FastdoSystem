@@ -24,6 +24,7 @@ namespace System_Back_End.Controllers.Auth
     [Authorize]
     public class ManageController : SharedAPIController
     {
+        #region constructor and properties
         public IPharmacyRepository _pharmacyRepository { get; }
         public IStockRepository _stockRepository { get; }
 
@@ -38,6 +39,10 @@ namespace System_Back_End.Controllers.Auth
             _stockRepository = stockRepository;
         }
 
+        #endregion
+
+        #region change password
+
         [HttpPost("password")]       
         public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
         {
@@ -50,11 +55,23 @@ namespace System_Back_End.Controllers.Auth
                 return NotFound(Functions.MakeError("OldPassword", "كلمة السر القديمة غير صحيحة"));
             return Ok();
         }
-        [HttpPost("ph/phone")]
-        public async Task<IActionResult> ChangePhoneForPharmacy(ChangePhoneModel model)
+
+        #endregion
+
+        #region change phone
+        [HttpPost("phone")]
+        public async Task<IActionResult> ChangePhone(ChangePhoneModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
+            if (Functions.CurrentUserType() == UserType.pharmacier)
+                return await ChangePhoneForPharmacy(model);
+            else
+                return await ChangePhoneForStock(model);
+        }
+
+        private async Task<IActionResult> ChangePhoneForPharmacy(ChangePhoneModel model)
+        {          
             var user = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             _transactionService.Begin();
             var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.NewPhone);
@@ -81,11 +98,8 @@ namespace System_Back_End.Controllers.Auth
             _transactionService.CommitChanges().End();
             return Ok(response);
         }
-        [HttpPost("stk/phone")]
-        public async Task<IActionResult> ChangePhoneForStock(ChangePhoneModel model)
+        private async Task<IActionResult> ChangePhoneForStock(ChangePhoneModel model)
         {
-            if (!ModelState.IsValid)
-                return new UnprocessableEntityObjectResult(ModelState);
             var user = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             _transactionService.Begin();
             var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.NewPhone);
@@ -112,9 +126,12 @@ namespace System_Back_End.Controllers.Auth
             _transactionService.CommitChanges().End();
             return Ok(response);
         }
+        #endregion
+
+        #region change email
 
         [HttpGet("email")]
-        public async Task<IActionResult> ChangeEmail(ChangeEmailModel model)
+        public async Task<IActionResult> ChangeEmail([FromQuery]ChangeEmailModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -174,5 +191,7 @@ namespace System_Back_End.Controllers.Auth
             
             return Ok(await _accountService.GetSigningInResponseModelForCurrentUser(user));
         }
+
+        #endregion
     }
 }

@@ -78,7 +78,7 @@ namespace System_Back_End.Controllers.Auth
             if (user == null)
                 return NotFound();
             if (user.EmailConfirmed)
-                return BadRequest(Functions.MakeError("Email", "هذا الايميل بالفعل مفعل!"));
+                return BadRequest(Functions.MakeError("G", "هذا الايميل بالفعل مفعل!"));
 
             //var code =await _userManager.GenerateEmailConfirmationTokenAsync(user);
             //var callbackUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/auth/confirmemail?userId={user.Id}&code={code}";
@@ -100,17 +100,17 @@ namespace System_Back_End.Controllers.Auth
             if (user == null)
                 return NotFound();
             if (user.EmailConfirmed)
-                return BadRequest(Functions.MakeError("Email", "هذا البريد الالكترونى بفعل بالفعل"));
+                return BadRequest(Functions.MakeError("G", "هذا البريد الالكترونى بفعل بالفعل"));
             if (user.confirmCode==null || !user.confirmCode.Equals(model.Code))
-                return NotFound(new { err = "الكود الذى ادخلتة غير صحيح" });
+                return NotFound(Functions.MakeError("Code", "الكود الذى ادخلتة غير صحيح"));
             user.confirmCode = null;
             var res =await _userManager.UpdateAsync(user);
             if (!res.Succeeded)
-                return BadRequest(Functions.MakeError("Email", "فشلت العملية,حاول مرة اخرى"));
+                return BadRequest(Functions.MakeError("G", "فشلت العملية,حاول مرة اخرى"));
             var token =await _userManager.GenerateEmailConfirmationTokenAsync(user);
             res = await _userManager.ConfirmEmailAsync(user, token);
             if(!res.Succeeded)
-                return BadRequest(Functions.MakeError("Email", "فشلت العملية,حاول مرة اخرى"));
+                return BadRequest(Functions.MakeError("G", "فشلت العملية,حاول مرة اخرى"));
             return Ok();
         }
         #endregion

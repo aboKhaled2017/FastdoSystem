@@ -32,7 +32,7 @@ namespace Microsoft.AspNetCore.Builder
         }
         public static IApplicationBuilder _UseMyDbConfigStarter(this IApplicationBuilder app, IHostingEnvironment env)
         {
-            RequestStaticServices.GetDbContext().Database.Migrate();
+            //RequestStaticServices.GetDbContext().Database.Migrate();
             DbServicesFuncs.ResetData().Wait();
             var _roleManager = RequestStaticServices.GetRoleManager();
             _roleManager._addRoles(new List<string> { Variables.adminer, Variables.pharmacier, Variables.stocker }).Wait();

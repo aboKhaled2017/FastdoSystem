@@ -77,6 +77,7 @@ namespace System_Back_End.Services
             var response = new HandlingImgResponse();
             if (licenseImg == null || commerialRegImg == null || licenseImg.Length == 0 || commerialRegImg.Length == 0)
             {
+                response.errorMess = "in valid request";
                 return response;
             }
             string licenseImgExt = Path.GetExtension(licenseImg.FileName);
@@ -86,7 +87,11 @@ namespace System_Back_End.Services
             if (!supportedTypes.Contains(licenseImgExt.Replace(".", string.Empty))
                 ||
                 !supportedTypes.Contains(commerialRegImgExt.Replace(".", string.Empty))
-                ) return response;
+                )
+            {
+                response.errorMess = "not supported extension";
+                return response;
+            }
             try
             { //delete old image if exists
                 var file1 = licenseImg.OpenReadStream();

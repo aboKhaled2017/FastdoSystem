@@ -21,11 +21,11 @@ namespace System_Back_End.Utilities
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var checkedProperty = validationContext.ObjectType.GetProperty(_propertyNameToBeChecked);
-            if(checkedProperty == null)
-                return new ValidationResult($"some Property '{_propertyNameToBeChecked}' is undefined.");
+            if (checkedProperty == null)
+                return null;
             var propertyValue = checkedProperty.GetValue(validationContext.ObjectInstance, null);
-            if(propertyValue==null)
-                return new ValidationResult($"the value of {_propertyNameToBeChecked} property is null");
+            if (propertyValue == null)
+                return null;
             string valueStr = propertyValue.ToString();
             switch (_userPropertyType)
             {

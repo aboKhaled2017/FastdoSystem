@@ -46,9 +46,12 @@ namespace System_Back_End
                 }
                 else
                 {
-                    options.UseSqlServer(Configuration.GetConnectionString("productionSql"), builder => {
+                     options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
                         builder.MigrationsAssembly("System_Back_End");
                     });
+                    /*options.UseSqlServer(Configuration.GetConnectionString("productionSql"), builder => {
+                        builder.MigrationsAssembly("System_Back_End");
+                    });*/
                 }
                 
                 
