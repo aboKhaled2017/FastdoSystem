@@ -22,6 +22,7 @@ namespace System_Back_End.Controllers
     [Authorize(Policy = "PharmacyPolicy")]
     public class LzDrugsController : SharedAPIController
     {
+        #region constructor and properties
         private ILzDrugRepository _lzDrugsRepository { get; }
         private IUrlHelper _urlHelper { get; }
 
@@ -36,6 +37,9 @@ namespace System_Back_End.Controllers
             _lzDrugsRepository = lzDrugsRepository;
             _urlHelper = urlHelper;
         }
+        #endregion
+
+        #region get
 
         [HttpGet(Name ="GetAllLzDrugsForCurrentUser")]
         public async Task<IActionResult> GetAllDrugs([FromQuery]LzDrgResourceParameters _params)
@@ -57,7 +61,9 @@ namespace System_Back_End.Controllers
                 return NotFound();
             return Ok(drug);
         }
+        #endregion
 
+        #region post
         // POST: api/LzDrugs
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] AddLzDrugModel drugModel)
@@ -74,6 +80,9 @@ namespace System_Back_End.Controllers
                 _mapper.Map<LzDrugModel_BM>(drug));
         }
 
+        #endregion
+
+        #region put
         // PUT: api/LzDrugs/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateLzDrugModel drugModel)
@@ -91,6 +100,9 @@ namespace System_Back_End.Controllers
             return NoContent();
         }
 
+        #endregion
+
+        #region delete
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
@@ -103,5 +115,6 @@ namespace System_Back_End.Controllers
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
             return NoContent();
         }
+        #endregion
     }
 }

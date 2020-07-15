@@ -22,6 +22,7 @@ namespace System_Back_End.Controllers
     [ApiController]
     public class IndexController : SharedAPIController
     {
+        #region constructor and properties
         public IAreaRepository _areaRepository { get; }
         public IndexController(
             UserManager<AppUser> userManager,
@@ -35,8 +36,10 @@ namespace System_Back_End.Controllers
         {
             _areaRepository = areaRepository;
         }
-       
 
+        #endregion
+
+        #region get
         [HttpGet("areas/all")]
         public ActionResult getAllAreas()
         {
@@ -88,11 +91,14 @@ namespace System_Back_End.Controllers
                 }).FirstOrDefaultAsync(u=>u.Id==userId);
             return Ok(user);
         }
+        #endregion
 
+        #region methods for test
         [HttpGet("test")]
         public HttpResponseMessage test(ConfirmEmailModel model)
         {
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
+        #endregion
     }
 }

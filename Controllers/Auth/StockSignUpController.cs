@@ -21,6 +21,7 @@ namespace System_Back_End.Controllers.Auth
     [AllowAnonymous]
     public class StockSignUpController : SharedAPIController
     {
+        #region constructor and properties
         private HandlingProofImgsServices _handlingProofImgsServices { get; }
         private IStockRepository _stockRepository { get; }
         public IExecuterDelayer _executerDelayer { get; }
@@ -41,6 +42,9 @@ namespace System_Back_End.Controllers.Auth
             _executerDelayer = executerDelayer;
         }
 
+        #endregion
+
+        #region main signup
         [HttpPost]
         public async Task<IActionResult> SignUp([FromForm]StockClientRegisterModel model)
         {           
@@ -85,7 +89,9 @@ namespace System_Back_End.Controllers.Auth
             return Ok(response);
 
         }
+        #endregion
 
+        #region signup steps
         [HttpPost("step1")]
         public IActionResult SignUp_Step1(Phr_RegisterModel_Identity model)
         {
@@ -116,5 +122,6 @@ namespace System_Back_End.Controllers.Auth
             return Ok();
         }
 
+        #endregion
     }
 }

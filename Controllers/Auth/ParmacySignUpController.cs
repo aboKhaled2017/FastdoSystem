@@ -21,6 +21,7 @@ namespace System_Back_End.Controllers.Auth
     [AllowAnonymous]
     public class ParmacySignUpController : SharedAPIController
     {
+        #region constructor and properties
         private HandlingProofImgsServices _handlingProofImgsServices { get; }
         private IPharmacyRepository _pharmacyRepository { get; }
         public IExecuterDelayer _executerDelayer { get; }
@@ -41,13 +42,10 @@ namespace System_Back_End.Controllers.Auth
             _executerDelayer = executerDelayer;
         }
 
+        #endregion
 
-        /// <summary>
-        /// register user for new account
-        /// </summary>
-        /// <example>url=domain/api/account/SignUp,method=post,body={email,fullName,phone,password} </example> 
-        /// <param name="model"></param>
-        /// <returns></returns>
+        #region main signup
+
         [HttpPost]
         public async Task<IActionResult> SignUp([FromForm]PharmacyClientRegisterModel model)
         {
@@ -92,6 +90,9 @@ namespace System_Back_End.Controllers.Auth
             return Ok(response);
         }
 
+        #endregion
+
+        #region signup steps
         [HttpPost("step1")]
         public IActionResult SignUp_Step1(Phr_RegisterModel_Identity model)
         {
@@ -121,6 +122,8 @@ namespace System_Back_End.Controllers.Auth
                 return new UnprocessableEntityObjectResult(ModelState);
             return Ok();
         }
+
+        #endregion
 
     }
 }

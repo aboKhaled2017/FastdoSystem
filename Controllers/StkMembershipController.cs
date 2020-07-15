@@ -19,6 +19,7 @@ namespace System_Back_End.Controllers
     [Authorize(Policy ="StockPolicy")]
     public class StkMembershipController : SharedAPIController
     {
+        #region constructor and properties
         public IStockRepository _stockRepository { get; }
 
         public StkMembershipController(
@@ -30,6 +31,10 @@ namespace System_Back_End.Controllers
         {
             _stockRepository = stockRepository;
         }
+
+        #endregion
+
+        #region patch
         [HttpPatch("name")]
         public async Task<IActionResult> UpdatePhName(UpdateStkNameModel model)
         {            
@@ -57,5 +62,6 @@ namespace System_Back_End.Controllers
             var response = await _accountService.GetSigningInResponseModelForCurrentUser(user);
             return Ok(response);
         }
+        #endregion
     }
 }

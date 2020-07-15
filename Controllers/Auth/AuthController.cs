@@ -22,10 +22,13 @@ namespace System_Back_End.Controllers.Auth
     [ApiController]
     public class AuthController : SharedAPIController
     {
+        #region constructor and properties
         public AuthController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
         {
         }
+        #endregion
 
+        #region ovveride methods
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             _accountService.SetCurrentContext(
@@ -33,7 +36,10 @@ namespace System_Back_End.Controllers.Auth
                 new UrlHelper(actionContext)
                 );
         }
-        #region Regular signin/signup
+        #endregion
+
+
+        #region signIn
 
         [HttpPost]
         [AllowAnonymous]
@@ -68,7 +74,9 @@ namespace System_Back_End.Controllers.Auth
         }
         #endregion
 
-        #region for email settings
+
+
+        #region email [confirm/sendConfirmAgain]
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> SendMeEmailConfirmCodeAgain([EmailAddress(ErrorMessage ="email is not valid")][Required(ErrorMessage ="email is required")]string email)
@@ -114,7 +122,9 @@ namespace System_Back_End.Controllers.Auth
             return Ok();
         }
         #endregion
-        #region for password setting
+
+
+        #region for password [forgot/reset]
         /// <summary>
         /// try to retrieve user's forgotton password
         /// </summary>

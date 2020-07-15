@@ -20,6 +20,7 @@ namespace System_Back_End.Controllers
     [Authorize(Policy = "PharmacyPolicy")]
     public class LzDrugSearchController : SharedAPIController
     {
+        #region constructor and properties
         public ILzDrg_Search_Repository _lzDrg_Search_Repository { get; }
         public IpropertyMappingService _propertyMappingService { get; }
 
@@ -33,6 +34,7 @@ namespace System_Back_End.Controllers
             _lzDrg_Search_Repository = lzDrg_Search_Repository;
             _propertyMappingService = propertyMappingService;
         }
+        #endregion
 
         #region override methods from parent class
         public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)

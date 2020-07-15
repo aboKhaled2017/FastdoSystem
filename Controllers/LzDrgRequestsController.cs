@@ -21,6 +21,7 @@ namespace System_Back_End.Controllers
     [Authorize(Policy = "PharmacyPolicy")]
     public class LzDrgRequestsController : SharedAPIController
     {
+        #region constructor and properties
         public ILzDrgRequestsRepository _lzDrgRequestsRepository { get; private set; }
 
         public LzDrgRequestsController(
@@ -31,6 +32,8 @@ namespace System_Back_End.Controllers
         {
             _lzDrgRequestsRepository = lzDrgRequestsRepository;
         }
+        #endregion
+
 
         #region Get List Of LzDrug Requests
         [HttpGet("made", Name = "Get_AllRequests_I_Made")]
@@ -168,7 +171,6 @@ namespace System_Back_End.Controllers
             return NoContent();
         }
         #endregion
-
 
     }
 }

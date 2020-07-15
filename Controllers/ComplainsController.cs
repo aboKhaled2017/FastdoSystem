@@ -16,6 +16,7 @@ namespace System_Back_End.Controllers
     [ApiController]
     public class ComplainsController : ControllerBase
     {
+        #region constructor and properties
         private IComplainsRepository _complainsRepository { get; }
 
         private IMapper _mapper { get; }
@@ -25,8 +26,10 @@ namespace System_Back_End.Controllers
             _complainsRepository = complainsRepository;
             _mapper = mapper;
         }
+        #endregion
 
-        // GET: api/Complains
+
+        #region get
         [HttpGet]
         public async Task<IActionResult> GetComplains()
         {
@@ -47,6 +50,9 @@ namespace System_Back_End.Controllers
             return Ok(complain);
         }
 
+        #endregion
+
+        #region put
         // PUT: api/Complains/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutComplain(Guid id, Complain complain)
@@ -75,7 +81,9 @@ namespace System_Back_End.Controllers
 
             return NoContent();
         }
+        #endregion
 
+        #region post
         // POST: api/Complains
         [HttpPost]
         public async Task<IActionResult> PostComplain(ComplainToAddModel model)
@@ -85,7 +93,9 @@ namespace System_Back_End.Controllers
 
             return CreatedAtAction("GetComplain", new { id = complain.Id }, complain);
         }
+        #endregion
 
+        #region delete
         // DELETE: api/Complains/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Complain>> DeleteComplain(Guid id)
@@ -98,5 +108,6 @@ namespace System_Back_End.Controllers
 
             return complain;
         }
+        #endregion
     }
 }

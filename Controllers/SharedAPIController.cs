@@ -15,6 +15,7 @@ namespace System_Back_End.Controllers
 {
     public class SharedAPIController : Controller
     {
+        #region constructor and properties
         protected readonly UserManager<AppUser> _userManager;
         protected readonly IEmailSender _emailSender;
         protected readonly AccountService _accountService;
@@ -33,12 +34,16 @@ namespace System_Back_End.Controllers
             _transactionService = transactionService;
             _mapper = mapper;
         }
+
         public SharedAPIController(AccountService accountService, IMapper mapper,UserManager<AppUser> userManager)
         {
             _accountService = accountService;
             _mapper = mapper;
             _userManager = userManager;
         }
+        #endregion
+
+        #region common methods for child controllers
         [Authorize]
         protected string GetUserId()
         {
@@ -51,6 +56,9 @@ namespace System_Back_End.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
+        #endregion
+
+        #region virtual methods
         public virtual string Create_BMs_ResourceUri(
             ResourceParameters _params,
             ResourceUriType resourceUriType,
@@ -81,5 +89,6 @@ namespace System_Back_End.Controllers
                     });
             }
         }
+        #endregion
     }
 }
