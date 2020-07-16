@@ -52,8 +52,7 @@ namespace System_Back_End.Repositories
         }
         public void UpdateContacts(Stock stock)
         {
-            UpdateFields<Stock>(stock, 
-                prop => prop.PersPhone,
+            UpdateFields<Stock>(stock,
                 prop => prop.LandlinePhone,
                 prop => prop.Address);
         }

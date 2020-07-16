@@ -19,6 +19,7 @@ namespace System_Back_End
         public static string EmailSettingSectionName = "EmailSetting";
         public static string PharmacyPolicy = "PharmacyPolicy";
         public static string StockPolicy = "StockPolicy";
+        public static string Stock_Or_PharmacyPolicy = "Stock_Or_PharmacyPolicy";
         public static string X_PaginationHeader = "X-Pagination";
         public static class ImagesPaths
         {

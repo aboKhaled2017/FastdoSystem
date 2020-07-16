@@ -95,6 +95,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     policy.RequireRole(Variables.stocker)
                            .RequireAuthenticatedUser();
                 });
+                opts.AddPolicy(Variables.Stock_Or_PharmacyPolicy, policy =>
+                {
+                    policy.RequireRole(new List<string> { Variables.pharmacier, Variables.stocker })
+                          .RequireAuthenticatedUser();
+                });
             });
             return services;
         }

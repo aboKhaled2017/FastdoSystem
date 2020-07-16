@@ -16,9 +16,11 @@ namespace System_Back_End.Mappings
             CreateMap<PharmacierObjectSeeder, Pharmacy>();
 
             CreateMap<AppUser, PharmacyClientResponseModel>();
-            CreateMap<Pharmacy,PharmacyClientResponseModel>();
+            CreateMap<Pharmacy, PharmacyClientResponseModel>()
+                .ForMember(dest => dest.UserType, o => o.MapFrom(s => UserType.pharmacier));
             CreateMap<AppUser, StockClientResponseModel>();
-            CreateMap<Stock,   StockClientResponseModel>();
+            CreateMap<Stock,   StockClientResponseModel>()
+                .ForMember(dest => dest.UserType, o => o.MapFrom(s => UserType.stocker));
 
             CreateMap<PharmacyClientRegisterModel, Pharmacy>()
                 .ForMember(dest => dest.Name, o => o.MapFrom(src => src.Name))

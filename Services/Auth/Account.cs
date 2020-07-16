@@ -17,6 +17,7 @@ namespace System_Back_End.Services.Auth
 {
     public class AccountService
     {
+        #region constructor and properties
         private readonly JWThandlerService _jWThandlerService;
         private readonly IEmailSender _emailSender;
 
@@ -45,6 +46,8 @@ namespace System_Back_End.Services.Auth
             _stockRepository = stockRepository;
             _mapper = mapper;
         }
+        #endregion
+
         public void SetCurrentContext(HttpContext httpContext, IUrlHelper url)
         {
             _httpContext = httpContext;
@@ -68,6 +71,7 @@ namespace System_Back_End.Services.Auth
             };
         }
 
+        
         public async Task<ISigningResponseModel> GetSigningInResponseModelForCurrentUser(AppUser user)
         {
             var userType = Functions.CurrentUserType();

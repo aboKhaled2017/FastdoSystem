@@ -10,10 +10,6 @@ namespace System_Back_End.Models
 {
     public class Phr_Contacts_Update 
     {
-        [CheckIfUserPropValueIsExixtsOnUpdate("PersPhone",UserPropertyType.phone)]
-        [Required(ErrorMessage = "رقم الهاتف مطلوب")]
-        [RegularExpression("^((010)|(011)|(012)|(015)|(017))[0-9]{8}$", ErrorMessage = "رقم هاتف غير صالح")]
-        public string PersPhone { get; set; }
         [Required(ErrorMessage = "رقم التليفون الارضى مطلوب")]
         [StringLength(15, MinimumLength = 4, ErrorMessage = "رقم تليفون غير صالح")]
         public string LandlinePhone { get; set; }
@@ -21,10 +17,6 @@ namespace System_Back_End.Models
     }
     public class Stk_Contacts_Update 
     {
-        [CheckIfUserPropValueIsExixtsOnUpdate("PersPhone", UserPropertyType.phone)]
-        [Required(ErrorMessage = "رقم الهاتف مطلوب")]
-        [RegularExpression("^((010)|(011)|(012)|(015)|(017))[0-9]{8}$", ErrorMessage = "رقم هاتف غير صالح")]
-        public string PersPhone { get; set; }
         [Required(ErrorMessage = "رقم التليفون الارضى مطلوب")]
         [StringLength(15, MinimumLength = 4, ErrorMessage = "رقم تليفون غير صالح")]
         public string LandlinePhone { get; set; }

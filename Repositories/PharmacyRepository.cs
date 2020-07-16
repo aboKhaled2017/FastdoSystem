@@ -53,7 +53,6 @@ namespace System_Back_End.Repositories
         public void UpdateContacts(Pharmacy pharmacy)
         {
             UpdateFields<Pharmacy>(pharmacy,
-                prop => prop.PersPhone,
                 prop => prop.LandlinePhone,
                 prop => prop.Address);
         }

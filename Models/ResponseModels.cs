@@ -14,6 +14,7 @@ namespace System_Back_End.Models
         public string PersPhone { get; set; }
         public string LandlinePhone { get; set; }
         public bool EmailConfirmed { get; set; }
+        public UserType UserType { get; set; }
     }
     public class PharmacyClientResponseModel:GeneralResponseModel
     {
