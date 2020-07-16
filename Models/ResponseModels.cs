@@ -13,6 +13,7 @@ namespace System_Back_End.Models
         public string Name { get; set; }
         public string PersPhone { get; set; }
         public string LandlinePhone { get; set; }
+        public string Address { get; set; }
         public bool EmailConfirmed { get; set; }
         public UserType UserType { get; set; }
     }
