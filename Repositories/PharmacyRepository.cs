@@ -12,7 +12,7 @@ namespace System_Back_End.Repositories
         public PharmacyRepository(SysDbContext context) : base(context)
         {
         }
-        public IQueryable GetAllAsync()
+        public IQueryable<Pharmacy> GetAllAsync()
         {
             return _context.Pharmacies;
         }

@@ -9,7 +9,7 @@ namespace System_Back_End.Repositories
     public interface IPharmacyRepository:IMainRepository
     {
         Task<bool> AddAsync(Pharmacy pharmacy);
-        IQueryable GetAllAsync();
+        IQueryable<Pharmacy> GetAllAsync();
         Task<bool> UpdateAsync(Pharmacy pharmacy);
         Task<Pharmacy> GetByIdAsync(string id);
         Task<Pharmacy> DeleteAsync(string id);

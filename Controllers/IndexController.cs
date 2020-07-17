@@ -24,17 +24,21 @@ namespace System_Back_End.Controllers
     {
         #region constructor and properties
         public IAreaRepository _areaRepository { get; }
+        public IPharmacyRepository _pharmacyRepository { get; }
+
         public IndexController(
             UserManager<AppUser> userManager,
             IEmailSender emailSender, 
             AccountService accountService, 
             IMapper mapper, 
             TransactionService transactionService,
-            IAreaRepository areaRepository
+            IAreaRepository areaRepository,
+            IPharmacyRepository pharmacyRepository
             )
             : base(userManager, emailSender, accountService, mapper, transactionService)
         {
             _areaRepository = areaRepository;
+            _pharmacyRepository = pharmacyRepository;
         }
 
         #endregion
@@ -90,6 +94,20 @@ namespace System_Back_End.Controllers
                     u.EmailConfirmed
                 }).FirstOrDefaultAsync(u=>u.Id==userId);
             return Ok(user);
+        }
+
+        [HttpGet("pharmacies/all")]
+        public async Task<ActionResult> getAllPharmacies()
+        {
+            var data = _pharmacyRepository.GetAllAsync().Select(p => new
+            {
+                p.Id,
+                email = p.User.Email,
+                drugsNum = p.LzDrugs.Count,
+                drugsNames = p.LzDrugs.Select(d =>new {d.Id,d.Name})
+            });
+            return Ok(await data.ToListAsync());
+                   
         }
         #endregion
 
