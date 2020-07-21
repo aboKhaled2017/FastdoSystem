@@ -14,11 +14,14 @@ namespace System_Back_End.Utilities
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if(value==null)
+            string val = (value==null)? string.Empty :value.ToString().Trim();
+            if(val ==string.Empty)
                 return new ValidationResult(ErrorMessage ?? "تاريخ الصلاحية مطلوب");
             DateTime dateVal;
-            if(!DateTime.TryParse(value.ToString(), out dateVal))
+            if(!DateTime.TryParse(val.ToString(), out dateVal))
                 return new ValidationResult(ErrorMessage ?? "من فضلك ادخل تاريخ صلاحية الراكد");
+            if(dateVal==default(DateTime))
+                return new ValidationResult(ErrorMessage ?? "تاريخ الصلاحية مطلوب");
             if (dateVal==null)
                 return new ValidationResult(ErrorMessage ?? "من فضلك ادخل تاريخ صلاحية الراكد");
             var com = dateVal.Date.CompareTo(DateTime.Now.Date);

@@ -78,6 +78,7 @@ namespace System_Back_End
                     builder.AllowAnyHeader();
                     builder.AllowAnyMethod();
                     builder.AllowCredentials();
+                    builder.WithExposedHeaders(Variables.X_PaginationHeader);
                 });
             });
             services.Configure<IdentityOptions>(op => {

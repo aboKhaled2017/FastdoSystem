@@ -20,7 +20,7 @@ namespace System_Back_End.Models
         [Required(ErrorMessage ="الكمية مطلوبة")]
         [Range(typeof(int),"1", "2147483647",ErrorMessage ="رقم الكمية غير صحيح")]
         public int Quantity { get; set; }
-        [Required(ErrorMessage = "السعر مطلوبة")]
+        [Required(ErrorMessage = "السعر مطلوب")]
         [Range(1,double.MaxValue,ErrorMessage ="هذا الرقم غير صالح")]
         public double Price { get; set; }
         public LzDrugConsumeType ConsumeType { get; set; } = LzDrugConsumeType.burning;
@@ -28,7 +28,6 @@ namespace System_Back_End.Models
         [Range(0.0, 100.0,ErrorMessage ="هذا الرقم غير صالح")]
         public double Discount { get; set; }
         [Required(ErrorMessage ="تاريخ صلاحية الراكد مطلوب")]
-        [DataType(DataType.Date,ErrorMessage ="تاريخ غير صحيح")]
         [ValidateDrugValidDate]
         public DateTime ValideDate { get; set; }
         public LzDrugPriceState PriceType { get; set; } = LzDrugPriceState.newP;
