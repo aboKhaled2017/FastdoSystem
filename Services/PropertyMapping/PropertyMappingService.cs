@@ -15,6 +15,7 @@ namespace System_Back_End.Services
                 {"Name",new PropertyMappingValue(new List<string>{ "Name"})},
                 {"Quantity",new PropertyMappingValue(new List<string>{ "Quantity"})},
                 {"Price",new PropertyMappingValue(new List<string>{ "Price"})},
+                {"Discount",new PropertyMappingValue(new List<string>{ "Discount"})},
                 {"ValideDate",new PropertyMappingValue(new List<string>{ "ValideDate"})},
             };
         private IList<IPropertyMapping> propertyMappings=new List<IPropertyMapping>();
