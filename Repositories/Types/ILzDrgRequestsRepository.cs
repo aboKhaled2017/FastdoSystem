@@ -14,7 +14,7 @@ namespace System_Back_End.Repositories
          Task<PagedList<Sent_LzDrgRequest_MB>> Get_AllRequests_I_Received(LzDrgReqResourceParameters _params);
          Task<PagedList<NotSeen_PhDrgRequest_MB>> Get_AllRequests_I_Received_INS(LzDrgReqResourceParameters _params);
          Task<IEnumerable<LzDrugRequest>> Get_Group_Of_Requests_I_Received(IEnumerable<Guid> reqIds);
-         Task<LzDrugRequest> GetByIdAsync(Guid id);
+         Task<object> GetByIdAsync(Guid id);
          void Add(LzDrugRequest lzDrugRequest);
          Task<LzDrugRequest> AddForUserAsync(Guid drugId);
          Task<bool> Patch_Update_Request_Sync(LzDrugRequest lzDrugRequest);

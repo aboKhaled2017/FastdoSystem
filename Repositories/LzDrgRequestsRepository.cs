@@ -63,9 +63,15 @@ namespace System_Back_End.Repositories
             return await _context.LzDrugRequests
                 .Where(r => r.LzDrug.PharmacyId == UserId && reqIds.Contains(r.Id)).ToListAsync();
         }
-        public async Task<LzDrugRequest> GetByIdAsync(Guid id)
+        public async Task<object> GetByIdAsync(Guid id)
         {
-            return await _context.LzDrugRequests.FindAsync(id);
+            return await _context.LzDrugRequests.Select(r=>new { 
+              r.Id,
+              r.LzDrugId,
+              r.PharmacyId,
+              r.Seen,
+              r.Status
+            }).FirstOrDefaultAsync(r=>r.Id==id);
         }
         public void Add(LzDrugRequest lzDrugRequest)
         {

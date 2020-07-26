@@ -89,7 +89,15 @@ namespace System_Back_End.Controllers
                 return BadRequest();
             if (!await _lzDrgRequestsRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
-            return CreatedAtRoute(routeName: "GetRequestById", routeValues: new { id = req.Id }, req);
+            var reqObj = new
+            {
+                req.Id,
+                req.LzDrugId,
+                req.PharmacyId,
+                req.Seen,
+                req.Status
+            };
+            return CreatedAtRoute(routeName: "GetRequestById", routeValues: new { id = req.Id }, reqObj);
         }
         [HttpPatch("received/{reqId}")]
         public async Task<IActionResult> Patch_HandleRequest_I_Received(Guid reqId,[FromBody] JsonPatchDocument<LzDrgRequest_ForUpdate_BM> patchDoc)
