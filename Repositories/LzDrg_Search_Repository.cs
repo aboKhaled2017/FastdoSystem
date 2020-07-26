@@ -46,15 +46,15 @@ namespace System_Back_End.Repositories
             }
             else
             {
-                if(_params.AreaId != 0)
+                if(_params.AreaIds!=null && _params.AreaIds.Count() != 0)
                 {
                     generalQuerableData_BeforePaging = generalQuerableData_BeforePaging
-                    .Where(d => d.Pharmacy.AreaId == _params.AreaId);
+                    .Where(d =>_params.AreaIds.Any(aid=>aid== d.Pharmacy.AreaId));
                 }
-                else if (_params.CityId != 0)
+                else if (_params.CityIds!=null&&_params.CityIds.Count()!= 0)
                 {
                     generalQuerableData_BeforePaging = generalQuerableData_BeforePaging
-                    .Where(d => d.Pharmacy.Area.SuperAreaId == _params.CityId);
+                    .Where(d => _params.CityIds.Any(cid=>cid==d.Pharmacy.Area.SuperAreaId));
                 }
 
             }

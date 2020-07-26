@@ -21,6 +21,7 @@ namespace System_Back_End.Repositories
                 {
                     Id=r.Id,
                     LzDrugId=r.LzDrugId,
+                    LzDrugName=r.LzDrug.Name,
                     Status=r.Status,
                     PharmacyId=r.LzDrug.PharmacyId,
                     PhName=r.LzDrug.Pharmacy.Name
@@ -35,6 +36,7 @@ namespace System_Back_End.Repositories
                 {
                     Id = r.Id,
                     LzDrugId = r.LzDrugId,
+                    LzDrugName=r.LzDrug.Name,
                     Status = r.Status,
                     PharmacyId = r.PharmacyId,
                     PhName = r.Pharmacy.Name
@@ -49,6 +51,7 @@ namespace System_Back_End.Repositories
                 {
                     Id = r.Id,
                     LzDrugId = r.LzDrugId,
+                    LzDrugName=r.LzDrug.Name,
                     Status = r.Status,
                     PharmacyId = r.PharmacyId,
                     PhName = r.Pharmacy.Name

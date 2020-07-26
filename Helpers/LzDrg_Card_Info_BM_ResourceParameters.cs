@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,8 +23,12 @@ namespace System_Back_End
             }
         }
         public string S { get; set; }
-        public byte CityId { get; set; }
-        public byte AreaId { get; set; }
+        //cityIds=1,2,3&otherParama=...
+        [ModelBinder(BinderType = typeof(ArrayModelBinder))] 
+        public IEnumerable<byte> CityIds { get; set; }
+        //areaIds=1,2,3&otherParama=...
+        [ModelBinder(BinderType = typeof(ArrayModelBinder))]
+        public IEnumerable<byte> AreaIds { get; set; }
         public string PhramId { get; set; }
         public DateTime ValidBefore { get; set; }=default(DateTime);
         public string OrderBy { get; set; } = "Name";

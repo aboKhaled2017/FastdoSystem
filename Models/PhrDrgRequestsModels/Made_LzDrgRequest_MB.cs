@@ -7,6 +7,7 @@ namespace System_Back_End.Models
     {
         public Guid Id { get; set; }
         public Guid LzDrugId { get; set; }
+        public string LzDrugName{ get; set; }
         public LzDrugRequestStatus Status { get; set; }
         public string PharmacyId { get; set; }
         public string PhName { get; set; }

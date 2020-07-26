@@ -50,8 +50,8 @@ namespace System_Back_End.Controllers
                         PageSize = _cardParams.PageSize,
                         S= _cardParams.S,
                         PhramId=_cardParams.PhramId,
-                        AreaId=_cardParams.AreaId,
-                        CityId=_cardParams.CityId,
+                        AreaIds=_cardParams.AreaIds,
+                        CityIds=_cardParams.CityIds,
                         ValidBefore=_cardParams.ValidBefore,
                         OrderBy=_cardParams.OrderBy
                     });
@@ -63,8 +63,8 @@ namespace System_Back_End.Controllers
                         PageSize = _cardParams.PageSize,
                         S=_cardParams.S,
                         PhramId = _cardParams.PhramId,
-                        AreaId = _cardParams.AreaId,
-                        CityId = _cardParams.CityId,
+                        AreaIds = _cardParams.AreaIds,
+                        CityIds = _cardParams.CityIds,
                         ValidBefore = _cardParams.ValidBefore,
                         OrderBy = _cardParams.OrderBy
                     });
@@ -76,8 +76,8 @@ namespace System_Back_End.Controllers
                         PageSize = _cardParams.PageSize,
                         S=_cardParams.S,
                         PhramId = _cardParams.PhramId,
-                        AreaId = _cardParams.AreaId,
-                        CityId = _cardParams.CityId,
+                        AreaIds = _cardParams.AreaIds,
+                        CityIds = _cardParams.CityIds,
                         ValidBefore = _cardParams.ValidBefore,
                         OrderBy = _cardParams.OrderBy
                     });
