@@ -36,13 +36,13 @@ namespace System_Back_End
             {
                 if(Env.IsDevelopment())
                 {
-                    options.UseSqlServer(Configuration.GetConnectionString("AWS_fastdo_db"),
+                    /*options.UseSqlServer(Configuration.GetConnectionString("AWS_fastdo_db"),
                     builder=> {
                     builder.MigrationsAssembly("System_Back_End");
-                    });
-                    /*options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
-                        builder.MigrationsAssembly("System_Back_End");
                     });*/
+                    options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
+                        builder.MigrationsAssembly("System_Back_End");
+                    });
                 }
                 else
                 {
