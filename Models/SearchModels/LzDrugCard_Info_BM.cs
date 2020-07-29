@@ -27,5 +27,6 @@ namespace System_Back_End.Models
         public int RequestsCount { get; set; }
         public bool IsMadeRequest { get; set; }
         public LzDrugRequestStatus? Status { get; set; }
+        public Guid? RequestId { get; set; }
     }
 }

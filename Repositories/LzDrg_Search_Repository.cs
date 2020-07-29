@@ -77,9 +77,13 @@ namespace System_Back_End.Repositories
                     RequestsCount = d.RequestingPharms.Count,
                     IsMadeRequest = (d.RequestingPharms.Count > 0 && d.RequestingPharms.Any(r => r.PharmacyId == UserId)),
                     Status =
-              (d.RequestingPharms.Count > 0 && d.RequestingPharms.Any(r => r.PharmacyId == UserId))
-            ? d.RequestingPharms.FirstOrDefault(r => r.PharmacyId == UserId).Status
-            : 0
+                      (d.RequestingPharms.Count > 0 && d.RequestingPharms.Any(r => r.PharmacyId == UserId))
+                    ? d.RequestingPharms.FirstOrDefault(r => r.PharmacyId == UserId).Status
+                    : 0,
+                    RequestId =
+                      (d.RequestingPharms.Count > 0 && d.RequestingPharms.Any(r => r.PharmacyId == UserId))
+                    ? d.RequestingPharms.FirstOrDefault(r => r.PharmacyId == UserId).Id
+                    : Guid.Empty
                 });
             return await PagedList<LzDrugCard_Info_BM>.CreateAsync(PagedData, _params);
         }

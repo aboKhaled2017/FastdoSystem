@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace System_Back_End.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    [Migration("20200710152625_init_for_localSql")]
-    partial class init_for_localSql
+    [Migration("20200727095039_awsInit")]
+    partial class awsInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace System_Back_End.Migrations
 {
-    public partial class init_for_localSql : Migration
+    public partial class awsInit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -312,7 +312,7 @@ namespace System_Back_End.Migrations
                         column: x => x.PharmacyId,
                         principalTable: "Pharmacies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PharmaciesInStocks_Stocks_StockId",
                         column: x => x.StockId,
@@ -360,13 +360,13 @@ namespace System_Back_End.Migrations
                         column: x => x.LzDrugId,
                         principalTable: "LzDrugs",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_LzDrugRequests_Pharmacies_PharmacyId",
                         column: x => x.PharmacyId,
                         principalTable: "Pharmacies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
