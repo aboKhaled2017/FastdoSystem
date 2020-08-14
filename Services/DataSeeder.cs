@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using AutoMapper;
 using System_Back_End.InitSeeds.Helpers;
+using System.Security.Claims;
+using System_Back_End.Global;
 
 namespace System_Back_End.Services
 {
@@ -33,19 +35,30 @@ namespace System_Back_End.Services
         }
         public static async Task SeedDefaultAdminstrator()
         {
-            var user = await _userManager.FindByEmailAsync(Properties.MainAdministratorInfo.Email);
+            var user = await _userManager.FindByEmailAsync(Properties.MainAdministratorInfo.UserName);
             if (user != null)
-                return;
+                return;            
             user = new AppUser
             {
-                Email = Properties.MainAdministratorInfo.Email,
-                UserName = Properties.MainAdministratorInfo.Email,
-                EmailConfirmed=true
+                UserName = Properties.MainAdministratorInfo.UserName,
+                PhoneNumber= Properties.MainAdministratorInfo.PhoneNumber
             };
             var res = await _userManager.CreateAsync(user, Properties.MainAdministratorInfo.Password);
             if (!res.Succeeded)
                 throw new Exception("cannot add the default administrator");
             await _userManager.AddToRoleAsync(user, Variables.adminer);
+            await _userManager.AddClaimsAsync(user, new List<Claim> {
+              new Claim(Variables.AdminClaimsTypes.AdminType,AdminType.Administrator),
+              new Claim(Variables.AdminClaimsTypes.Previligs,AdminPreviligs.FullControlOnSubAdmins)
+            });
+            var admin = new Admin
+            {
+                Name = Properties.MainAdministratorInfo.Name,
+                User = user
+            };
+             context.Admins.Add(admin);
+            if (await context.SaveChangesAsync() < 1)
+                await _userManager.DeleteAsync(user);
         }
         private static async Task SeedAreas()
         {

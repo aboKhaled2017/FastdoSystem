@@ -20,11 +20,11 @@ namespace System_Back_End.Models
         public string Name { get; set; }
         [Required(ErrorMessage = "الاسم مطلوب")]
         [MaxLength(50, ErrorMessage = "الاسم لا يجب ان يتعدى 60 حرف")]
-        [RegularExpression("^[a-zA-Z]{3,15}(?: [a-zA-Z]+){1,3}$", ErrorMessage = "ادخل اسم صحيح, وان يكون ثنائى على الاقل")]
+        [RegularExpression("^([a-zA-Z]|[\u0600-\u06FF ]){3,15}(?: ([a-zA-Z]|[\u0600-\u06FF ])+){1,3}$", ErrorMessage = "ادخل اسم صحيح, وان يكون ثنائى على الاقل")]
         public string MgrName { get; set; }
         [Required(ErrorMessage = "الاسم مطلوب")]
         [MaxLength(50, ErrorMessage = "الاسم لا يجب ان يتعدى 60 حرف")]
-        [RegularExpression("^[a-zA-Z]{3,15}(?: [a-zA-Z]+){1,3}$", ErrorMessage = "ادخل اسم صحيح, وان يكون ثنائى على الاقل")]
+        [RegularExpression("^([a-zA-Z]|[\u0600-\u06FF ]){3,15}(?: ([a-zA-Z]|[\u0600-\u06FF ])+){1,3}$", ErrorMessage = "ادخل اسم صحيح, وان يكون ثنائى على الاقل")]
         public string OwnerName { get; set; }
 
         [Required(ErrorMessage = "الصورة مطلوبة")]

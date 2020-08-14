@@ -20,13 +20,13 @@ namespace System_Back_End.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class IndexController : SharedAPIController
+    public class AdminController : SharedAPIController
     {
         #region constructor and properties
         public IAreaRepository _areaRepository { get; }
         public IPharmacyRepository _pharmacyRepository { get; }
 
-        public IndexController(
+        public AdminController(
             UserManager<AppUser> userManager,
             IEmailSender emailSender, 
             AccountService accountService, 
@@ -39,6 +39,14 @@ namespace System_Back_End.Controllers
         {
             _areaRepository = areaRepository;
             _pharmacyRepository = pharmacyRepository;
+        }
+
+        public AdminController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
+        {
+        }
+
+        public AdminController(AccountService accountService, IMapper mapper, UserManager<AppUser> userManager) : base(accountService, mapper, userManager)
+        {
         }
 
         #endregion

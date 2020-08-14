@@ -47,7 +47,9 @@ namespace System_Back_End
             {
                 return new AdministratorInfo
                 {
-                    Email = MainAdministratorConfigSection.GetValue<string>("email"),
+                    UserName = MainAdministratorConfigSection.GetValue<string>("userName"),
+                    Name = MainAdministratorConfigSection.GetValue<string>("name"),
+                    PhoneNumber = MainAdministratorConfigSection.GetValue<string>("phone"),
                     Password = MainAdministratorConfigSection.GetValue<string>("password")
                 };
             }

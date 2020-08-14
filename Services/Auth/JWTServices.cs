@@ -20,6 +20,27 @@ namespace System_Back_End.Services
         {
             _configuration = configuration;
         }
+        public TokenModel CreateAccessToken_ForAdministartor(AppUser user,string name,IList<Claim> userClaims)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub,user.Id),
+                new Claim("UserId",user.Id),
+                new Claim(ClaimTypes.Name,name),
+                new Claim("Phone",user.PhoneNumber),
+                new Claim("UserName",user.UserName),
+                new Claim(ClaimTypes.Role,Variables.adminer),
+                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),
+            };
+            claims.AddRange(userClaims);
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JWT.GetValue<string>("signingKey")));
+            var signingCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            //addClaims(claims);
+            var jwt = CreateSecurityToken(claims, DateTime.UtcNow.AddYears(10), signingCredentials);
+            var token = new JwtSecurityTokenHandler().WriteToken(jwt);
+            return CreateTokenModel(token, DateTime.UtcNow.Ticks);
+        }
         public TokenModel CreateAccessToken(AppUser user, string role,string compName)
         {
             var claims = new Claim[]

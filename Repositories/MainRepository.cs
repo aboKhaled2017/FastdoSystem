@@ -24,6 +24,13 @@ namespace System_Back_End.Repositories
                 return RequestStaticServices.GetUserManager().GetUserId(RequestStaticServices.GetCurrentHttpContext().User);
             }
         }
+        protected string UserName
+        {
+            get
+            {
+                return RequestStaticServices.GetUserManager().GetUserName(RequestStaticServices.GetCurrentHttpContext().User);
+            }
+        }
         public bool Save()
         {
             return _context.SaveChanges()>0;

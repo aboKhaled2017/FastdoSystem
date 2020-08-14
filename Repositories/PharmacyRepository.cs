@@ -15,7 +15,7 @@ namespace System_Back_End.Repositories
         public IQueryable<Pharmacy> GetAllAsync()
         {
             return _context.Pharmacies;
-        }
+        }       
         public async Task<Pharmacy> GetByIdAsync(string id)
         {
             return await _context.Pharmacies.FindAsync(id);

@@ -3,23 +3,20 @@ using System;
 using System.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace System_Back_End.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    [Migration("20200727095039_awsInit")]
-    partial class awsInit
+    [Migration("20200806045017_addHistoryTb_and_chg")]
+    partial class addHistoryTb_and_chg
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -39,8 +36,7 @@ namespace System_Back_End.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -48,8 +44,7 @@ namespace System_Back_End.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -68,8 +63,7 @@ namespace System_Back_End.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -133,15 +127,38 @@ namespace System_Back_End.Migrations
 
             modelBuilder.Entity("System.Models.Admin", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("Id");
 
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<string>("SuperAdminId");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("SuperAdminId");
+
                     b.ToTable("Admins");
+                });
+
+            modelBuilder.Entity("System.Models.AdminHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Desc");
+
+                    b.Property<string>("IssuerId");
+
+                    b.Property<DateTime>("OccuredAt");
+
+                    b.Property<string>("OperationType");
+
+                    b.Property<string>("ToId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdminHistoryEntries");
                 });
 
             modelBuilder.Entity("System.Models.AppUser", b =>
@@ -194,8 +211,7 @@ namespace System_Back_End.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -453,6 +469,19 @@ namespace System_Back_End.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("System.Models.Admin", b =>
+                {
+                    b.HasOne("System.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("System.Models.Admin", "SuperAdmin")
+                        .WithMany("SubAdmins")
+                        .HasForeignKey("SuperAdminId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("System.Models.Area", b =>

@@ -25,4 +25,12 @@ namespace System_Back_End.Models
     {
          
     }
+    public class AdministratorClientResponseModel
+    {
+        public string Id { get; set; }
+        public string UserName { get; set; }
+        public string Name { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Prevligs { get; set; }
+    }
 }

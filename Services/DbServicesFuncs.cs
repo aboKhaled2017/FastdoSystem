@@ -28,7 +28,7 @@ namespace System_Back_End.Services
             {
                 _userManager.DeleteAsync(user).Wait();
             });
-            await context.SaveChangesAsync();           
+            await context.SaveChangesAsync();        
         }
     }
 }

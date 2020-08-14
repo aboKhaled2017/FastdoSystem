@@ -21,6 +21,9 @@ namespace System_Back_End.Mappings
             CreateMap<AppUser, StockClientResponseModel>();
             CreateMap<Stock,   StockClientResponseModel>()
                 .ForMember(dest => dest.UserType, o => o.MapFrom(s => UserType.stocker));
+            CreateMap<AppUser, AdministratorClientResponseModel>();
+            CreateMap<Admin, AdministratorClientResponseModel>();
+
 
             CreateMap<PharmacyClientRegisterModel, Pharmacy>()
                 .ForMember(dest => dest.Name, o => o.MapFrom(src => src.Name))
@@ -53,6 +56,7 @@ namespace System_Back_End.Mappings
             CreateMap<LzDrugRequest,LzDrgRequest_ForUpdate_BM>();
             CreateMap<LzDrgRequest_ForUpdate_BM, LzDrugRequest>();
 
+             
             /*CreateMap<LzDrug, LzDrugCard_Info_BM>();
             CreateMap<Pharmacy,LzDrugCard_Info_BM>()
                 .ForMember(dest=>dest.PharmName)*/

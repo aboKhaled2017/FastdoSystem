@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 namespace System_Back_End.Models
 {
     public interface ISigningResponseModel { }
+    public class SigningAdministratorClientInResponseModel : ISigningResponseModel
+    {
+        public AdministratorClientResponseModel user { get; set; }
+        public TokenModel accessToken { get; set; }
+    }
     public class SigningPharmacyClientInResponseModel:ISigningResponseModel
     {
         public PharmacyClientResponseModel user { get; set; }

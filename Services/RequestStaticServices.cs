@@ -57,6 +57,10 @@ namespace System_Back_End.Services
         {
             return _serviceScope.ServiceProvider.GetService<TransactionHelper>();          
         }
+        public static TransactionService GetTransactionService()
+        {
+            return _serviceScope.ServiceProvider.GetService<TransactionService>();
+        }
         public static IMapper GetMapper ()
         {
                 var mappingConfig = new MapperConfiguration(mc =>

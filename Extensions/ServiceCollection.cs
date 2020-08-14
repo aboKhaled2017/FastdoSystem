@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Enums;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System_Back_End;
+using System_Back_End.Global;
 using System_Back_End.Mappings;
 using System_Back_End.Repositories;
 using System_Back_End.Services;
@@ -58,6 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IComplainsRepository,ComplainsRepository>();
             services.AddScoped<ILzDrg_Search_Repository,LzDrg_Search_Repository>();
             services.AddScoped<IAreaRepository, AreaRepository>();
+            services.AddScoped<IAdminRepository, AdminRepository>();
             return services;
         }
         public static IServiceCollection _AddSystemAuthentication(this IServiceCollection services)
@@ -100,6 +104,93 @@ namespace Microsoft.Extensions.DependencyInjection
                     policy.RequireRole(new List<string> { Variables.pharmacier, Variables.stocker })
                           .RequireAuthenticatedUser();
                 });
+                opts.AddPolicy(Variables.AdminPolicy, policy =>
+                {
+                    policy.RequireRole(Variables.adminer)
+                          .RequireClaim(Variables.AdminClaimsTypes.AdminType,AdminType.Administrator)
+                          .RequireAuthenticatedUser();
+                });
+                opts.AddPolicy(Variables.RepresentativePolicy, policy =>
+                {
+                    policy.RequireRole(Variables.adminer)
+                          .RequireClaim(Variables.AdminClaimsTypes.AdminType, AdminType.Representative)
+                          .RequireAuthenticatedUser();
+                });
+                opts.AddPolicy(Variables.FullControlOnSubAdminsPolicy, policy =>
+                {
+                    policy.RequireAssertion(p => {
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        if (claimVal == null) return false;
+                        return claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
+                    });
+                });
+                opts.AddPolicy(Variables.ViewAnySubAdminPolicy, policy =>
+                {
+                    policy.RequireAssertion(p => {
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        if (claimVal == null) return false;
+                        return
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.ViewAnySubAdmin)
+                        ||
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
+
+                    });
+                });
+                opts.AddPolicy(Variables.CanAddSubAdminPolicy, policy =>
+                { 
+                    policy.RequireAssertion(p =>{
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        if (claimVal == null) return false;
+                        return claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.AddNewAdmin)
+                        ||
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
+                    });
+                });
+                opts.AddPolicy(Variables.CanUpdateSubAdminPolicy, policy =>
+                {
+                    policy.RequireAssertion(p => {
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        if (claimVal == null) return false;
+                        return
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.UpdateSubAdmin)
+                        ||
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
+                    });
+                });
+                opts.AddPolicy(Variables.CanDeleteSubAdminPolicy, policy =>
+                {
+                    policy.RequireAssertion(p => {
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        if (claimVal == null) return false;
+                        return
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.DeleteSubAdmin)
+                        ||
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
+                    });
+                });
+                opts.AddPolicy(Variables.CanAddNewRepresentativePolicy, policy =>
+                {
+                    policy.RequireAssertion(p => {
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        if (claimVal == null) return false;
+                        return
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.AddNewRepresentative)
+                        ||
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
+                    });
+                });
+
             });
             return services;
         }

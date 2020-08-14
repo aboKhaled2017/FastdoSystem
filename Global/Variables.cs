@@ -20,7 +20,21 @@ namespace System_Back_End
         public static string PharmacyPolicy = "PharmacyPolicy";
         public static string StockPolicy = "StockPolicy";
         public static string Stock_Or_PharmacyPolicy = "Stock_Or_PharmacyPolicy";
+        public static string AdminPolicy = "AdminPolicy";
+        public static string FullControlOnSubAdminsPolicy = "FullControlOnSubAdminsPolicy";
+        public static string ViewAnySubAdminPolicy = "ViewAnySubAdminPolicy";
+        public static string RepresentativePolicy = "RepresentativePolicy";
+        public static string CanAddSubAdminPolicy = "CanAddSubAdminPolicy";
+        public static string CanUpdateSubAdminPolicy = "CanUpdateSubAdminPolicy";
+        public static string CanDeleteSubAdminPolicy = "CanDeleteSubAdminPolicy";
+        public static string CanAddNewRepresentativePolicy = "CanAddNewRepresentativePolicy";
         public static string X_PaginationHeader = "X-Pagination";
+        public static class AdminClaimsTypes 
+        {
+            public static string AdminType = "AdminType";
+            public static string Previligs = "Previligs";
+
+        }
         public static class ImagesPaths
         {
             public static string PharmacyLicenseImgSrc 

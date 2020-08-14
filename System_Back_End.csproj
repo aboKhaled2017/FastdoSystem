@@ -9,6 +9,13 @@
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="All_migrations\**" />
+    <Content Remove="All_migrations\**" />
+    <EmbeddedResource Remove="All_migrations\**" />
+    <None Remove="All_migrations\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
@@ -33,16 +40,15 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\System.Models\System.Models.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\Images\Pharmacies\Identity\CommerialReg\" />
     <Folder Include="wwwroot\Images\Pharmacies\Identity\License\" />
     <Folder Include="wwwroot\Images\Stocks\Identity\CommerialReg\" />
     <Folder Include="wwwroot\Images\Stocks\Identity\License\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\System.Models\System.Models.csproj" />
   </ItemGroup>
 
 </Project>
