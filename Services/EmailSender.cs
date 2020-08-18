@@ -5,7 +5,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Services
+namespace Fastdo.backendsys.Services
 {
     public class EmailSender : IEmailSender
     {

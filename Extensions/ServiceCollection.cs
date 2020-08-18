@@ -9,16 +9,16 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Enums;
+using Fastdo.Repositories.Enums;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System_Back_End;
-using System_Back_End.Global;
-using System_Back_End.Mappings;
-using System_Back_End.Repositories;
-using System_Back_End.Services;
-using System_Back_End.Services.Auth;
+using Fastdo.backendsys;
+using Fastdo.backendsys.Global;
+using Fastdo.backendsys.Mappings;
+using Fastdo.backendsys.Repositories;
+using Fastdo.backendsys.Services;
+using Fastdo.backendsys.Services.Auth;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace System_Back_End.Models.ManageModels
+namespace Fastdo.backendsys.Models.ManageModels
 {
     public class EnableAuthenticatorModel
     {

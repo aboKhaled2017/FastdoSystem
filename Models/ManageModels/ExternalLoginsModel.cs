@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
-namespace System_Back_End.Models.ManageModels
+namespace Fastdo.backendsys.Models.ManageModels
 {
     public class ExternalLoginsModel
     {

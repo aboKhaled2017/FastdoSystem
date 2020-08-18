@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using System_Back_End.Utilities;
+using Fastdo.backendsys.Utilities;
 
-namespace System_Back_End.Models
+namespace Fastdo.backendsys.Models
 {
     [ModelMetadataType(typeof(IPhr_RegisterModel_Contacts))]
     public class Phr_RegisterModel_Contacts : IPhr_RegisterModel_Contacts

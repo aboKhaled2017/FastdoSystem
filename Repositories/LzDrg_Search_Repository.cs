@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
-using System_Back_End.Models;
-using System_Back_End.Services;
+using Fastdo.backendsys.Models;
+using Fastdo.backendsys.Services;
 
-namespace System_Back_End.Repositories
+namespace Fastdo.backendsys.Repositories
 {
     public class LzDrg_Search_Repository : MainRepository, ILzDrg_Search_Repository
     {

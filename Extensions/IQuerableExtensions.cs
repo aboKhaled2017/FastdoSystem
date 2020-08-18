@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System_Back_End.Services;
+using Fastdo.backendsys.Services;
 using System.Linq.Dynamic.Core;
-namespace System_Back_End
+namespace Fastdo.backendsys
 {
     public static class IQuerableExtensions
     {

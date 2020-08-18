@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System_Back_End.Models;
-using System_Back_End.Repositories;
-using System_Back_End.Services.Auth;
+using Fastdo.backendsys.Models;
+using Fastdo.backendsys.Repositories;
+using Fastdo.backendsys.Services.Auth;
 
-namespace System_Back_End.Controllers
+namespace Fastdo.backendsys.Controllers
 {
     [Route("api/ph/membership")]
     [ApiController]

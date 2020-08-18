@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using System_Back_End.Utilities;
+using Fastdo.backendsys.Utilities;
 
-namespace System_Back_End.Models
+namespace Fastdo.backendsys.Models
 {
     public class Phr_Contacts_Update 
     {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
-using System_Back_End.Utilities;
+using Fastdo.backendsys.Utilities;
 
-namespace System_Back_End.Models
+namespace Fastdo.backendsys.Models
 {
     public interface IPhr_RegisterModel_Proof
     {

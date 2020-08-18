@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace System_Back_End.Models
+namespace Fastdo.backendsys.Models
 {
     [ModelMetadataType(typeof(IPhr_RegisterModel_Proof))]
     public class Phr_RegisterModel_Proof : IPhr_RegisterModel_Proof

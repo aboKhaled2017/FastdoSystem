@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using System_Back_End.Services;
+using Fastdo.backendsys.Services;
 
-namespace System_Back_End.Utilities
+namespace Fastdo.backendsys.Utilities
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class IsProductExists:ValidationAttribute

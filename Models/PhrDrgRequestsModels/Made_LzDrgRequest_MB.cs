@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Enums;
+using Fastdo.Repositories.Enums;
 
-namespace System_Back_End.Models
+namespace Fastdo.backendsys.Models
 {
     public class Made_LzDrgRequest_MB
     {

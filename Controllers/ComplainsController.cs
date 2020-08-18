@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Models;
-using System_Back_End.Repositories;
-using System_Back_End.Models;
+using Fastdo.Repositories.Models;
+using Fastdo.backendsys.Repositories;
+using Fastdo.backendsys.Models;
 using AutoMapper;
 
-namespace System_Back_End.Controllers
+namespace Fastdo.backendsys.Controllers
 {
     [Route("api/complains")]
     [ApiController]

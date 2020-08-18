@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace System_Back_End
+namespace Fastdo.backendsys
 {
     public class ArrayModelBinder : IModelBinder
     {

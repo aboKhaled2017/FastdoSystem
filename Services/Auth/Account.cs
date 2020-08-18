@@ -3,17 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Models;
+using Fastdo.Repositories.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Text;
-using System_Back_End.Models;
+using Fastdo.backendsys.Models;
 using AutoMapper;
-using System_Back_End.Repositories;
+using Fastdo.backendsys.Repositories;
 
-namespace System_Back_End.Services.Auth
+namespace Fastdo.backendsys.Services.Auth
 {
     public partial class AccountService
     {

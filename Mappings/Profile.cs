@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
-using System_Back_End.InitSeeds.Helpers;
-using System_Back_End.Models;
+using Fastdo.backendsys.InitSeeds.Helpers;
+using Fastdo.backendsys.Models;
 
-namespace System_Back_End.Mappings
+namespace Fastdo.backendsys.Mappings
 {
     public class MappingProfile : Profile
     {
@@ -56,7 +56,13 @@ namespace System_Back_End.Mappings
             CreateMap<LzDrugRequest,LzDrgRequest_ForUpdate_BM>();
             CreateMap<LzDrgRequest_ForUpdate_BM, LzDrugRequest>();
 
-             
+            CreateMap<Pharmacy, Pharmacy_Update_ADM_Model>();
+            CreateMap<Pharmacy_Update_ADM_Model, Pharmacy>();
+
+            CreateMap<Stock, Stock_Update_ADM_Model>();
+            CreateMap<Stock_Update_ADM_Model, Stock>();
+
+
             /*CreateMap<LzDrug, LzDrugCard_Info_BM>();
             CreateMap<Pharmacy,LzDrugCard_Info_BM>()
                 .ForMember(dest=>dest.PharmName)*/

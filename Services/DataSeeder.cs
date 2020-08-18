@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Models;
+using Fastdo.Repositories.Models;
 using Microsoft.AspNetCore.Identity;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using AutoMapper;
-using System_Back_End.InitSeeds.Helpers;
+using Fastdo.backendsys.InitSeeds.Helpers;
 using System.Security.Claims;
-using System_Back_End.Global;
+using Fastdo.backendsys.Global;
 
-namespace System_Back_End.Services
+namespace Fastdo.backendsys.Services
 {
     public static class DataSeeder
     {

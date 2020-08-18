@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System_Back_End.Services;
+using Fastdo.backendsys.Services;
 
-namespace System_Back_End.Utilities
+namespace Fastdo.backendsys.Utilities
 {
     public class RequireUniqueLzDrugName : ValidationAttribute
     {
-        private readonly System.Models.SysDbContext _Context;
+        private readonly Fastdo.Repositories.Models.SysDbContext _Context;
 
         public bool _isUpdate { get; }
 

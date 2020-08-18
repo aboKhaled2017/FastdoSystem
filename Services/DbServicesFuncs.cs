@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Models;
+using Fastdo.Repositories.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 
-namespace System_Back_End.Services
+namespace Fastdo.backendsys.Services
 {
     public static class DbServicesFuncs
     {

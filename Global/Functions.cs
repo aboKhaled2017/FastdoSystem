@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Security.Claims;
-using System_Back_End.Services;
+using Fastdo.backendsys.Services;
 
-namespace System_Back_End
+namespace Fastdo.backendsys
 {
     public static class Functions
     {

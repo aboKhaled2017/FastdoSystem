@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Models;
+using Fastdo.Repositories.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace System_Back_End.Services
+namespace Fastdo.backendsys.Services
 {
     public class TransactionService
     {

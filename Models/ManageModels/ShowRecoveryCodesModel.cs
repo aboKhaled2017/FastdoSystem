@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Models.ManageModels
+namespace Fastdo.backendsys.Models.ManageModels
 {
     public class ShowRecoveryCodesModel
     {

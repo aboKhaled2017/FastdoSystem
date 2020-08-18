@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using System_Back_End.Models;
+using Fastdo.backendsys.Models;
 
-namespace System_Back_End.Services
+namespace Fastdo.backendsys.Services
 {
     public class JWThandlerService
     {

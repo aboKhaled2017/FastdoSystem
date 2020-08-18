@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Repositories
+namespace Fastdo.backendsys.Repositories
 {
     public interface IMainRepository
     {

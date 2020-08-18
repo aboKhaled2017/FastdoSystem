@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Enums;
+using Fastdo.Repositories.Enums;
 
-namespace System_Back_End.Models
+namespace Fastdo.backendsys.Models
 {
     public class LzDrgRequest_ForUpdate_BM
     {

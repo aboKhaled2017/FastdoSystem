@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Providers
+namespace Fastdo.backendsys.Providers
 {
     public class FourDigitTokenProvider : PhoneNumberTokenProvider<AppUser>
     {

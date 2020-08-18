@@ -12,11 +12,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Models;
-using System_Back_End.Providers;
+using Fastdo.Repositories.Models;
+using Fastdo.backendsys.Providers;
 using Microsoft.AspNetCore.Mvc;
 
-namespace System_Back_End
+namespace Fastdo.backendsys
 {
     public class Startup
     {
@@ -117,7 +117,7 @@ namespace System_Back_End
             }
             app.UseHttpsRedirection();
             app._UseServicesStarter(serviceProvider);
-            ///app._UseMyDbConfigStarter(env);
+           /// app._UseMyDbConfigStarter(env);
             app.UseCors(Variables.corePolicy);
             app.UseStaticFiles();
             app.UseAuthentication();

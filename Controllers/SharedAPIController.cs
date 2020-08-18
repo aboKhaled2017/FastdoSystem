@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using System_Back_End.Services;
-using System_Back_End.Services.Auth;
+using Fastdo.backendsys.Services;
+using Fastdo.backendsys.Services.Auth;
 
-namespace System_Back_End.Controllers
+namespace Fastdo.backendsys.Controllers
 {
     public class SharedAPIController : Controller
     {
@@ -27,12 +27,10 @@ namespace System_Back_End.Controllers
             AccountService accountService,
             IMapper mapper,
             TransactionService transactionService)
-        {
-            _userManager = userManager;
-            _emailSender = emailSender;
-            _accountService = accountService;
-            _transactionService = transactionService;
-            _mapper = mapper;
+            :this(accountService,mapper,userManager)
+        {           
+            _emailSender = emailSender;     
+            _transactionService = transactionService;    
         }
 
         public SharedAPIController(AccountService accountService, IMapper mapper,UserManager<AppUser> userManager)

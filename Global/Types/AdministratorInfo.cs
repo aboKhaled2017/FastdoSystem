@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Global
+namespace Fastdo.backendsys.Global
 {
     public class AdministratorInfo
     {

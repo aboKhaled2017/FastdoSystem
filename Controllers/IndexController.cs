@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,21 +12,21 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Identity.UI.V3.Pages.Account.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System_Back_End.Repositories;
-using System_Back_End.Services;
-using System_Back_End.Services.Auth;
+using Fastdo.backendsys.Repositories;
+using Fastdo.backendsys.Services;
+using Fastdo.backendsys.Services.Auth;
 
-namespace System_Back_End.Controllers
+namespace Fastdo.backendsys.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class AdminController : SharedAPIController
+    public class IndexController : SharedAPIController
     {
         #region constructor and properties
         public IAreaRepository _areaRepository { get; }
         public IPharmacyRepository _pharmacyRepository { get; }
 
-        public AdminController(
+        public IndexController(
             UserManager<AppUser> userManager,
             IEmailSender emailSender, 
             AccountService accountService, 
@@ -40,15 +40,6 @@ namespace System_Back_End.Controllers
             _areaRepository = areaRepository;
             _pharmacyRepository = pharmacyRepository;
         }
-
-        public AdminController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
-        {
-        }
-
-        public AdminController(AccountService accountService, IMapper mapper, UserManager<AppUser> userManager) : base(accountService, mapper, userManager)
-        {
-        }
-
         #endregion
 
         #region get
@@ -65,7 +56,7 @@ namespace System_Back_End.Controllers
         [HttpGet("users/all")]
         public async Task<ActionResult> getAllUsers()
         {
-            
+            var p = Properties.EmailConfig;
             var stockUsers = (await _userManager
                 .GetUsersInRoleAsync(Variables.stocker))
                 .Select(u => new

@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System_Back_End.Services;
+using Fastdo.backendsys.Services;
 
-namespace System_Back_End.Utilities
+namespace Fastdo.backendsys.Utilities
 {
     public class CheckIfUserPropValueIsExixts:ValidationAttribute
     {
         private readonly string _propertyNameToBeChecked;
         private readonly UserPropertyType _userPropertyType;
-        private readonly System.Models.SysDbContext _Context;
+        private readonly Fastdo.Repositories.Models.SysDbContext _Context;
         public CheckIfUserPropValueIsExixts(string propertyNameToBeChecked,UserPropertyType userPropertyType)
         {
             _propertyNameToBeChecked = propertyNameToBeChecked;

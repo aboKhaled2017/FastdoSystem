@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Services
+namespace Fastdo.backendsys.Services
 {
     public class HandlingImgResponse
     {

@@ -9,11 +9,11 @@ using NHibernate.Engine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
-using System_Back_End.Mappings;
+using Fastdo.backendsys.Mappings;
 
-namespace System_Back_End.Services
+namespace Fastdo.backendsys.Services
 {
     public static class RequestStaticServices
     {

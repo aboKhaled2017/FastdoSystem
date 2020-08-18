@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Utilities
+namespace Fastdo.backendsys.Utilities
 {
     public class AllowedExtensions : ValidationAttribute
     {

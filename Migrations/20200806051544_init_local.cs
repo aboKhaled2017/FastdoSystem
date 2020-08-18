@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace System_Back_End.Migrations
+namespace Fastdo.backendsys.Migrations
 {
     public partial class init_local : Migration
     {

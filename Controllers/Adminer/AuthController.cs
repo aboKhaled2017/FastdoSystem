@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
-using System_Back_End.Models;
-using System_Back_End.Repositories;
-using System_Back_End.Services;
-using System_Back_End.Services.Auth;
+using Fastdo.backendsys.Models;
+using Fastdo.backendsys.Repositories;
+using Fastdo.backendsys.Services;
+using Fastdo.backendsys.Services.Auth;
 
-namespace System_Back_End.Controllers.Adminer
+namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admin/auth")]
     [ApiController]

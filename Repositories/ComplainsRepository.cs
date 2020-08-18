@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Repositories
+namespace Fastdo.backendsys.Repositories
 {
     public class ComplainsRepository : MainRepository, IComplainsRepository
     {

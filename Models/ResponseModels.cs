@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Models
+namespace Fastdo.backendsys.Models
 {
     public class GeneralResponseModel
     {

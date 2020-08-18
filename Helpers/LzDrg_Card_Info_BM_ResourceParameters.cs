@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace System_Back_End
+namespace Fastdo.backendsys
 {
     public class LzDrg_Card_Info_BM_ResourceParameters : ResourceParameters
     {

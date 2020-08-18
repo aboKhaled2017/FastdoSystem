@@ -2,10 +2,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System_Back_End.Global;
-using System_Back_End.Services;
+using Fastdo.backendsys.Global;
+using Fastdo.backendsys.Services;
 
-namespace System_Back_End.Utilities
+namespace Fastdo.backendsys.Utilities
 {
     public class ValidateAdminType : ValidationAttribute
     {

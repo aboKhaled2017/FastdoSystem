@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace System_Back_End.Extensions
+namespace Fastdo.backendsys.Extensions
 {
     public static class UrlEncoding
     {

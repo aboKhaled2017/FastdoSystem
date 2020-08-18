@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Models;
-namespace System_Back_End.InitSeeds.Helpers
+using Fastdo.Repositories.Models;
+namespace Fastdo.backendsys.InitSeeds.Helpers
 {
     public class StockerObjectSeeder:Stock
     {

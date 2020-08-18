@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
-using System_Back_End.Models;
+using Fastdo.backendsys.Models;
 
-namespace System_Back_End.Services
+namespace Fastdo.backendsys.Services
 {
     public class PropertyMappingService: IpropertyMappingService
     {
@@ -18,10 +18,16 @@ namespace System_Back_End.Services
                 {"Discount",new PropertyMappingValue(new List<string>{ "Discount"})},
                 {"ValideDate",new PropertyMappingValue(new List<string>{ "ValideDate"})},
             };
+        private Dictionary<string, PropertyMappingValue> _pharmacyCard_Info_BM_PropertyMapping =
+            new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"Name",new PropertyMappingValue(new List<string>{ "Name"})},
+            };
         private IList<IPropertyMapping> propertyMappings=new List<IPropertyMapping>();
         public PropertyMappingService()
         {
             propertyMappings.Add(new PropertyMapping<LzDrugCard_Info_BM,LzDrug>(_lzDrugCard_Info_BM_PropertyMapping));
+            propertyMappings.Add(new PropertyMapping<Get_PageOf_Pharmacies_ADMModel, Pharmacy>(_pharmacyCard_Info_BM_PropertyMapping));
         }
         public Dictionary<string,PropertyMappingValue> GetPropertyMapping<TSource,TDestination>()
         {

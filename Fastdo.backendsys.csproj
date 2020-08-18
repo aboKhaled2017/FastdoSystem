@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <UserSecretsId>aspnet-System_Back_End-76FD20C3-E389-4328-96D2-EF912A54AED3</UserSecretsId>
+    <UserSecretsId>aspnet-Fastdo.backendsys-CF8E5702-6D79-474D-962C-E6AE541DEECE</UserSecretsId>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <!--<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>-->
@@ -16,6 +16,10 @@
     <None Remove="All_migrations\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
@@ -23,13 +27,12 @@
     <PackageReference Include="IdentityServer4" Version="2.5.4" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
-    
+
     <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
-    
+
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    
+
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
     <PackageReference Include="NHibernate" Version="5.2.7" />
@@ -48,7 +51,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\System.Models\System.Models.csproj" />
+    <ProjectReference Include="..\Fastdo.Repositories\Fastdo.Repositories.csproj" />
   </ItemGroup>
-
 </Project>

@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Enums;
+using Fastdo.Repositories.Enums;
 using System.Linq;
-using System.Models;
+using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
-using System_Back_End.Models;
+using Fastdo.backendsys.Models;
 
-namespace System_Back_End.Repositories
+namespace Fastdo.backendsys.Repositories
 {
     public class AdminRepository : MainRepository, IAdminRepository
     {
