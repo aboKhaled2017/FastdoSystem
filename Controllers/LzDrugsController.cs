@@ -54,7 +54,7 @@ namespace Fastdo.backendsys.Controllers
 
         // GET: api/LzDrugs/5
         [HttpGet("{id}", Name = "GetDrugById")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> GetDrugById(Guid id)
         {
             var drug = await _lzDrugsRepository.Get_BM_ByIdAsync(id);
             if (drug == null)
@@ -66,7 +66,7 @@ namespace Fastdo.backendsys.Controllers
         #region post
         // POST: api/LzDrugs
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AddLzDrugModel drugModel)
+        public async Task<IActionResult> PostDrug([FromBody] AddLzDrugModel drugModel)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -85,7 +85,7 @@ namespace Fastdo.backendsys.Controllers
         #region put
         // PUT: api/LzDrugs/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] UpdateLzDrugModel drugModel)
+        public async Task<IActionResult> PutDrug(Guid id, [FromBody] UpdateLzDrugModel drugModel)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -105,7 +105,7 @@ namespace Fastdo.backendsys.Controllers
         #region delete
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteDrug(Guid id)
         {
             if (!await _lzDrugsRepository.IsUserHas(id))
                 return NotFound();

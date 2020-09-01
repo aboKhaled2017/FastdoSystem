@@ -19,7 +19,7 @@ using Fastdo.backendsys.Services.Auth;
 
 namespace Fastdo.backendsys.Controllers.Adminer
 {
-    [Route("api/admins")]
+    [Route("api/admins", Name = "AdminAccount")]
     [ApiController]
     [Authorize(Policy = "AdminPolicy")]
     public class AdminersController : SharedAPIController
@@ -35,6 +35,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         #endregion
 
         #region ovveride methods
+        [ApiExplorerSettings(IgnoreApi = true)]
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             _accountService.SetCurrentContext(
@@ -47,6 +48,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         #region get
         [Authorize(Policy = "ViewAnySubAdminPolicy")]
         [HttpGet("{id}", Name = "GetAdminById")]
+        [Produces(typeof(ShowAdminModel))]
         public async Task<IActionResult> GetAdminByIdAsync(string id)
         {
             var _admin = await _adminRepository.GetAdminsShownModelById(id);
@@ -57,13 +59,14 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         [Authorize(Policy = "ViewAnySubAdminPolicy")]
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllAdminsAsync(string adminType = null)
+        public async Task<ActionResult<IList<ShowAdminModel>>> GetAllAdminsAsync(string adminType = null)
         {
             return Ok(await _adminRepository.GetAllAdminsShownModels(adminType).ToListAsync());
         }
         #endregion
 
         #region post
+
         [Authorize(Policy = "CanUpdateSubAdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> AddNewAdmin(AddNewSubAdminModel model)
@@ -86,7 +89,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         #region delete
         [Authorize(Policy = "CanDeleteSubAdminPolicy")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAdmin(string id)
+        public async Task<IActionResult> DeleteAdminSync(string id)
         {
             var adminToDelete = await _adminRepository.GetByIdAsync(id);
             if (adminToDelete.SuperAdminId == null)
@@ -101,7 +104,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         #region update
         [Authorize(Policy = "CanUpdateSubAdminPolicy")]
         [HttpPut("password/{id}")]
-        public async Task<IActionResult> UpdateSubAdminPassword(string id,UpdateSubAdminPasswordModel model)
+        public async Task<IActionResult> UpdateSubAdminPasswordAsync(string id,UpdateSubAdminPasswordModel model)
         {
             if (model == null)
                 return BadRequest();
@@ -116,7 +119,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         [Authorize(Policy = "CanUpdateSubAdminPolicy")]
         [HttpPut("username/{id}")]
-        public async Task<IActionResult> UpdateSubAdminUserName(string id, UpdateSubAdminUserNameModel model)
+        public async Task<IActionResult> UpdateSubAdminUserNameAsync(string id, UpdateSubAdminUserNameModel model)
         {
             if (model == null)
                 return BadRequest();
@@ -135,7 +138,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         [Authorize(Policy = "CanUpdateSubAdminPolicy")]
         [HttpPut("phone/{id}")]
-        public async Task<IActionResult> UpdateSubAdminPhoneNumber(string id, UpdateSubAdminPhoneNumberModel model)
+        public async Task<IActionResult> UpdateSubAdminPhoneNumberAsync(string id, UpdateSubAdminPhoneNumberModel model)
         {
             if (model == null)
                 return BadRequest();
@@ -154,7 +157,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         [Authorize(Policy = "CanUpdateSubAdminPolicy")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSubAdmin(string id, UpdateSubAdminModel model)
+        public async Task<IActionResult> UpdateSubAdminAsync(string id, UpdateSubAdminModel model)
         {
             if (model == null)
                 return BadRequest();

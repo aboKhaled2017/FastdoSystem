@@ -1,20 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <UserSecretsId>aspnet-Fastdo.backendsys-CF8E5702-6D79-474D-962C-E6AE541DEECE</UserSecretsId>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <!--<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
-    <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>-->
-    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="All_migrations\**" />
-    <Content Remove="All_migrations\**" />
-    <EmbeddedResource Remove="All_migrations\**" />
-    <None Remove="All_migrations\**" />
-  </ItemGroup>
+  <PropertyGroup>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+  </PropertyGroup>
+  
+ 
+   
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
@@ -34,8 +31,12 @@
 
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
     <PackageReference Include="NHibernate" Version="5.2.7" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.7.0" />
+    <PackageReference Include="NSwag.Core" Version="13.7.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.5" />
@@ -43,6 +44,8 @@
 
 
   <ItemGroup>
+    <Folder Include="Areas\AdminPanel\Data\" />
+    <Folder Include="Areas\AdminPanel\Models\" />
     <Folder Include="wwwroot\Images\Pharmacies\Identity\CommerialReg\" />
     <Folder Include="wwwroot\Images\Pharmacies\Identity\License\" />
     <Folder Include="wwwroot\Images\Stocks\Identity\CommerialReg\" />
@@ -51,6 +54,19 @@
 
 
   <ItemGroup>
+    <None Include="Areas\AdminPanel\Views\Shared\_CookieConsentPartial.cshtml" />
+    <None Include="Areas\AdminPanel\Views\Shared\_Layout.cshtml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <ProjectReference Include="..\Fastdo.Repositories\Fastdo.Repositories.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Reference Include="System.Models">
+      <HintPath>..\..\System.Models\bin\Release\netcoreapp2.2\System.Models.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

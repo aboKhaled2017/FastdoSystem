@@ -29,6 +29,7 @@ namespace Fastdo.backendsys.Controllers.Auth
         #endregion
 
         #region ovveride methods
+        [ApiExplorerSettings(IgnoreApi = true)]
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             _accountService.SetCurrentContext(
@@ -43,7 +44,7 @@ namespace Fastdo.backendsys.Controllers.Auth
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> SignIn(LoginModel model)
+        public async Task<IActionResult> SignInForUserAsync(LoginModel model)
         {
             if (model == null)
                 return BadRequest();
@@ -79,7 +80,7 @@ namespace Fastdo.backendsys.Controllers.Auth
         #region email [confirm/sendConfirmAgain]
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> SendMeEmailConfirmCodeAgain([EmailAddress(ErrorMessage ="email is not valid")][Required(ErrorMessage ="email is required")]string email)
+        public async Task<IActionResult> SendMeEmailConfirmCodeAgainForUser([EmailAddress(ErrorMessage ="email is not valid")][Required(ErrorMessage ="email is required")]string email)
         {
 
             var user = await _userManager.FindByEmailAsync(email);
@@ -100,7 +101,7 @@ namespace Fastdo.backendsys.Controllers.Auth
         }
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(ConfirmEmailModel model)
+        public async Task<IActionResult> ConfirmEmailForUser(ConfirmEmailModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -133,7 +134,7 @@ namespace Fastdo.backendsys.Controllers.Auth
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
+        public async Task<IActionResult> ForgotPasswordForUser(ForgotPasswordModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -162,7 +163,7 @@ namespace Fastdo.backendsys.Controllers.Auth
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
+        public async Task<IActionResult> ResetPasswordForUser(ResetPasswordModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);

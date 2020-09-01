@@ -37,7 +37,7 @@ namespace Fastdo.backendsys.Controllers
 
         #region Get List Of LzDrug Requests
         [HttpGet("made", Name = "Get_AllRequests_I_Made")]
-        public async Task<IActionResult> Get_AllRequests_I_Made([FromQuery]LzDrgReqResourceParameters _params)
+        public async Task<IActionResult> GetAllRequestsIMadeForUser([FromQuery]LzDrgReqResourceParameters _params)
         {
             var requests = await _lzDrgRequestsRepository.Get_AllRequests_I_Made(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<Made_LzDrgRequest_MB, LzDrgReqResourceParameters>(
@@ -47,7 +47,7 @@ namespace Fastdo.backendsys.Controllers
             return Ok(requests);
         }
         [HttpGet("received",Name = "Get_AllRequests_I_Received")]
-        public async Task<IActionResult> Get_AllRequests_I_Received([FromQuery]LzDrgReqResourceParameters _params)
+        public async Task<IActionResult> GetAllRequestsIReceivedForUser([FromQuery]LzDrgReqResourceParameters _params)
         {
             var requests = await _lzDrgRequestsRepository.Get_AllRequests_I_Received(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<Sent_LzDrgRequest_MB, LzDrgReqResourceParameters>(
@@ -57,7 +57,7 @@ namespace Fastdo.backendsys.Controllers
             return Ok(requests);
         }
         [HttpGet("received/ns", Name = "Get_AllRequests_I_Received_INS")]
-        public async Task<IActionResult> Get_NotSeen_AllRequestes_I_Received([FromQuery]LzDrgReqResourceParameters _params)
+        public async Task<IActionResult> GetNotSeenAllRequestesIReceivedForUser([FromQuery]LzDrgReqResourceParameters _params)
         {
             var requests = await _lzDrgRequestsRepository.Get_AllRequests_I_Received_INS(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<NotSeen_PhDrgRequest_MB, LzDrgReqResourceParameters>(
@@ -71,7 +71,7 @@ namespace Fastdo.backendsys.Controllers
 
         #region Get Single LzDrug Request
         [HttpGet("{id}", Name = "GetRequestById")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetLzDrgRequestByIdForUser(Guid id)
         {
             var req = await _lzDrgRequestsRepository.GetByIdAsync(id);
             if (req == null)
@@ -82,7 +82,7 @@ namespace Fastdo.backendsys.Controllers
 
         #region (Add/handle/cancel) Single LzDrug Request
         [HttpPost("{drugId}",Name ="Add_LzDrug_Request_For_User")]
-        public async Task<IActionResult> Post_NewRequest(Guid drugId)
+        public async Task<IActionResult> PostNewRequestForUser(Guid drugId)
         {
             var req = await _lzDrgRequestsRepository.AddForUserAsync(drugId);
             if (req == null)
@@ -100,7 +100,7 @@ namespace Fastdo.backendsys.Controllers
             return CreatedAtRoute(routeName: "GetRequestById", routeValues: new { id = req.Id }, reqObj);
         }
         [HttpPatch("received/{reqId}")]
-        public async Task<IActionResult> Patch_HandleRequest_I_Received(Guid reqId,[FromBody] JsonPatchDocument<LzDrgRequest_ForUpdate_BM> patchDoc)
+        public async Task<IActionResult> PatchHandleRequestIReceivedForUser(Guid reqId,[FromBody] JsonPatchDocument<LzDrgRequest_ForUpdate_BM> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest();
@@ -118,7 +118,7 @@ namespace Fastdo.backendsys.Controllers
         }
 
         [HttpDelete("made/{reqId}")]
-        public async Task<IActionResult> Cancel_Request_I_Made([FromRoute]Guid reqId)
+        public async Task<IActionResult> CancelRequestIMadeForUser([FromRoute]Guid reqId)
         {
             var req = await _lzDrgRequestsRepository.Get_Request_I_Made_IfExistsForUser(reqId);
             if (req == null)
@@ -134,7 +134,7 @@ namespace Fastdo.backendsys.Controllers
         #region (handle/cancel) List Of LzDrug Requests
 
         [HttpDelete("Made/all")]
-        public async Task<IActionResult> Delete_AllRequests_I_Made()
+        public async Task<IActionResult> DeleteAllRequestsIMade()
         {
             _lzDrgRequestsRepository.Delete_AllRequests_I_Made();
             if (!await _lzDrgRequestsRepository.SaveAsync())
@@ -143,7 +143,7 @@ namespace Fastdo.backendsys.Controllers
         }
 
         [HttpDelete("Made")]
-        public async Task<IActionResult> Delete_AllRequests_I_Made([FromBody] IEnumerable<Guid>Ids)
+        public async Task<IActionResult> DeleteAllRequestsIMade([FromBody] IEnumerable<Guid>Ids)
         {
             if (!await _lzDrgRequestsRepository.User_Made_These_Requests(Ids))
                 return NotFound();
@@ -154,7 +154,7 @@ namespace Fastdo.backendsys.Controllers
         }
 
         [HttpPatch("received/({ids})")]
-        public async Task<IActionResult> Patch_HandleSomeRequests_I_Received(
+        public async Task<IActionResult> PatchHandleSomeRequestsIReceived(
             [ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid>Ids, 
             [FromBody] JsonPatchDocument<LzDrgRequest_ForUpdate_BM> patchDoc)
         {

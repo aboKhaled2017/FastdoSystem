@@ -37,6 +37,7 @@ namespace Fastdo.backendsys.Controllers
         #endregion
 
         #region override methods from parent class
+        [ApiExplorerSettings(IgnoreApi = true)]
         public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
             var _cardParams = _params as LzDrg_Card_Info_BM_ResourceParameters;
@@ -89,7 +90,7 @@ namespace Fastdo.backendsys.Controllers
 
         #region Get All LzDrugs Cards For Search
         [HttpGet(Name ="GetAll_LzDrug_CardInfo_BMs")]
-        public async Task<IActionResult> GetAll([FromQuery]LzDrg_Card_Info_BM_ResourceParameters _params)
+        public async Task<IActionResult> GetPageOfSearchedLzDrugs([FromQuery]LzDrg_Card_Info_BM_ResourceParameters _params)
         {
             if (!_propertyMappingService.validMappingExistsFor<LzDrugCard_Info_BM, LzDrug>(_params.OrderBy))
                 return BadRequest();

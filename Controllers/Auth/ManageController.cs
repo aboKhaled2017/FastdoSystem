@@ -44,7 +44,7 @@ namespace Fastdo.backendsys.Controllers.Auth
         #region change password
 
         [HttpPost("password")]       
-        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        public async Task<IActionResult> ChangePasswordForUSer(ChangePasswordModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -60,17 +60,17 @@ namespace Fastdo.backendsys.Controllers.Auth
 
         #region change phone
         [HttpPost("phone")]
-        public async Task<IActionResult> ChangePhone(ChangePhoneModel model)
+        public async Task<IActionResult> ChangePhoneForUser(ChangePhoneModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
             if (Functions.CurrentUserType() == UserType.pharmacier)
-                return await ChangePhoneForPharmacy(model);
+                return await ChangePhoneForPharmacyOfUser(model);
             else
-                return await ChangePhoneForStock(model);
+                return await ChangePhoneForStockOfUser(model);
         }
-
-        private async Task<IActionResult> ChangePhoneForPharmacy(ChangePhoneModel model)
+        [ApiExplorerSettings(IgnoreApi =true)]
+        private async Task<IActionResult> ChangePhoneForPharmacyOfUser(ChangePhoneModel model)
         {          
             var user = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             _transactionService.Begin();
@@ -98,7 +98,8 @@ namespace Fastdo.backendsys.Controllers.Auth
             _transactionService.CommitChanges().End();
             return Ok(response);
         }
-        private async Task<IActionResult> ChangePhoneForStock(ChangePhoneModel model)
+        [ApiExplorerSettings(IgnoreApi = true)]
+        private async Task<IActionResult> ChangePhoneForStockOfUser(ChangePhoneModel model)
         {
             var user = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             _transactionService.Begin();
@@ -131,7 +132,7 @@ namespace Fastdo.backendsys.Controllers.Auth
         #region change email
 
         [HttpGet("email")]
-        public async Task<IActionResult> ChangeEmail([FromQuery]ChangeEmailModel model)
+        public async Task<IActionResult> ChangeEmailForUser([FromQuery]ChangeEmailModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -146,7 +147,7 @@ namespace Fastdo.backendsys.Controllers.Auth
             return Ok();
         }
         [HttpGet("sendCodeToMailAgain")]
-        public async Task<IActionResult> SendCodeToChangedEmailAgain(ChangeEmailModel model)
+        public async Task<IActionResult> SendCodeToChangedEmailAgainForUser(ChangeEmailModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -159,7 +160,7 @@ namespace Fastdo.backendsys.Controllers.Auth
             return Ok();
         }
         [HttpPost("email")]
-        public async Task<IActionResult> ConfirmChangeEmail(ConfirmChangeEmailModel model)
+        public async Task<IActionResult> ConfirmChangeEmailForUser(ConfirmChangeEmailModel model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);

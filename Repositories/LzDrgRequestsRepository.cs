@@ -145,7 +145,32 @@ namespace Fastdo.backendsys.Repositories
         {
             return await _context.LzDrugRequests.FirstOrDefaultAsync(r => r.Id == reqId && r.LzDrug.PharmacyId == UserId);
         }
-        
 
+        public async Task<PagedList<Show_LzDrgsReq_ADM_Model>> GET_PageOf_LzDrgsRequests(LzDrgReqResourceParameters _params)
+        {
+            var items = _context.LzDrugRequests.AsQueryable();
+               
+            if (_params.Seen != null)
+            {
+                items = items.Where(i => i.Seen == _params.Seen);
+            }
+            if (_params.Status != null)
+            {
+                items = items.Where(i => i.Status == _params.Status);
+            }
+            var data=items
+                .Select(r => new Show_LzDrgsReq_ADM_Model
+                {
+                    Id = r.Id,
+                    LzDrugId = r.LzDrugId,
+                    LzDrugName = r.LzDrug.Name,
+                    Status = r.Status,
+                    OwenerPh_Id = r.LzDrug.PharmacyId,
+                    OwenerPh_Name = r.LzDrug.Pharmacy.Name,
+                    RequesterPhram_Id = r.PharmacyId,
+                    RequesterPhram_Name = r.Pharmacy.Name
+                });
+            return await PagedList<Show_LzDrgsReq_ADM_Model>.CreateAsync(data, _params);
+        }
     }
 }

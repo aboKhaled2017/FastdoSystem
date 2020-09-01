@@ -15,6 +15,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Fastdo.Repositories.Models;
 using Fastdo.backendsys.Providers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using System.IO;
+using NSwag;
+using NSwag.AspNetCore;
+using Fastdo.backendsys.Utilities;
+using System.Net;
 
 namespace Fastdo.backendsys
 {
@@ -46,12 +53,12 @@ namespace Fastdo.backendsys
                 }
                 else
                 {
-                    options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
-                        builder.MigrationsAssembly("System_Back_End");
-                    });
-                    /*options.UseSqlServer(Configuration.GetConnectionString("AWS_fastdo_db"), builder => {
+                    /*options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
                         builder.MigrationsAssembly("System_Back_End");
                     });*/
+                    options.UseSqlServer(Configuration.GetConnectionString("AWS_fastdo_db"), builder => {
+                        builder.MigrationsAssembly("System_Back_End");
+                    });
                 }
                 
                 
@@ -69,8 +76,8 @@ namespace Fastdo.backendsys
             services._AddSystemServices();
             services._AddSystemAuthentication();
             services._AddSystemAuthorizations();
-            services.AddMvc(options=> { 
-            
+            services.AddMvc(options=> {
+                options.Conventions.Add(new ControllerDocumentationsConvensions());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddCors(options => {
                 options.AddPolicy(Variables.corePolicy, builder => {
@@ -92,11 +99,19 @@ namespace Fastdo.backendsys
             {
                 op.TokenLifespan = TimeSpan.FromDays(1);
             });
+            services
+                .AddSwaggerDocument(c=> {
+                    c.Title = "Fastdo Api v1";                                  
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,IServiceProvider serviceProvider)
         {
+            app.UseOpenApi(c => {});
+            app.UseSwaggerUi3(c=> { });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -121,10 +136,20 @@ namespace Fastdo.backendsys
             app.UseCors(Variables.corePolicy);
             app.UseStaticFiles();
             app.UseAuthentication();
-
+            app.UseStatusCodePages(async context => {
+                if (context.HttpContext.Request.Path.Value.Contains("/AdminPanel",StringComparison.OrdinalIgnoreCase)&&
+                    !context.HttpContext.Request.Path.Value.Contains("/api/", StringComparison.OrdinalIgnoreCase))
+                {
+                    var response = context.HttpContext.Response;
+                    if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
+                        response.StatusCode == (int)HttpStatusCode.Forbidden)
+                        response.Redirect("/AdminPanel/Auth/Signin");
+                }
+            });
             app.UseMvc(routes =>
-            {
-                
+            {              
+                routes.MapAreaRoute("AdminAreaRoute", "AdminPanel", "AdminPanel/{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("default", "AdminPanel/{controller=Home}/{action=Index}/{id?}", new { Area="AdminPanel"});
             });
         }
     }

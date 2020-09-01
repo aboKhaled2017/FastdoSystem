@@ -14,11 +14,12 @@ using Fastdo.backendsys.Services.Auth;
 
 namespace Fastdo.backendsys.Controllers.Adminer
 {
-    [Route("api/admin")]
+    [Route("api/admin", Name = "Admin")]
     [ApiController]
     [Authorize(Policy = "AdminPolicy")]
     public class IndexController : SharedAPIController
     {
+
         #region constructor and properties
         IAdminRepository _adminRepository;
         public IndexController(UserManager<AppUser> userManager, IEmailSender emailSender, IAdminRepository  adminRepository,
@@ -31,12 +32,11 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         #region get
         [HttpGet("statis")]
-        public async Task<IActionResult> GetGeneralStatistics()
+        public async Task<IActionResult> GetGeneralStatisticsForAdmin()
         {
             return Ok(await _adminRepository.GetGeneralStatisOfSystem());
         }
         #endregion
 
     }
-
 }

@@ -46,7 +46,7 @@ namespace Fastdo.backendsys.Controllers.Auth
 
         #region main signup
         [HttpPost]
-        public async Task<IActionResult> SignUp([FromForm]StockClientRegisterModel model)
+        public async Task<IActionResult> SignUpForStock([FromForm]StockClientRegisterModel model)
         {           
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -93,7 +93,7 @@ namespace Fastdo.backendsys.Controllers.Auth
 
         #region signup steps
         [HttpPost("step1")]
-        public IActionResult SignUp_Step1(Phr_RegisterModel_Identity model)
+        public IActionResult SignUpStep1ForStock(Phr_RegisterModel_Identity model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -101,21 +101,21 @@ namespace Fastdo.backendsys.Controllers.Auth
         }
         [HttpPost("step2")]
         //[Consumes("")]
-        public IActionResult SignUp_Step2([FromForm]Phr_RegisterModel_Proof model)
+        public IActionResult SignUpStep2ForStock([FromForm]Phr_RegisterModel_Proof model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
             return Ok();
         }
         [HttpPost("step3")]
-        public IActionResult SignUp_Step3(Phr_RegisterModel_Contacts model)
+        public IActionResult SignUpStep3ForStock(Phr_RegisterModel_Contacts model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
             return Ok();
         }
         [HttpPost("step4")]
-        public IActionResult SignUp_Step4(Phr_RegisterModel_Account model)
+        public IActionResult SignUpStep4ForStock(Phr_RegisterModel_Account model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);

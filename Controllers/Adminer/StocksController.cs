@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fastdo.backendsys.Controllers.Adminer
 {
-    [Route("api/admins/stocks")]
+    [Route("api/admins/stocks", Name = "AdminStocks")]
     [ApiController]
     [Authorize(Policy = "AdminPolicy")]
     public class StocksController : SharedAPIController
@@ -32,6 +32,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         #endregion
 
         #region override methods from parent class
+        [ApiExplorerSettings(IgnoreApi = true)]
         public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
             var _cardParams = _params as StockResourceParameters;
@@ -75,7 +76,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         #region get
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetStockById([FromRoute]string id)
+        public async Task<IActionResult> GetStockByIdForAdmin([FromRoute]string id)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
@@ -85,7 +86,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
             return Ok(stk);
         }
         [HttpGet(Name ="Get_PageOfStocks_ADM")]
-        public async Task<IActionResult> GetPageOfStocks([FromQuery]StockResourceParameters _params)
+        public async Task<IActionResult> GetPageOfStocksForAdmin([FromQuery]StockResourceParameters _params)
         {
             var stocks = await _stockRepository.Get_PageOf_StockModels_ADM(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<Get_PageOf_Stocks_ADMModel, StockResourceParameters>(
@@ -98,7 +99,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         #region delete
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStock([FromRoute]string id)
+        public async Task<IActionResult> DeleteStockForAdmin([FromRoute]string id)
         {
             var stk = await _stockRepository.Get_IfExists(id);
             if (stk == null)
@@ -112,7 +113,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         #region Patch
         [HttpPatch("{id}")]
-        public async Task<IActionResult> HandleRequest([FromRoute]string id, [FromBody] JsonPatchDocument<Stock_Update_ADM_Model> patchDoc)
+        public async Task<IActionResult> HandleStockRequestForAdmin([FromRoute]string id, [FromBody] JsonPatchDocument<Stock_Update_ADM_Model> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest();

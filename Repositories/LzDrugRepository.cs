@@ -17,6 +17,29 @@ namespace Fastdo.backendsys.Repositories
         {
         }
 
+        public async Task<PagedList<Show_VStock_LzDrg_ADM_Model>> GET_PageOf_VStock_LzDrgs(LzDrgResourceParameters _params)
+        {
+            var sourceData = _context.LzDrugs
+                        .OrderBy(d => d.Name)
+                        .GroupBy(d => d.Name)
+                        .Select(drgGroup => new Show_VStock_LzDrg_ADM_Model { 
+                         Name=drgGroup.First().Name,
+                         Products=drgGroup.Select(d=>new VStock_LzDrg_For_Pharmacy_ADM_Model { 
+                            DrugId=d.Id,
+                            ConsumeType=d.ConsumeType,
+                            Discount=d.Discount,
+                            PharmacyId=d.PharmacyId,
+                            PharmacyName=d.Pharmacy.Name,
+                            Price=d.Price,
+                            PriceType=d.PriceType,
+                            Quantity=d.Quantity,
+                            Type=d.Type,
+                            UnitType=d.UnitType,
+                            ValideDate=d.ValideDate
+                         })
+                        });
+            return await PagedList<Show_VStock_LzDrg_ADM_Model>.CreateAsync(sourceData, _params);
+        }
         public async Task<PagedList<LzDrugModel_BM>> GetAll_BM(LzDrgResourceParameters _params)
         {
 
@@ -89,6 +112,26 @@ namespace Fastdo.backendsys.Repositories
         public async Task<bool> LzDrugExists(Guid id)
         {
             return await _context.LzDrugs.AnyAsync(d=>d.Id==id);
+        }
+
+        public async Task<Show_LzDrgReqDetails_ADM_Model> GEt_LzDrugDetails_For_ADM(Guid id)
+        {
+            return await _context.LzDrugs.Where(d => d.Id == id)
+                .Select(d=>new Show_LzDrgReqDetails_ADM_Model
+                {
+                    Id=d.Id,
+                    Desc=d.Desc,
+                    Discount=d.Discount,
+                    Name=d.Name,
+                    Price=d.Price,
+                    PriceType=d.PriceType,
+                    Quantity=d.Quantity,
+                    Type=d.Type,
+                    UnitType=d.UnitType,
+                    ValideDate=d.ValideDate,
+                    RequestCount=d.RequestingPharms.Count
+                })
+                .SingleOrDefaultAsync();
         }
 
     }

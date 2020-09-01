@@ -15,7 +15,7 @@ using Fastdo.backendsys.Services.Auth;
 
 namespace Fastdo.backendsys.Controllers.Adminer
 {
-    [Route("api/admin/auth")]
+    [Route("api/admin/auth", Name = "AdminAuth")]
     [ApiController]
     [Authorize(Policy = "AdminPolicy")]
     public class AuthController : SharedAPIController
@@ -27,6 +27,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         #endregion
 
         #region ovveride methods
+        [ApiExplorerSettings(IgnoreApi = true)]
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             _accountService.SetCurrentContext(
@@ -41,7 +42,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         [HttpPost("signin")]
         [AllowAnonymous]
-        public async Task<IActionResult> SignIn(AdminLoginModel model)
+        public async Task<IActionResult> SignInAdminAsync(AdminLoginModel model)
         {
             if (model == null)
                 return BadRequest();

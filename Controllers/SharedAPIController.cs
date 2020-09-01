@@ -57,6 +57,7 @@ namespace Fastdo.backendsys.Controllers
         #endregion
 
         #region virtual methods
+        [ApiExplorerSettings(IgnoreApi = true)]
         public virtual string Create_BMs_ResourceUri(
             ResourceParameters _params,
             ResourceUriType resourceUriType,

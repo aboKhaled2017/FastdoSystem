@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fastdo.backendsys.Controllers.Adminer
 {
-    [Route("api/admins/pharmacies")]
+    [Route("api/admins/pharmacies", Name = "AdminPharmacies")]
     [ApiController]
     [Authorize(Policy = "AdminPolicy")]
     public class PharmaciesController : SharedAPIController
@@ -32,6 +32,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         #endregion
 
         #region override methods from parent class
+        [ApiExplorerSettings(IgnoreApi = true)]
         public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
             var _cardParams = _params as PharmaciesResourceParameters;
@@ -75,7 +76,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         #region get
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPharmacyById([FromRoute]string id)
+        public async Task<ActionResult<Get_PageOf_Pharmacies_ADMModel>> GetPharmacyByIdForAdmin([FromRoute]string id)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
@@ -85,7 +86,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
             return Ok(pharm);
         }
         [HttpGet(Name ="Get_PageOfPharmacies_ADM")]
-        public async Task<IActionResult> GetPageOfPharmacies([FromQuery]PharmaciesResourceParameters _params)
+        public async Task<IActionResult> GetPageOfPharmaciesForAdmin([FromQuery]PharmaciesResourceParameters _params)
         {
             var pharms = await _pharmacyRepository.Get_PageOf_PharmacyModels_ADM(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<Get_PageOf_Pharmacies_ADMModel, PharmaciesResourceParameters>(
@@ -98,7 +99,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         #region delete
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePharmacy([FromRoute]string id)
+        public async Task<IActionResult> DeletePharmacyForAdmin([FromRoute]string id)
         {
             var pharm =await _pharmacyRepository.Get_IfExists(id);
             if (pharm == null)
@@ -112,7 +113,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         #region Patch
         [HttpPatch("{id}")]
-        public async Task<IActionResult> HandleRequest([FromRoute]string id, [FromBody] JsonPatchDocument<Pharmacy_Update_ADM_Model> patchDoc)
+        public async Task<IActionResult> HandlePharmacyRequestFromAdmin([FromRoute]string id, [FromBody] JsonPatchDocument<Pharmacy_Update_ADM_Model> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest();

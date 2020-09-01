@@ -1,0 +1,83 @@
+﻿
+ 
+    
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Main CSS-->
+    <link rel="stylesheet" type="text/css" href="~/AdminRlt/css/main.css">
+    <!-- Font-icon css-->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>دخول الى لوحة التحكم</title>
+</head>
+<body>
+    <section class="material-half-bg">
+        <div class="cover"></div>
+    </section>
+    <section class="login-content">
+        <div class="logo">
+            <img height="200" src="~/Images/AdminPanel/Bg_And_Logo/company.png" />
+        </div>
+        <div class="login-box">
+            <form class="login-form" id="login-form">
+                <h3 class="login-head"><i class="fa fa-lg fa-fw fa-user"></i>دخول</h3>
+                <div class="form-group">
+                    <label class="control-label">اسم المستخدم</label>
+                    <input id="userNameInpt" class="form-control" type="text" placeholder="اسم المستخدم" autofocus required title="ادخل اسم المستخدم">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">كلمة المرور</label>
+                    <input id="passwordInpt" class="form-control" type="password" placeholder="كلمة المرور" required title="ادخل كلمة المرور">
+                </div>
+                <div class="btn-group d-none" role="group">
+                    <button class="btn btn-primary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        نوع المسؤل
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#">Dropdown link</a>
+                        <a class="dropdown-item" href="#">Dropdown link</a>
+                    </div>
+                </div>
+                <input type="hidden" name="adminType" value="Administrator" />
+                <div class="form-group">
+                    <div class="utility">
+                        <div class="animated-checkbox">
+                            <label>
+                                <input type="checkbox"><span class="label-text">تذكرنى</span>
+                            </label>
+                        </div>
+                        <p class="semibold-text mb-2"><a href="#" data-toggle="flip">هل نسيت كلمة السر ؟</a></p>
+                    </div>
+                </div>
+                <div class="form-group btn-container">
+                    <button class="btn btn-primary btn-block"><i class="fa fa-sign-in fa-lg fa-fw"></i>دخول الان</button>
+                </div>
+            </form>
+            <div class="forget-form">
+                <h3 class="login-head"><i class="fa fa-lg fa-fw fa-lock"></i>هل نسيت كلمة السر</h3>
+                <div>
+                    يمكنك التواصل مع المسؤل الرئيسى للموقع لاستعادة كلمة السر
+                </div>
+                <div>
+                    فى حالة اذا كنت انت نفسك المسؤل الاساسى للموقع ,يمكنك التواصل بفرق التطوير لاستعادة كلمة السر
+                </div>
+                <div class="form-group mt-3">
+                    <p class="semibold-text mb-0"><a href="#" data-toggle="flip"><i class="fa fa-angle-right fa-fw"></i>رجوع الى الدخول</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Essential javascripts for application to work-->
+    <script src="~/AdminRlt/js/jquery-3.2.1.min.js"></script>
+    <script src="~/AdminRlt/js/popper.min.js"></script>
+    <script src="~/AdminRlt/js/bootstrap.min.js"></script>
+    <script src="~/AdminRlt/js/main.js"></script>
+    <!-- The javascript plugin to display page loading on top-->
+    <script src="~/AdminRlt/js/plugins/pace.min.js"></script>
+    <script src="~/AdminRtl/js/Scripts/loginPageScript.js"></script>
+</body>
+</html>
+

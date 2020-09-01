@@ -35,7 +35,7 @@ namespace Fastdo.backendsys.Services
         }
         public static async Task SeedDefaultAdminstrator()
         {
-            var user = await _userManager.FindByEmailAsync(Properties.MainAdministratorInfo.UserName);
+            var user = await _userManager.FindByNameAsync(Properties.MainAdministratorInfo.UserName);
             if (user != null)
                 return;            
             user = new AppUser

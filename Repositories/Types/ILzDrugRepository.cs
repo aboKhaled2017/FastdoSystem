@@ -12,6 +12,7 @@ namespace Fastdo.backendsys.Repositories
     {
          void Add(LzDrug drug);
 
+         Task<PagedList<Show_VStock_LzDrg_ADM_Model>> GET_PageOf_VStock_LzDrgs(LzDrgResourceParameters lzDrugResourceParameters);
          Task<PagedList<LzDrugModel_BM>> GetAll_BM(LzDrgResourceParameters lzDrugResourceParameters);
 
          void Update(LzDrug drug);
@@ -27,6 +28,7 @@ namespace Fastdo.backendsys.Repositories
          Task<LzDrug> GetIfExists(Guid id);
 
          Task<bool> LzDrugExists(Guid id);
+         Task<Show_LzDrgReqDetails_ADM_Model> GEt_LzDrugDetails_For_ADM(Guid id);
 
     }
 }

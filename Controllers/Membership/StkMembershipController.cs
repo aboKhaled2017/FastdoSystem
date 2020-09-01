@@ -36,7 +36,7 @@ namespace Fastdo.backendsys.Controllers
 
         #region patch
         [HttpPatch("name")]
-        public async Task<IActionResult> UpdatePhName(UpdateStkNameModel model)
+        public async Task<IActionResult> UpdatePhNameForStockOfUser(UpdateStkNameModel model)
         {            
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
@@ -50,7 +50,7 @@ namespace Fastdo.backendsys.Controllers
         }
 
         [HttpPatch("contacts")]
-        public async Task<IActionResult> UpdateContacts(Stk_Contacts_Update model)
+        public async Task<IActionResult> UpdateContactsForStockOfUser(Stk_Contacts_Update model)
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
