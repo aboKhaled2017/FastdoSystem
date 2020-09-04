@@ -7,6 +7,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using NLog.Web;
 
 namespace Fastdo.backendsys
 {
@@ -21,6 +23,11 @@ namespace Fastdo.backendsys
             WebHost.CreateDefaultBuilder(args)
             .CaptureStartupErrors(true)
             .UseSetting("detailedErrors", "true")
+            .ConfigureLogging((context,logging) =>
+            {
+                logging.ClearProviders();
+                logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Error);
+            }).UseNLog()
                 .UseStartup<Startup>();
     }
 }

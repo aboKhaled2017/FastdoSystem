@@ -15,8 +15,8 @@ namespace Fastdo.backendsys.Repositories
          Task<Get_PageOf_Stocks_ADMModel> Get_StockModel_ADM(string id);
          Task<bool> UpdateAsync(Stock stock);
          Task<Stock> GetByIdAsync(string id);
-        void Delete(Stock stk);
-        void UpdatePhone(Stock stock);
+         Task Delete(Stock stk);
+         void UpdatePhone(Stock stock);
          void UpdateName(Stock stock);
          void UpdateContacts(Stock stock);
         Task<bool> Patch_Apdate_ByAdmin(Stock stk);

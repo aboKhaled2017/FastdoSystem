@@ -50,6 +50,11 @@
 @import '3-component/widgets';
 @import '3-component/chat';
 
+//customs
+@import 'Customs/loadingSpinner';
+@import 'Customs/_generalPatterns';
+@import 'Customs/_generalClasses';
+
 // Include the following style if you need RTL support
 // Also you will need to add dir="rtl" attribute to HTML tag
 
@@ -60,6 +65,8 @@
 
 // This styles are optional based on your preferance
 @import '4-pages/login-material';
+@import '4-pages/_pharmacies';
+
 @import '4-pages/lockscreen-material';
 @import '4-pages/error-page';
 @import '4-pages/mailbox';

@@ -104,7 +104,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
             var stk = await _stockRepository.Get_IfExists(id);
             if (stk == null)
                 return NotFound();
-            _stockRepository.Delete(stk);
+            await _stockRepository.Delete(stk);
             if (!await _stockRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
             return NoContent();

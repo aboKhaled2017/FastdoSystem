@@ -4,16 +4,43 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
+    <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
   </PropertyGroup>
   <PropertyGroup>
     <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Logs\**" />
+    <Compile Remove="wwwroot\Images\**" />
+    <Compile Remove="wwwroot\node_modules\**" />
+    <Content Remove="Logs\**" />
+    <Content Remove="wwwroot\Images\**" />
+    <Content Remove="wwwroot\node_modules\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <EmbeddedResource Remove="wwwroot\Images\**" />
+    <EmbeddedResource Remove="wwwroot\node_modules\**" />
+    <None Remove="Logs\**" />
+    <None Remove="wwwroot\Images\**" />
+    <None Remove="wwwroot\node_modules\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="nlog.config" />
+    <Content Remove="wwwroot\AdminRtl\js\Scripts\Services\commonServices.ts" />
+    <Content Remove="wwwroot\AdminRtl\js\Scripts\Utiles.ts" />
+    <Content Remove="wwwroot\package-lock.json" />
+    <Content Remove="wwwroot\package.json" />
+  </ItemGroup>
   
  
    
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
   </ItemGroup>
@@ -34,6 +61,7 @@
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
     <PackageReference Include="NHibernate" Version="5.2.7" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.3" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.7.0" />
     <PackageReference Include="NSwag.Core" Version="13.7.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
@@ -45,17 +73,193 @@
 
   <ItemGroup>
     <Folder Include="Areas\AdminPanel\Data\" />
-    <Folder Include="Areas\AdminPanel\Models\" />
-    <Folder Include="wwwroot\Images\Pharmacies\Identity\CommerialReg\" />
-    <Folder Include="wwwroot\Images\Pharmacies\Identity\License\" />
-    <Folder Include="wwwroot\Images\Stocks\Identity\CommerialReg\" />
-    <Folder Include="wwwroot\Images\Stocks\Identity\License\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\AdminRtl\js\dest\" />
   </ItemGroup>
 
 
   <ItemGroup>
     <None Include="Areas\AdminPanel\Views\Shared\_CookieConsentPartial.cshtml" />
     <None Include="Areas\AdminPanel\Views\Shared\_Layout.cshtml" />
+    <None Include="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\autoFill.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\dataTables.autoFill.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\AutoFill-2.3.5\js\dataTables.autoFill.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\css\common.scss" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\css\mixins.scss" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.colVis.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.colVis.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.flash.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.flash.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.html5.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.html5.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.print.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.print.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\buttons.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\dataTables.buttons.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\js\dataTables.buttons.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Buttons-1.6.3\swf\flashExport.swf" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\dataTables.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\jquery.dataTables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\DataTables-1.10.21\js\jquery.dataTables.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\datatables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\datatables.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\dataTables.editor.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\dataTables.editor.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Editor-2020-09-17-1.9.4\js\editor.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\dataTables.fixedColumns.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\dataTables.fixedColumns.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.dataTables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.semanicui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedColumns-3.3.1\js\fixedColumns.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\dataTables.fixedHeader.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\dataTables.fixedHeader.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.dataTables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.semanicui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\FixedHeader-3.1.7\js\fixedHeader.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\JSZip-2.5.0\jszip.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\JSZip-2.5.0\jszip.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\dataTables.keyTable.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\dataTables.keyTable.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.dataTables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.semanicui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\KeyTable-2.5.2\js\keyTable.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\pdfmake-0.1.36\pdfmake.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\pdfmake-0.1.36\pdfmake.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\pdfmake-0.1.36\vfs_fonts.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\dataTables.responsive.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\dataTables.responsive.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Responsive-2.2.5\js\responsive.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\dataTables.rowGroup.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\dataTables.rowGroup.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.dataTables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.semanicui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\RowGroup-1.1.2\js\rowGroup.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\dataTables.scroller.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\dataTables.scroller.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.dataTables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.semanicui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Scroller-2.0.2\js\scroller.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\dataTables.searchPanes.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\dataTables.searchPanes.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.dataTables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.dataTables.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.semanicui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\SearchPanes-1.1.1\js\searchPanes.semanticui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\dataTables.select.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\dataTables.select.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.bootstrap.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.bootstrap.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.bootstrap4.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.bootstrap4.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.dataTables.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.foundation.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.foundation.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.jqueryui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.jqueryui.min.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.semanticui.js" />
+    <None Include="wwwroot\AdminRtl\js\plugins\DataTables\Select-1.3.1\js\select.semanticui.min.js" />
   </ItemGroup>
 
 
@@ -68,5 +272,11 @@
     <Reference Include="System.Models">
       <HintPath>..\..\System.Models\bin\Release\netcoreapp2.2\System.Models.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\AdminRtl\js\Scripts\Services\commonServices.ts" />
+    <TypeScriptCompile Include="wwwroot\AdminRtl\js\Scripts\Utiles.ts" />
   </ItemGroup>
 </Project>

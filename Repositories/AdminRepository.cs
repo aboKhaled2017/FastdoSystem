@@ -83,6 +83,10 @@ namespace Fastdo.backendsys.Repositories
                     done = _context.LzDrugRequests.Count(s=>s.Status==LzDrugRequestStatus.Completed),
                     pending = _context.LzDrugRequests.Count(s => s.Status == LzDrugRequestStatus.Pending),
                     cancel = _context.LzDrugRequests.Count(s => s.Status == LzDrugRequestStatus.Rejected)
+                },
+                lzDrugs=new LzDrugsStatis
+                {
+                    total=_context.LzDrugs.Count()
                 }
             });
             return await queryResult.FirstAsync();

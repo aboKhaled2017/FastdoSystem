@@ -1,19 +1,20 @@
-﻿
- 
-    
+﻿  @{ 
+      Layout = null;
+  }
 <!DOCTYPE html>
 <html dir="rtl">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="~/AdminRtl/favicon.ico" />
     <!-- Main CSS-->
-    <link rel="stylesheet" type="text/css" href="~/AdminRlt/css/main.css">
+    <link rel="stylesheet" type="text/css" href="~/AdminRtl/css/main.css">
     <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>دخول الى لوحة التحكم</title>
 </head>
-<body>
+<body class="isLoading">
     <section class="material-half-bg">
         <div class="cover"></div>
     </section>
@@ -21,16 +22,20 @@
         <div class="logo">
             <img height="200" src="~/Images/AdminPanel/Bg_And_Logo/company.png" />
         </div>
-        <div class="login-box">
+        <div class="login-box">          
             <form class="login-form" id="login-form">
                 <h3 class="login-head"><i class="fa fa-lg fa-fw fa-user"></i>دخول</h3>
+                <h6 id="generalError">
+                </h6>
                 <div class="form-group">
                     <label class="control-label">اسم المستخدم</label>
                     <input id="userNameInpt" class="form-control" type="text" placeholder="اسم المستخدم" autofocus required title="ادخل اسم المستخدم">
+                    <div class="form-control-feedback"></div>
                 </div>
                 <div class="form-group">
                     <label class="control-label">كلمة المرور</label>
                     <input id="passwordInpt" class="form-control" type="password" placeholder="كلمة المرور" required title="ادخل كلمة المرور">
+                    <div class="form-control-feedback"></div>
                 </div>
                 <div class="btn-group d-none" role="group">
                     <button class="btn btn-primary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -46,14 +51,16 @@
                     <div class="utility">
                         <div class="animated-checkbox">
                             <label>
-                                <input type="checkbox"><span class="label-text">تذكرنى</span>
+                                <input id="rememberMeInpt" type="checkbox" value="false"><span class="label-text">تذكرنى</span>
                             </label>
                         </div>
                         <p class="semibold-text mb-2"><a href="#" data-toggle="flip">هل نسيت كلمة السر ؟</a></p>
                     </div>
                 </div>
                 <div class="form-group btn-container">
-                    <button class="btn btn-primary btn-block"><i class="fa fa-sign-in fa-lg fa-fw"></i>دخول الان</button>
+                    <button class="btn btn-primary btn-block" id="loginBtnSubmit">                        
+                        <i class="fa fa-sign-in fa-lg fa-fw"></i>دخول الان
+                    </button>
                 </div>
             </form>
             <div class="forget-form">
@@ -70,13 +77,25 @@
             </div>
         </div>
     </section>
+    <section class="d-none">
+        <form action="/adminpanel/auth/signin" method="POST" id="PostedFormOfSignIn">
+            <input type="text" id="PostSign_Id" name="Id" value="" />
+            <input type="text" id="PostSign_Name" name="Name" value="" />
+            <input type="text" id="PostSign_PhoneNumber" name="PhoneNumber" value="" />
+            <input type="text" id="PostSign_UserName" name="UserName" value="" />
+            <input type="text" id="PostSign_Prevligs" name="Prevligs" value="" />
+            <input type="checkbox" id="PostSign_RememberMe" name="RememberMe" value="true" />
+            <input type="text" id="PostSign_ReturnUrl" name="ReturnUrl" value="@ViewData["ReturnUrl"]" />
+        </form>
+    </section>
     <!-- Essential javascripts for application to work-->
-    <script src="~/AdminRlt/js/jquery-3.2.1.min.js"></script>
-    <script src="~/AdminRlt/js/popper.min.js"></script>
-    <script src="~/AdminRlt/js/bootstrap.min.js"></script>
-    <script src="~/AdminRlt/js/main.js"></script>
+    <script src="~/AdminRtl/js/jquery-3.2.1.min.js"></script>
+    <script src="~/AdminRtl/js/popper.min.js"></script>
+    <script src="~/AdminRtl/js/bootstrap.min.js"></script>
+    <script src="~/AdminRtl/js/main.js"></script>
     <!-- The javascript plugin to display page loading on top-->
-    <script src="~/AdminRlt/js/plugins/pace.min.js"></script>
+    <script src="~/AdminRtl/js/plugins/pace.min.js"></script>
+    <script src="~/AdminRtl/js/Scripts/Utiles.js"></script>
     <script src="~/AdminRtl/js/Scripts/loginPageScript.js"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@ namespace Fastdo.backendsys.Repositories
         Task<bool> UpdateAsync(Pharmacy pharmacy);
         Task<Get_PageOf_Pharmacies_ADMModel> Get_PharmacyModel_ADM(string id);
         Task<Pharmacy> GetByIdAsync(string id);
-        void Delete(Pharmacy pharm);
+        Task Delete(Pharmacy pharm);
         void UpdatePhone(Pharmacy pharmacy);
         void UpdateName(Pharmacy pharmacy);
         void UpdateContacts(Pharmacy pharmacy);

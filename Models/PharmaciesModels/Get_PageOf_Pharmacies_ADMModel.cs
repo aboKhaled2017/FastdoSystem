@@ -10,6 +10,7 @@ namespace Fastdo.backendsys.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public string Email { get; set; }
         public string MgrName { get; set; }
         public string OwnerName { get; set; }
         public string PersPhone { get; set; }

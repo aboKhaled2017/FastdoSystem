@@ -6,22 +6,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Fastdo.Repositories.Models;
-using Fastdo.backendsys.Providers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
-using System.IO;
-using NSwag;
-using NSwag.AspNetCore;
 using Fastdo.backendsys.Utilities;
 using System.Net;
+using NLog;
+using System.IO;
 
 namespace Fastdo.backendsys
 {
@@ -43,12 +37,12 @@ namespace Fastdo.backendsys
             {
                 if(Env.IsDevelopment())
                 {
-                    /*options.UseSqlServer(Configuration.GetConnectionString("AWS_fastdo_db"),
+                    /*options.UseSqlServer(Configuration.GetConnectionString("localSql"),
                     builder=> {
                     builder.MigrationsAssembly("System_Back_End");
                     });*/
                     options.UseSqlServer(Configuration.GetConnectionString("localSql"), builder => {
-                        builder.MigrationsAssembly("System_Back_End");
+                        builder.MigrationsAssembly("Fastdo.backendsys");
                     });
                 }
                 else
@@ -57,12 +51,11 @@ namespace Fastdo.backendsys
                         builder.MigrationsAssembly("System_Back_End");
                     });*/
                     options.UseSqlServer(Configuration.GetConnectionString("AWS_fastdo_db"), builder => {
-                        builder.MigrationsAssembly("System_Back_End");
+                        builder.MigrationsAssembly("Fastdo.backendsys");
                     });
                 }
-                
-                
-            });
+                        
+            });           
             services._AddRepositories();
             services
                 .AddIdentity<AppUser, IdentityRole>()
@@ -111,32 +104,18 @@ namespace Fastdo.backendsys
         {
             app.UseOpenApi(c => {});
             app.UseSwaggerUi3(c=> { });
-
-            if (env.IsDevelopment())
+            app._UseExceptions(env);
+            if (env.IsProduction())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
-            else
-            {
-                app.UseExceptionHandler(appBuilder =>
-                {
-                    appBuilder.Run(async context =>
-                    {
-                        context.Response.StatusCode = 500;
-                        await context.Response.WriteJsonAsync(Functions.MakeError("unhandled exception happend,try again"));
-                    });
-                });
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
             app._UseServicesStarter(serviceProvider);
-           /// app._UseMyDbConfigStarter(env);
+            app._UseMyDbConfigStarter(env);
             app.UseCors(Variables.corePolicy);
             app.UseStaticFiles();
             app.UseAuthentication();
-            app.UseStatusCodePages(async context => {
+            app.UseStatusCodePages(context => {
                 if (context.HttpContext.Request.Path.Value.Contains("/AdminPanel",StringComparison.OrdinalIgnoreCase)&&
                     !context.HttpContext.Request.Path.Value.Contains("/api/", StringComparison.OrdinalIgnoreCase))
                 {
@@ -144,6 +123,17 @@ namespace Fastdo.backendsys
                     if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
                         response.StatusCode == (int)HttpStatusCode.Forbidden)
                         response.Redirect("/AdminPanel/Auth/Signin");
+                }
+                return Task.CompletedTask;
+            });
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404 &&
+                    !context.Request.Path.Value.Contains("/api/", StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Request.Path = "/AdminPanel/Home/Error";
+                    await next();
                 }
             });
             app.UseMvc(routes =>

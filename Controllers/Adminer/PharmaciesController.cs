@@ -104,7 +104,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
             var pharm =await _pharmacyRepository.Get_IfExists(id);
             if (pharm == null)
                 return NotFound();
-             _pharmacyRepository.Delete(pharm);
+             await _pharmacyRepository.Delete(pharm);
             if (!await _pharmacyRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
             return NoContent();

@@ -13,6 +13,7 @@
   color: $pagination-color;
   background-color: $pagination-bg;
   border: $pagination-border-width solid $pagination-border-color;
+  pointer-events:none;
 
   &:hover {
     z-index: 2;
@@ -35,33 +36,38 @@
 }
 
 .page-item {
-  &:first-child {
-    .page-link {
-      margin-left: 0;
-      @include border-left-radius($border-radius);
-    }
-  }
-  &:last-child {
-    .page-link {
-      @include border-right-radius($border-radius);
-    }
-  }
+    cursor: pointer;
 
-  &.active .page-link {
-    z-index: 1;
-    color: $pagination-active-color;
-    background-color: $pagination-active-bg;
-    border-color: $pagination-active-border-color;
-  }
+    &:first-child {
+        .page-link {
+            margin-left: 0;
+            @include border-right-radius($border-radius);
+        }
+    }
 
-  &.disabled .page-link {
-    color: $pagination-disabled-color;
-    pointer-events: none;
-    // Opinionated: remove the "hand" cursor set previously for .page-link
-    cursor: auto;
-    background-color: $pagination-disabled-bg;
-    border-color: $pagination-disabled-border-color;
-  }
+    &:last-child {
+        .page-link {
+            @include border-left-radius($border-radius);
+        }
+    }
+
+    &.active .page-link {
+        z-index: 1;
+        color: $pagination-active-color;
+        background-color: $pagination-active-bg;
+        border-color: $pagination-active-border-color;
+    }
+
+    &.disabled {
+        pointer-events:none;
+        .page-link {
+            color: $pagination-disabled-color;
+            // Opinionated: remove the "hand" cursor set previously for .page-link
+            cursor: auto;
+            background-color: $pagination-disabled-bg;
+            border-color: $pagination-disabled-border-color;
+        }
+    }
 }
 
 

@@ -1,0 +1,26 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "صفحة الخطأ"; ;
+}
+
+    <div class="page-error tile">
+        <h1><i class="fa fa-exclamation-circle"></i> خطأ</h1>
+        @if (Model.StatusCode == 404)
+        {
+            <h2 class="text-danger">الصفحة التى تبحث عنها غير موجودة</h2>
+        }
+        else
+        {
+            <h2 class="text-danger">حدث خطأ ما اثناء معالجة الطلب.</h2>
+
+            @if (Model.ShowRequestId)
+            {
+                <p>
+                    <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                </p>
+            }
+        }
+
+        <p><a class="btn btn-primary" href="javascript:window.history.back();">رجوع</a></p>
+    </div>
+

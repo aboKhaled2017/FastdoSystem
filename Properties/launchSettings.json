@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/System_Back_End",
+      "applicationUrl": "https://localhost/fastdo",
       "sslPort": 0
     },
     "iisExpress": {
@@ -17,7 +17,9 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "sqlDebugging": false,
+      "nativeDebugging": true
     },
     "System_Back_End": {
       "commandName": "Project",
@@ -25,11 +27,16 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "nativeDebugging": true,
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     },
-    "HOST_Local_IIS": {
+    "IIS": {
       "commandName": "IIS",
-      "workingDirectory": "D:\\program drive\\DeployedProjects\\FAST_Do"
+      "launchBrowser": true,
+      "launchUrl": "https://localhost/fastdo",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
     }
   }
 }

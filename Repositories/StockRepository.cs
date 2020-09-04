@@ -86,9 +86,11 @@ namespace Fastdo.backendsys.Repositories
         {
             return await _context.Stocks.FindAsync(id);
         }
-        public void Delete(Stock stk)
+        public async Task Delete(Stock stk)
         {
-            _context.Stocks.Remove(stk);
+            _context.PharmaciesInStocks.RemoveRange(_context.PharmaciesInStocks.Where(ps => ps.StockId == stk.Id));
+             await _context.SaveChangesAsync();
+            _context.Users.Remove(_context.Users.Find(stk.Id));
         }
         public void UpdatePhone(Stock stock)
         {

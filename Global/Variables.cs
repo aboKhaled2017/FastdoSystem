@@ -11,6 +11,8 @@ namespace Fastdo.backendsys
 {
     public static class Variables
     {
+        public static string AdminSchemaOfAdminSite = "AdminSchemaOfAdminSite";
+        public static string AdminPanelCookiePath = "AdminPanel";
         public static string stocker = "stocker";
         public static string adminer="adminer";
         public static string pharmacier = "pharmacier";

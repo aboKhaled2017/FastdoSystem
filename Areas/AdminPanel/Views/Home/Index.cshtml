@@ -1,8 +1,47 @@
-﻿
+﻿@model StatisShowModel
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Areas/AdminPanel/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "الصفحة الرئيسية";
 }
 
-<h1>hello index</h1>
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <div class="widget-small primary coloured-icon">
+                <i class="icon fa fa-glass fa-3x"></i>
+                <div class="info">
+                    <h4><a href="/AdminPanel/Pharmacies">الصيدليات</a></h4>
+                    <p>اجمالى : <b>@Html.FormateTextToElementIfZero("span", Model.pharmacies.total, "لا يوجد", "badge badge-danger")</b></p>
+                    <p>المنتظريين : <b>@Html.FormateTextToElementIfZero("span", Model.pharmacies.pending, "لا يوجد", "badge badge-danger")</b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="widget-small info coloured-icon">
+                <i class="icon fa fa-building fa-3x"></i>
+                <div class="info">
+                    <h4><a href="/AdminPanel/stocks">المخازن</a></h4>
+                    <p>اجمالى : <b>@Html.FormateTextToElementIfZero("span", Model.stocks.total, "لا يوجد", "badge badge-danger")</b></p>
+                    <p>المنتظريين : @Html.FormateTextToElementIfZero("span",Model.stocks.pending,"لا يوجد","badge badge-danger")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="widget-small warning coloured-icon">
+                <i class="icon fa fa-exchange fa-3x"></i>
+                <div class="info">
+                    <h4><a href="/AdminPanel/LzDrugsReqs">الطلبات على الرواكد</a></h4>
+                    <p>اجمالى : <b>@Html.FormateTextToElementIfZero("span", Model.requests.total, "لا يوجد", "badge badge-danger")</b></p>
+                    <p>المنتظريين : <b>@Html.FormateTextToElementIfZero("span", Model.requests.pending, "لا يوجد", "badge badge-danger")</b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="widget-small danger coloured-icon">
+                <i class="icon fa fa-briefcase fa-3x"></i>
+                <div class="info">
+                    <h4><a href="/AdminPanel/vstock">الرواكد</a></h4>
+                    <p>اجمالى : <b>@Html.FormateTextToElementIfZero("span", Model.lzDrugs.total, "لا يوجد", "badge badge-danger")</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
 

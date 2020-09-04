@@ -26,6 +26,7 @@ namespace Fastdo.backendsys.Repositories
             {
                 Id = p.Id,
                 MgrName = p.MgrName,
+                Email=p.User.Email,
                 Name = p.Name,
                 OwnerName = p.OwnerName,
                 PersPhone = p.PersPhone,
@@ -33,7 +34,7 @@ namespace Fastdo.backendsys.Repositories
                 LicenseImgSrc = p.LicenseImgSrc,
                 CommercialRegImgSrc = p.CommercialRegImgSrc,
                 Status = p.Status,
-                Address = p.Address,
+                Address = $"{p.Area.SuperArea.Name}/{p.Area.Name}",
                 AreaId = p.AreaId,
                 joinedStocksCount = p.GoinedStocks.Count,
                 lzDrugsCount = p.LzDrugs.Count,
@@ -90,9 +91,13 @@ namespace Fastdo.backendsys.Repositories
             _context.Entry(pharmacy).State = EntityState.Modified;
             return (await _context.SaveChangesAsync()) > 0;
         }       
-        public void Delete(Pharmacy pharm)
-        {
-          _context.Pharmacies.Remove(pharm);
+        public async Task Delete(Pharmacy pharm)
+        {                   
+            _context.LzDrugRequests.RemoveRange(
+                _context.LzDrugRequests.Where(r => pharm.Id == r.PharmacyId || pharm.Id == r.LzDrug.PharmacyId)
+            );
+            await _context.SaveChangesAsync();            
+            _context.Users.Remove(await _context.Users.FindAsync(pharm.Id));
         }
         public void UpdatePhone(Pharmacy pharmacy)
         {

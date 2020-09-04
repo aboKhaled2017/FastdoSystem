@@ -27,8 +27,8 @@ namespace Fastdo.backendsys.Services
             {
                 return response;
             }
-            string licenseImgExt = Path.GetExtension(licenseImg.FileName);
-            string commerialRegImgExt = Path.GetExtension(commerialRegImg.FileName);
+            string licenseImgExt = Path.GetExtension(licenseImg.FileName).Replace(".", string.Empty);
+            string commerialRegImgExt = Path.GetExtension(commerialRegImg.FileName).Replace(".", string.Empty);
             var supportedTypes = new string[] { "png", "jpg", "jpeg", "gif", "PNG", "JPG", "GIF", "JPEG" };
             //not valid extension
             if (!supportedTypes.Contains(licenseImgExt.Replace(".", string.Empty))
@@ -40,28 +40,33 @@ namespace Fastdo.backendsys.Services
                 var file1 = licenseImg.OpenReadStream();
                 if (file1.Length > 0)
                 {
-                    response.LicenseImgPath = Variables.ImagesPaths.PharmacyLicenseImgSrc+ $@"/{Id}.{licenseImgExt}";
-                    if (File.Exists(response.LicenseImgPath))
-                       File.Delete(response.LicenseImgPath);
-                    using (FileStream fs = System.IO.File.Create(response.LicenseImgPath))
+                    var LicenseImgPath = Variables.ImagesPaths.PharmacyLicenseImgSrc+ $@"/{Id}.{licenseImgExt}";
+                    if (File.Exists(LicenseImgPath))
+                       File.Delete(LicenseImgPath);
+                    using (FileStream fs = System.IO.File.Create(LicenseImgPath))
                     {
                         file1.CopyTo(fs);
                         fs.Flush();
 
                     }
+                    response.LicenseImgPath = 
+                        LicenseImgPath.Replace(RequestStaticServices.GetHostingEnv().WebRootPath, "")
+                        .Replace(@"\","/");
                 }
                 var file2 = commerialRegImg.OpenReadStream();
                 if (file2.Length > 0)
                 {
-                    response.CommertialRegImgPath = Variables.ImagesPaths.PharmacyCommertialRegImgSrc + $@"/{Id}.{licenseImgExt}";
-                    if (File.Exists(response.CommertialRegImgPath))
-                        File.Delete(response.CommertialRegImgPath);
-                    using (FileStream fs = System.IO.File.Create(response.CommertialRegImgPath))
+                    var CommertialRegImgPath = Variables.ImagesPaths.PharmacyCommertialRegImgSrc + $@"/{Id}.{licenseImgExt}";
+                    if (File.Exists(CommertialRegImgPath))
+                        File.Delete(CommertialRegImgPath);
+                    using (FileStream fs = System.IO.File.Create(CommertialRegImgPath))
                     {
                         file2.CopyTo(fs);
                         fs.Flush();
 
                     }
+                    response.CommertialRegImgPath = CommertialRegImgPath.Replace(RequestStaticServices.GetHostingEnv().WebRootPath, "")
+                        .Replace(@"\", "/");
                 }
             }
             catch (Exception ex)
@@ -80,8 +85,8 @@ namespace Fastdo.backendsys.Services
                 response.errorMess = "in valid request";
                 return response;
             }
-            string licenseImgExt = Path.GetExtension(licenseImg.FileName);
-            string commerialRegImgExt = Path.GetExtension(commerialRegImg.FileName);
+            string licenseImgExt = Path.GetExtension(licenseImg.FileName).Replace(".", string.Empty);
+            string commerialRegImgExt = Path.GetExtension(commerialRegImg.FileName).Replace(".", string.Empty);
             var supportedTypes = new string[] { "png", "jpg", "jpeg", "gif", "PNG", "JPG", "GIF", "JPEG" };
             //not valid extension
             if (!supportedTypes.Contains(licenseImgExt.Replace(".", string.Empty))
@@ -97,10 +102,12 @@ namespace Fastdo.backendsys.Services
                 var file1 = licenseImg.OpenReadStream();
                 if (file1.Length > 0)
                 {
-                    response.LicenseImgPath = Variables.ImagesPaths.StockLicenseImgSrc + $@"/{Id}{licenseImgExt}";
-                    if (File.Exists(response.LicenseImgPath))
-                        File.Delete(response.LicenseImgPath);
-                    using (FileStream fs = System.IO.File.Create(response.LicenseImgPath))
+                    var LicenseImgPath = Variables.ImagesPaths.StockLicenseImgSrc + $@"/{Id}{licenseImgExt}"
+                        .Replace(@"\","/");
+                    response.LicenseImgPath=LicenseImgPath.Replace(RequestStaticServices.GetHostingEnv().WebRootPath, "");
+                    if (File.Exists(LicenseImgPath))
+                        File.Delete(LicenseImgPath);
+                    using (FileStream fs = System.IO.File.Create(LicenseImgPath))
                     {
                         file1.CopyTo(fs);
                         fs.Flush();
@@ -110,10 +117,12 @@ namespace Fastdo.backendsys.Services
                 var file2 = commerialRegImg.OpenReadStream();
                 if (file2.Length > 0)
                 {
-                    response.CommertialRegImgPath = Variables.ImagesPaths.StockCommertialRegImgSrc + $@"/{Id}{licenseImgExt}";
-                    if (File.Exists(response.CommertialRegImgPath))
-                        File.Delete(response.CommertialRegImgPath);
-                    using (FileStream fs = System.IO.File.Create(response.CommertialRegImgPath))
+                    var CommertialRegImgPath = Variables.ImagesPaths.StockCommertialRegImgSrc + $@"/{Id}{licenseImgExt}";
+                    response.CommertialRegImgPath=CommertialRegImgPath.Replace(RequestStaticServices.GetHostingEnv().WebRootPath, "")
+                        .Replace(@"\", "/");
+                    if (File.Exists(CommertialRegImgPath))
+                        File.Delete(CommertialRegImgPath);
+                    using (FileStream fs = System.IO.File.Create(CommertialRegImgPath))
                     {
                         file2.CopyTo(fs);
                         fs.Flush();

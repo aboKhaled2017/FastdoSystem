@@ -19,6 +19,8 @@ using Fastdo.backendsys.Mappings;
 using Fastdo.backendsys.Repositories;
 using Fastdo.backendsys.Services;
 using Fastdo.backendsys.Services.Auth;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -71,7 +73,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;           
-            })            
+            })
+            .AddCookie(Variables.AdminSchemaOfAdminSite, CookieBuilder =>
+            {
+                CookieBuilder.Cookie.Path = $"/{Variables.AdminPanelCookiePath}";
+                CookieBuilder.LoginPath = "/AdminPanel/Auth/SignIn";
+                CookieBuilder.AccessDeniedPath = "/AdminPanel/Auth/AccessDenied";
+                CookieBuilder.Cookie.Name = "AdminCookie";
+            })
            .AddJwtBearer(options =>
            {
                var JWTSection = RequestStaticServices.GetConfiguration().GetSection("JWT");
@@ -86,6 +95,15 @@ namespace Microsoft.Extensions.DependencyInjection
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSection.GetValue<string>("signingKey")))
                };
            });
+
+            //for admin panel
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
             return services;
         }
         public static IServiceCollection _AddSystemAuthorizations(this IServiceCollection services)
@@ -103,6 +121,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     policy.RequireRole(new List<string> { Variables.pharmacier, Variables.stocker })
                           .RequireAuthenticatedUser();
+                });
+                opts.AddPolicy("AdminAreaAuthPolicy", policy =>
+                {
+                    policy.AuthenticationSchemes.Add(Variables.AdminSchemaOfAdminSite);
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(Variables.adminer);
                 });
                 opts.AddPolicy(Variables.AdminPolicy, policy =>
                 {
