@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Areas.AdminPanel.Models;
+using Fastdo.backendsys.Repositories;
+using Fastdo.Repositories.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -11,6 +14,10 @@ namespace Fastdo.backendsys.Areas.AdminPanel.Controllers
 {
     public class AuthController : MainController
     {
+        public AuthController(IAdminRepository adminRepository, UserManager<AppUser> userManager) : base(adminRepository, userManager)
+        {
+        }
+
         [AllowAnonymous]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult SignIn(string returnUrl = "")
@@ -41,6 +48,7 @@ namespace Fastdo.backendsys.Areas.AdminPanel.Controllers
             }
             return View();
         }
+
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult LogOut()
         {

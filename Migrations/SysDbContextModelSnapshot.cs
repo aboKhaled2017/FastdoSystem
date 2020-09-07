@@ -23,16 +23,14 @@ namespace Fastdo.backendsys.Migrations
                 {
                     b.Property<string>("Id");
 
-                    b.Property<string>("BB");
-
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("_SuperAdminId");
+                    b.Property<string>("SuperAdminId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("_SuperAdminId");
+                    b.HasIndex("SuperAdminId");
 
                     b.ToTable("Admins");
                 });
@@ -440,9 +438,10 @@ namespace Fastdo.backendsys.Migrations
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Fastdo.Repositories.Models.Admin", "_SuperAdmin")
+                    b.HasOne("Fastdo.Repositories.Models.Admin", "SuperAdmin")
                         .WithMany("SubAdmins")
-                        .HasForeignKey("_SuperAdminId");
+                        .HasForeignKey("SuperAdminId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Fastdo.Repositories.Models.Area", b =>

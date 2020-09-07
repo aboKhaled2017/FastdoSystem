@@ -48,9 +48,8 @@ namespace Microsoft.AspNetCore.Identity
         }
         public async static Task<bool> UserIdentityExists(this UserManager<AppUser> userManager, AppUser user, string password,string adminType)
         {
-            string role = Variables.adminer;
             return user != null &&
-                await userManager.IsInRoleAsync(user, role) &&
+                await userManager.IsInRoleAsync(user, Variables.adminer) &&
                 (await userManager.GetClaimsAsync(user))
                 .Any(c=>c.Type==Variables.AdminClaimsTypes.AdminType && c.Value==adminType) &&
                 await userManager.CheckPasswordAsync(user, password);

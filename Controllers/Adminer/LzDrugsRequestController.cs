@@ -16,8 +16,8 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admins/drgsReq",Name = "AdminLzDrugRequests")]
     [ApiController]
-    [Authorize(Policy = "AdminPolicy")]
-    public class LzDrugsRequestController : SharedAPIController
+    [Authorize(Policy = "ControlOnDrugsRequestsPagePolicy")]
+    public class LzDrugsRequestController : MainAdminController
     {
         #region constructor and properties
         private readonly ILzDrgRequestsRepository _lzDrgRequestsRepository;
@@ -70,7 +70,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         }
         #endregion
 
-        #region 
+        #region  get
         [HttpGet(Name = "GET_PageOf_LzDrgsRequests")]
         public async Task<IActionResult> GetPageOfLzDrgsRequests([FromQuery]LzDrgReqResourceParameters _params)
         {

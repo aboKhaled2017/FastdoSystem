@@ -1,0 +1,24 @@
+﻿@model PageingControlsViewModel
+<div class="table-controls container-fluid">
+    <div class="row">
+        @if (Model.RequireSearch)
+        {
+            <div class="search-control col-md-3 col-6">
+                <input class="form-control arText" id="dtSearchInp" placeholder="@Model.SearchPlaceholder" type="text">
+            </div>
+        }
+        <div class="col-md-3 col-6">
+            <select class="form-control" id="pageSizeSelectInp">
+                <option disabled selected class="d-none">حجم الصفحة</option>
+                <option value="4">4 صفوف</option>
+                <option value="8">8 صفوف</option>
+                <option value="12">12 صف</option>
+                <option value="16">16 صف</option>
+            </select>
+        </div>
+        @if(Model.OtherSections!=null)
+        {
+            Write(Model.OtherSections);
+        }
+    </div>
+</div>

@@ -14,12 +14,8 @@
     <div class="col-md-12">
         <div class="tile">
             <div class="tile-body" style="position:relative">
-                <div class="table-controls container-fluid">
-                    <div class="search-control col-md-3 col-6">
-                        <input class="form-control arText" id="pharmacySearchInp" placeholder="ابحث بأسم الصيدلية" type="text">
-                    </div>
-                </div>
-                <table class="table table-hover table-bordered dt-responsive" id="PharmaciesTable" width="100%">
+                @{await Html.RenderPartialAsync("PagingControls",new PageingControlsViewModel{SearchPlaceholder="ابحث بأسم الصيدلية" });}
+                <table class="table table-hover table-bordered dt-responsive" id="PharmaciesTable">
                     <thead>
                         <tr>
                             <th>التحكم</th>
@@ -95,6 +91,6 @@
         </div>
     </div>
 </div>
-    @section Scripts{
-        <script src="~/AdminRtl/js/Scripts/PharmasPageScripts.js"></script>
-    }
+@section Scripts{
+    <script src="~/AdminRtl/js/Scripts/PharmasPageScripts.js"></script>
+}

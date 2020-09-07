@@ -9,7 +9,7 @@ using System.Web.Mvc;
 namespace Microsoft.AspNetCore.Mvc.Rendering
 {
     public static class HtmlHelperExt
-    {
+    { 
         public static IHtmlContent FormateTextToElementIfZero(this IHtmlHelper helper,string elName,int val,string replaceText,string elClass = "")
         {
             if (val != 0) return new HtmlString(val.ToString());

@@ -14,8 +14,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admins/drgs", Name = "AdminLzDrugs")]
     [ApiController]
-    [Authorize(Policy = "AdminPolicy")]
-    public class LzDrgsController : SharedAPIController
+    public class LzDrgsController : MainAdminController
     {
         #region Constructors and properties
         public ILzDrugRepository _lzDrugRepository { get; }

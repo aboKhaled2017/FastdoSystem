@@ -18,8 +18,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admin/auth", Name = "AdminAuth")]
     [ApiController]
-    [Authorize(Policy = "AdminPolicy")]
-    public class AuthController : SharedAPIController
+    public class AuthController : MainAdminController
     {
         #region constructor and properties
         public AuthController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)

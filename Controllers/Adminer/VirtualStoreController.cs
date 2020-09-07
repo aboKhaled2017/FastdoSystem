@@ -15,8 +15,8 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admins/vstock", Name = "Admin_VStock")]
     [ApiController]
-    [Authorize(Policy = "AdminPolicy")]
-    public class VirtualStoreController : SharedAPIController
+    [Authorize(Policy = "ControlOnVStockPagePolicy")]
+    public class VirtualStoreController : MainAdminController
     {
         #region Constructors and properties
         public ILzDrugRepository _lzDrugRepository { get; }
@@ -25,6 +25,43 @@ namespace Fastdo.backendsys.Controllers.Adminer
         {
             _lzDrugRepository = lzDrugRepository;
         }
+
+        #endregion
+
+        #region override methods from parent class
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        {
+            var _cardParams = _params as LzDrgResourceParameters;
+            switch (resourceUriType)
+            {
+                case ResourceUriType.PreviousPage:
+                    return Url.Link(routeName,
+                    new LzDrgResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber - 1,
+                        PageSize = _cardParams.PageSize,
+                        S = _cardParams.S
+                    });
+                case ResourceUriType.NextPage:
+                    return Url.Link(routeName,
+                    new LzDrgResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber + 1,
+                        PageSize = _cardParams.PageSize,
+                        S = _cardParams.S
+                    });
+                default:
+                    return Url.Link(routeName,
+                    new LzDrgResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber,
+                        PageSize = _cardParams.PageSize,
+                        S = _cardParams.S
+                    });
+            }
+        }
+
 
         #endregion
 

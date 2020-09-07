@@ -41,7 +41,7 @@ namespace Fastdo.backendsys
                     builder=> {
                     builder.MigrationsAssembly("System_Back_End");
                     });*/
-                    options.UseSqlServer(Configuration.GetConnectionString("localSql"), builder => {
+                    options.UseSqlServer(Configuration.GetConnectionString("AWS_fastdo_db"), builder => {
                         builder.MigrationsAssembly("Fastdo.backendsys");
                     });
                 }
@@ -112,6 +112,7 @@ namespace Fastdo.backendsys
             app.UseHttpsRedirection();
             app._UseServicesStarter(serviceProvider);
             app._UseMyDbConfigStarter(env);
+            //app._useCustomFunctionToBeImplemented(env);/*disable it*/
             app.UseCors(Variables.corePolicy);
             app.UseStaticFiles();
             app.UseAuthentication();
@@ -125,17 +126,7 @@ namespace Fastdo.backendsys
                         response.Redirect("/AdminPanel/Auth/Signin");
                 }
                 return Task.CompletedTask;
-            });
-            app.Use(async (context, next) =>
-            {
-                await next();
-                if (context.Response.StatusCode == 404 &&
-                    !context.Request.Path.Value.Contains("/api/", StringComparison.OrdinalIgnoreCase))
-                {
-                    context.Request.Path = "/AdminPanel/Home/Error";
-                    await next();
-                }
-            });
+            });            
             app.UseMvc(routes =>
             {              
                 routes.MapAreaRoute("AdminAreaRoute", "AdminPanel", "AdminPanel/{controller=Home}/{action=Index}/{id?}");

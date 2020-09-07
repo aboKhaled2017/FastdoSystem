@@ -21,5 +21,6 @@ namespace Fastdo.backendsys
                 _pageSize = (value > maxPageSize) ? maxPageSize : value;
             }
         }
+        public string S { get; set; }
     }
 }

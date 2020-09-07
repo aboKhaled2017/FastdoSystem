@@ -52,15 +52,27 @@ namespace Fastdo.backendsys
         public static UserIdentifier UserIdentifier()
         {
             var User = RequestStaticServices.GetCurrentHttpContext().User;
+            var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
+            if(role==Variables.adminer)
                 return new UserIdentifier
                 {
-                    Email = User.Claims.FirstOrDefault(c => c.Type == "Email").Value,
+                    Email = null,
                     Name = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value,
                     UserId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value,
                     Phone = User.Claims.FirstOrDefault(c => c.Type == "Phone").Value,
                     UserName = User.Claims.FirstOrDefault(c => c.Type == "UserName").Value,
-                    IsEmailConfirmed=bool.Parse(User.Claims.FirstOrDefault(c => c.Type == "IsEmailConfirmed").Value),
-                    Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value,
+                    IsEmailConfirmed =true,
+                    Role = role,
+                };
+            return new UserIdentifier
+                {
+                    Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value??null,
+                    Name = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value??null,
+                    UserId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value ?? null,
+                    Phone = User.Claims.FirstOrDefault(c => c.Type == "Phone")?.Value ?? null,
+                    UserName = User.Claims.FirstOrDefault(c => c.Type == "UserName")?.Value ?? null,
+                    IsEmailConfirmed=bool.Parse(User.Claims.FirstOrDefault(c => c.Type == "IsEmailConfirmed")?.Value ?? null),
+                    Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? null,
                 };            
         }
         public static UserType CurrentUserType()

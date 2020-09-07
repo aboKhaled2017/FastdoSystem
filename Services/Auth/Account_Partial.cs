@@ -18,7 +18,7 @@ namespace Fastdo.backendsys.Services.Auth
         {
             var user = new AppUser
             {
-                UserName = model.UserName,
+                UserName = model.UserName.Trim(),
                 PhoneNumber = model.PhoneNumber
             };
             _transactionService.Begin();
@@ -32,7 +32,7 @@ namespace Fastdo.backendsys.Services.Auth
             await _userManager.AddToRoleAsync(user, Variables.adminer);
             await _userManager.AddClaimsAsync(user, new List<Claim> {
                 new Claim(Variables.AdminClaimsTypes.AdminType,model.AdminType),
-                new Claim(Variables.AdminClaimsTypes.Previligs,model.Previligs)
+                new Claim(Variables.AdminClaimsTypes.Priviligs.ToString(),model.Priviligs)
             }); 
             var superId = _userManager.GetUserId(_httpContext.User);
             var admin = new Admin
@@ -68,6 +68,8 @@ namespace Fastdo.backendsys.Services.Auth
         {
             _transactionService.Begin();
             var admin = await _adminRepository.GetByIdAsync(user.Id);
+            if (admin.SuperAdminId == null)
+                throw new Exception("لايمكن تعديل بيانات المسؤل الرئيسى");
             admin.Name = model.Name;
             _adminRepository.Update(admin);
             if(!await _adminRepository.SaveAsync())
@@ -76,9 +78,9 @@ namespace Fastdo.backendsys.Services.Auth
                 return false;
             }
             var replacedClaim = (await _userManager.GetClaimsAsync(user))
-                .FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                .FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs);
             if (replacedClaim == null) return false;
-            var res = await _userManager.ReplaceClaimAsync(user, replacedClaim, new Claim(Variables.AdminClaimsTypes.Previligs, model.Previligs));
+            var res = await _userManager.ReplaceClaimAsync(user, replacedClaim, new Claim(Variables.AdminClaimsTypes.Priviligs, model.Priviligs));
             if (!res.Succeeded)
             {
                 _transactionService.RollBackChanges().End();

@@ -18,8 +18,8 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admins/pharmacies", Name = "AdminPharmacies")]
     [ApiController]
-    [Authorize(Policy = "AdminPolicy")]
-    public class PharmaciesController : SharedAPIController
+    [Authorize(Policy = "ControlOnPharmaciesPagePolicy")]
+    public class PharmaciesController : MainAdminController
     {
         #region constructor and properties
         private readonly IPharmacyRepository _pharmacyRepository;

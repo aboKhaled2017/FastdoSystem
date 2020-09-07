@@ -30,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="nlog.config" />
+    <Content Remove="wwwroot\AdminRtl\js\Scripts\Interfaces.d.ts" />
     <Content Remove="wwwroot\AdminRtl\js\Scripts\Services\commonServices.ts" />
     <Content Remove="wwwroot\AdminRtl\js\Scripts\Utiles.ts" />
     <Content Remove="wwwroot\package-lock.json" />
@@ -73,7 +74,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\AdminPanel\Data\" />
-    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\AdminRtl\js\dest\" />
   </ItemGroup>
 
@@ -276,6 +276,7 @@
 
 
   <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\AdminRtl\js\Scripts\Interfaces.d.ts" />
     <TypeScriptCompile Include="wwwroot\AdminRtl\js\Scripts\Services\commonServices.ts" />
     <TypeScriptCompile Include="wwwroot\AdminRtl\js\Scripts\Utiles.ts" />
   </ItemGroup>

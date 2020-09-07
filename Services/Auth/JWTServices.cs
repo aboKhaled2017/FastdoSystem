@@ -31,7 +31,7 @@ namespace Fastdo.backendsys.Services
                 new Claim("UserName",user.UserName),
                 new Claim(ClaimTypes.Role,Variables.adminer),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString())
             };
             claims.AddRange(userClaims);
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JWT.GetValue<string>("signingKey")));

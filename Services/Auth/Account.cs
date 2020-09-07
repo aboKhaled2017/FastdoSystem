@@ -63,7 +63,7 @@ namespace Fastdo.backendsys.Services.Auth
         {
             var claims = await _userManager.GetClaimsAsync(user);
             var _user = _mapper.MergeInto<AdministratorClientResponseModel>(user, admin);
-            _user.Prevligs = claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs).Value;
+            _user.Prevligs = claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs).Value;
             return new SigningAdministratorClientInResponseModel
             {
                 user = _user,

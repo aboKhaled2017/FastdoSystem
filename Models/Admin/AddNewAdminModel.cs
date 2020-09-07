@@ -36,6 +36,7 @@ namespace Fastdo.backendsys.Models
         public string ConfirmPassword { get; set; }
         [ValidateAdminType]
         public string AdminType { get; set; }
-        public string Previligs { get; set; }
+        [Required(ErrorMessage ="من فضلك اختر على الاقل صلاحية")]
+        public string Priviligs { get; set; }
     }
 }

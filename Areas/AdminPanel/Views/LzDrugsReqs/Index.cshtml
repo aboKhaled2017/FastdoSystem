@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewData["Title"] = "صفحة الطلب على الرواكد";
+}
+
+    <h3>صفحة الطلب على الرواكد</h3>
+
+<div class="row lzDrugsReqsPageSection">
+    <div class="ContainerOverlay">
+        <div class="inner-overlay">
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="tile">
+            <div class="tile-body" style="position:relative">
+                
+                @{await Html.RenderPartialAsync("PagingControls",new PageingControlsViewModel {
+                  RequireSearch=false,
+                  OtherSections=await Html.PartialAsync("StatusControl")
+                  });}
+                <table class="table table-hover table-bordered dt-responsive" id="lzDrugsReqsTable">
+                    <thead>
+                        <tr>
+                            <th class="noWrap">اسم الراكد</th>
+                            <th class="noWrap">الصيدلية التى تحوي الراكد</th>
+                            <th class="noWrap">الصيدلية مرسلة الطلب</th>
+                            <th>حالة الطلب</th>
+                            <th>التفاصيل</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5">
+                                <div>
+                                    <ul class="pagination" id="paginationUI">
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The details Modal -->
+<div class="modal fade" id="modal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/AdminRtl/js/Scripts/LzDrugsReqsPageScripts.js"></script>
+}
+
+

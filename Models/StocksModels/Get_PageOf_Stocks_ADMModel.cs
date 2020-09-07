@@ -20,6 +20,7 @@ namespace Fastdo.backendsys.Models
         public string Address { get; set; }
         public byte AreaId { get; set; }
         public int joinedPharmesCount { get; set; }
+        public int drugsCount { get; set; }
 
     }
 }

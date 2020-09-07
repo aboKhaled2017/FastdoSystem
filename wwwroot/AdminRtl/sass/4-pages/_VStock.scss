@@ -1,0 +1,37 @@
+﻿.vstockPageSection {
+    position: relative;
+
+    .dataTables_info {
+        display: none;
+    }
+
+    table {
+        tr > td {
+            i.showVstockDetailsBtn {
+                font-size: 30px;
+                cursor: pointer;
+                color: $primary-color;
+            }
+
+            &:last-of-type {
+                text-align: center;
+            }
+        }
+
+        .innerTable {
+            background: #607D8B;
+            color:#fff;
+            thead{
+                background:#000;
+            }
+        }
+    }
+}
+#innerTable {
+    background: #9E9E9E;
+}
+#modal {
+    .modalImageInBody{
+        width:100%;
+    }
+}

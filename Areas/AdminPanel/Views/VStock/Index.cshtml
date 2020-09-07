@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewData["Title"] = "المخزن الافتراضى";
+}
+
+<div class="row vstockPageSection">
+    <div class="ContainerOverlay">
+        <div class="inner-overlay">
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="tile">
+            <div class="tile-body" style="position:relative">
+
+                @{await Html.RenderPartialAsync("PagingControls", new PageingControlsViewModel{ SearchPlaceholder="ابحث باسم الراكد"});}
+                <table class="table table-hover table-bordered dt-responsive" id="vstockTable" width="100%">
+                    <thead>
+                        <tr>
+                            <th class="noWrap">اسم الراكد</th>
+                            <th class="noWrap">النوع</th>
+                            <th class="noWrap">الكمية</th>
+                            <th class="noWrap">عدد الصيدليات المتواجد بها</th>
+                            <th class="text-center"></th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">
+                                <div>
+                                    <ul class="pagination" id="paginationUI">
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table id="innerTable" class="d-none innerTable table table-hover table-bordered dt-responsive" width="100%">
+    <thead>
+        <tr>
+            <th class="text-nowrap">الصيدلية</th>
+            <th class="text-nowrap">الكمية</th>
+            <th class="text-nowrap">الخصم</th>
+            <th class="text-nowrap">صالح حتى</th>
+            <th class="text-nowrap">نوع السعر</th>
+            <th class="text-nowrap">الوصف الكامل</th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+</table>
+
+@section Scripts{
+    <script src="~/AdminRtl/js/Scripts/VStockPageScripts.js"></script>
+}
+
+

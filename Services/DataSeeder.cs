@@ -49,7 +49,7 @@ namespace Fastdo.backendsys.Services
             await _userManager.AddToRoleAsync(user, Variables.adminer);
             await _userManager.AddClaimsAsync(user, new List<Claim> {
               new Claim(Variables.AdminClaimsTypes.AdminType,AdminType.Administrator),
-              new Claim(Variables.AdminClaimsTypes.Previligs,AdminPreviligs.FullControlOnSubAdmins)
+              new Claim(Variables.AdminClaimsTypes.Priviligs,AdminerPreviligs.HaveFullControl.ToString())
             });
             var admin = new Admin
             {

@@ -13,8 +13,8 @@ namespace Fastdo.backendsys.Repositories
         Task<StatisShowModel> GetGeneralStatisOfSystem();
         Task<ShowAdminModel> GetAdminsShownModelById(string id);
         Task<bool> AddAsync(Admin admin);
-        IQueryable<ShowAdminModel> GetAllAdminsShownModels(string adminType);
+        Task<PagedList<ShowAdminModel>> GET_PageOfAdminers_ShowModels_ADM(AdminersResourceParameters _params);
         void Update(Admin admin);
-        void Delete(Admin admin);
+        Task Delete(Admin admin);
     }
 }

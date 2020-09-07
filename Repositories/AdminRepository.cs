@@ -21,29 +21,22 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<ShowAdminModel> GetAdminsShownModelById(string id)
         {
-            return await GetAllAdminsShownModels()
+            return await GetAllAdmins().Select(a => new ShowAdminModel
+            {
+                Id = a.Id,
+                Name = a.Name,
+                SuperId = a.SuperAdminId,
+                UserName = a.User.UserName,
+                PhoneNumber = a.User.PhoneNumber,
+                Type = _context.UserClaims.FirstOrDefault(c => c.UserId == a.Id && c.ClaimType == Variables.AdminClaimsTypes.AdminType).ClaimValue,
+                Priviligs = _context.UserClaims.FirstOrDefault(c => c.UserId == a.Id && c.ClaimType == Variables.AdminClaimsTypes.Priviligs).ClaimValue
+            })
                 .Where(a => a.Id == id)
                 .FirstOrDefaultAsync();
         }
         public IQueryable<Admin> GetAllAdmins()
         {
             return _context.Admins.AsQueryable();
-        }
-        public IQueryable<ShowAdminModel> GetAllAdminsShownModels(string adminType = null)
-        {
-            var data=GetAllAdmins().Select(a=>new ShowAdminModel
-            { 
-                Id=a.Id,
-                Name=a.Name,
-                SuperId=a.SuperAdminId,
-                UserName=a.User.UserName,
-                PhoneNumber=a.User.PhoneNumber,
-                Type=_context.UserClaims.FirstOrDefault(c=>c.UserId==a.Id &&c.ClaimType==Variables.AdminClaimsTypes.AdminType).ClaimValue,
-                Prevligs = _context.UserClaims.FirstOrDefault(c => c.UserId == a.Id && c.ClaimType == Variables.AdminClaimsTypes.Previligs).ClaimValue
-            });
-            if (adminType != null)
-                data = data.Where(d => d.Type == adminType);
-            return data;
         }
         public async Task<bool> AddAsync(Admin admin)
         {
@@ -103,7 +96,7 @@ namespace Fastdo.backendsys.Repositories
             _context.Entry(admin).State = EntityState.Modified;
 
         }
-        public void Delete(Admin admin)
+        public async Task Delete(Admin admin)
         {
             var subAdmins = _context.Admins.Where(a => a.SuperAdminId == admin.Id).ToList();
             foreach (var _subAdmin in subAdmins)
@@ -120,6 +113,31 @@ namespace Fastdo.backendsys.Repositories
                 Desc = $"the user {UserName} with id {UserId} deleted  admin [{admin.Name}]"
             });
             _context.Admins.Remove(admin);
+            await _context.SaveChangesAsync();
+            _context.Users.Remove(await _context.Users.FindAsync(admin.Id));
+        }
+
+        public async Task<PagedList<ShowAdminModel>> GET_PageOfAdminers_ShowModels_ADM(AdminersResourceParameters _params)
+        {
+            var data = GetAllAdmins().Select(a => new ShowAdminModel
+            {
+                Id = a.Id,
+                Name = a.Name,
+                SuperId = a.SuperAdminId,
+                UserName = a.User.UserName,
+                PhoneNumber = a.User.PhoneNumber,
+                Type = _context.UserClaims.FirstOrDefault(c => c.UserId == a.Id && c.ClaimType == Variables.AdminClaimsTypes.AdminType).ClaimValue,
+                Priviligs = _context.UserClaims.FirstOrDefault(c => c.UserId == a.Id && c.ClaimType == Variables.AdminClaimsTypes.Priviligs).ClaimValue
+            });
+            if (_params.AdminType != null)
+                data = data.Where(d => d.Type ==_params.AdminType);
+            if (!string.IsNullOrEmpty(_params.S))
+            {
+                var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
+                data = data
+                     .Where(d => d.Name.ToLowerInvariant().Contains(searchQueryForWhereClause));
+            }
+            return await PagedList<ShowAdminModel>.CreateAsync(data, _params);
         }
     }
 }

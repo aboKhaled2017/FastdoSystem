@@ -43,9 +43,10 @@ namespace Fastdo.backendsys.Repositories
                 LicenseImgSrc = p.LicenseImgSrc,
                 CommercialRegImgSrc = p.CommercialRegImgSrc,
                 Status = p.Status,
-                Address = p.Address,
+                Address = $"{p.Area.SuperArea.Name}/{p.Area.Name}",
                 AreaId = p.AreaId,
                 joinedPharmesCount = p.GoinToPharmacies.Count,
+                drugsCount=p.SDrugs.Count
             });
             if (!string.IsNullOrEmpty(_params.S))
             {

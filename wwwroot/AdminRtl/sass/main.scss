@@ -66,8 +66,15 @@
 // This styles are optional based on your preferance
 @import '4-pages/login-material';
 @import '4-pages/_pharmacies';
+@import '4-pages/_stocks';
+@import '4-pages/_lzDrugsReqs';
+@import '4-pages/_VStock';
+@import '4-pages/_admins';
 
 @import '4-pages/lockscreen-material';
 @import '4-pages/error-page';
 @import '4-pages/mailbox';
 @import '4-pages/user-profile';
+
+///maxcdn
+@import 'maxcdn/maxcdn.bootstrapcdn.font-awesome'

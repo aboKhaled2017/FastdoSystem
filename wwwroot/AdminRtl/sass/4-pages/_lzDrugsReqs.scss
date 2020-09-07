@@ -1,0 +1,22 @@
+﻿.lzDrugsReqsPageSection {
+    position: relative;
+    .dataTables_info {
+        display: none;
+    }
+
+    table {
+        tr > td {
+            &:first-of-type, &:last-of-type {
+                .btn {
+                    border-radius: 0;
+                }
+            }
+        }
+    }
+}
+
+#modal {
+    .modalImageInBody{
+        width:100%;
+    }
+}

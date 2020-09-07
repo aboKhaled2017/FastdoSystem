@@ -79,6 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 CookieBuilder.Cookie.Path = $"/{Variables.AdminPanelCookiePath}";
                 CookieBuilder.LoginPath = "/AdminPanel/Auth/SignIn";
                 CookieBuilder.AccessDeniedPath = "/AdminPanel/Auth/AccessDenied";
+                CookieBuilder.LogoutPath = "/AdminPanel/Auth/LogOut";
                 CookieBuilder.Cookie.Name = "AdminCookie";
             })
            .AddJwtBearer(options =>
@@ -109,6 +110,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection _AddSystemAuthorizations(this IServiceCollection services)
         {
             services.AddAuthorization(opts => {
+                #region role based policies
                 opts.AddPolicy(Variables.PharmacyPolicy, policy => {
                     policy.RequireRole(Variables.pharmacier)
                            .RequireAuthenticatedUser();
@@ -122,99 +124,107 @@ namespace Microsoft.Extensions.DependencyInjection
                     policy.RequireRole(new List<string> { Variables.pharmacier, Variables.stocker })
                           .RequireAuthenticatedUser();
                 });
-                opts.AddPolicy("AdminAreaAuthPolicy", policy =>
+                opts.AddPolicy(Variables.AdministratorPolicy, policy =>
+                {
+                    policy.RequireRole(Variables.adminer)
+                          .RequireClaim(Variables.AdminClaimsTypes.AdminType, AdminType.Administrator)
+                          .RequireAuthenticatedUser();
+                });
+
+                #endregion
+
+                #region admin  area policies
+                opts.AddPolicy(Variables.AdminPanelPolicies.AdminPanelAuthPolicy, policy =>
                 {
                     policy.AuthenticationSchemes.Add(Variables.AdminSchemaOfAdminSite);
                     policy.RequireAuthenticatedUser();
                     policy.RequireRole(Variables.adminer);
                 });
-                opts.AddPolicy(Variables.AdminPolicy, policy =>
-                {
-                    policy.RequireRole(Variables.adminer)
-                          .RequireClaim(Variables.AdminClaimsTypes.AdminType,AdminType.Administrator)
-                          .RequireAuthenticatedUser();
-                });
-                opts.AddPolicy(Variables.RepresentativePolicy, policy =>
-                {
-                    policy.RequireRole(Variables.adminer)
-                          .RequireClaim(Variables.AdminClaimsTypes.AdminType, AdminType.Representative)
-                          .RequireAuthenticatedUser();
-                });
-                opts.AddPolicy(Variables.FullControlOnSubAdminsPolicy, policy =>
+
+                
+                #endregion
+
+                #region admin api policies
+                opts.AddPolicy(Variables.AdminPolicies.HaveFullControlPolicy, policy =>
                 {
                     policy.RequireAssertion(p => {
-                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs);
                         if (claimVal == null) return false;
                         return claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
+                                     .Contains(AdminerPreviligs.HaveFullControl.ToString());
                     });
                 });
-                opts.AddPolicy(Variables.ViewAnySubAdminPolicy, policy =>
+                opts.AddPolicy(Variables.AdminPolicies.ControlOnAdministratorsPagePolicy, policy =>
                 {
                     policy.RequireAssertion(p => {
-                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs);
                         if (claimVal == null) return false;
                         return
                         claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.ViewAnySubAdmin)
+                                     .Contains(AdminerPreviligs.HaveControlOnAdminersPage.ToString())
                         ||
                         claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
+                                     .Contains(AdminerPreviligs.HaveFullControl.ToString());
 
                     });
                 });
-                opts.AddPolicy(Variables.CanAddSubAdminPolicy, policy =>
-                { 
-                    policy.RequireAssertion(p =>{
-                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
-                        if (claimVal == null) return false;
-                        return claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.AddNewAdmin)
-                        ||
-                        claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
-                    });
-                });
-                opts.AddPolicy(Variables.CanUpdateSubAdminPolicy, policy =>
+                opts.AddPolicy(Variables.AdminPolicies.ControlOnDrugsRequestsPagePolicy, policy =>
                 {
                     policy.RequireAssertion(p => {
-                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs);
                         if (claimVal == null) return false;
                         return
                         claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.UpdateSubAdmin)
+                                     .Contains(AdminerPreviligs.HaveControlOnDrugsREquestsPage.ToString())
                         ||
                         claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
-                    });
-                });
-                opts.AddPolicy(Variables.CanDeleteSubAdminPolicy, policy =>
-                {
-                    policy.RequireAssertion(p => {
-                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
-                        if (claimVal == null) return false;
-                        return
-                        claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.DeleteSubAdmin)
-                        ||
-                        claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
-                    });
-                });
-                opts.AddPolicy(Variables.CanAddNewRepresentativePolicy, policy =>
-                {
-                    policy.RequireAssertion(p => {
-                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Previligs);
-                        if (claimVal == null) return false;
-                        return
-                        claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.AddNewRepresentative)
-                        ||
-                        claimVal.Value.Split(",")
-                                     .Contains(AdminPreviligs.FullControlOnSubAdmins);
-                    });
-                });
+                                     .Contains(AdminerPreviligs.HaveFullControl.ToString());
 
+                    });
+                });
+                opts.AddPolicy(Variables.AdminPolicies.ControlOnPharmaciesPagePolicy, policy =>
+                {
+                    policy.RequireAssertion(p => {
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs);
+                        if (claimVal == null) return false;
+                        return
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminerPreviligs.HaveControlOnPharmaciesPage.ToString())
+                        ||
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminerPreviligs.HaveFullControl.ToString());
+
+                    });
+                });
+                opts.AddPolicy(Variables.AdminPolicies.ControlOnStocksPagePolicy, policy =>
+                {
+                    policy.RequireAssertion(p => {
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs);
+                        if (claimVal == null) return false;
+                        return
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminerPreviligs.HaveControlOnStocksPage.ToString())
+                        ||
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminerPreviligs.HaveFullControl.ToString());
+
+                    });
+                });
+                opts.AddPolicy(Variables.AdminPolicies.ControlOnVStockPagePolicy, policy =>
+                {
+                    policy.RequireAssertion(p => {
+                        var claimVal = p.User.Claims.FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs);
+                        if (claimVal == null) return false;
+                        return
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminerPreviligs.HaveControlOnVStockPage.ToString())
+                        ||
+                        claimVal.Value.Split(",")
+                                     .Contains(AdminerPreviligs.HaveFullControl.ToString());
+
+                    });
+                });
+                #endregion
             });
             return services;
         }

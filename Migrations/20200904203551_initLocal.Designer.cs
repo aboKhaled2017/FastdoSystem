@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fastdo.backendsys.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    [Migration("20200901203506_mighostv2")]
-    partial class mighostv2
+    [Migration("20200904203551_initLocal")]
+    partial class initLocal
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -442,7 +442,8 @@ namespace Fastdo.backendsys.Migrations
 
                     b.HasOne("Fastdo.Repositories.Models.Admin", "SuperAdmin")
                         .WithMany("SubAdmins")
-                        .HasForeignKey("SuperAdminId");
+                        .HasForeignKey("SuperAdminId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Fastdo.Repositories.Models.Area", b =>

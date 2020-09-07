@@ -38,6 +38,6 @@ namespace Fastdo.backendsys.Models
         [StringLength(20, MinimumLength = 5, ErrorMessage = "الاسم مابين 5 الى 20 حرف")]
         public string Name { get; set; }
 
-        public string Previligs { get; set; }
+        public string Priviligs { get; set; }
     }
 }

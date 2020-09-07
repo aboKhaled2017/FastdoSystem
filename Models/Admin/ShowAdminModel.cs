@@ -13,6 +13,6 @@ namespace Fastdo.backendsys.Models
         public string UserName { get; set; }
         public string PhoneNumber { get; set; }
         public string Type { get; set; }
-        public string Prevligs { get; set; }
+        public string Priviligs { get; set; }
     }
 }

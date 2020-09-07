@@ -8,6 +8,9 @@ using Fastdo.backendsys;
 using Fastdo.backendsys.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Diagnostics;
+using Fastdo.Repositories.Models;
+using System.Security.Claims;
+using Fastdo.backendsys.Global;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -39,12 +42,12 @@ namespace Microsoft.AspNetCore.Builder
             var _roleManager = RequestStaticServices.GetRoleManager();
             _roleManager._addRoles(new List<string> { Variables.adminer, Variables.pharmacier, Variables.stocker }).Wait();
             if (env.IsDevelopment())
-            {               
-                app._UseInitalSeeds_In_Developement().Wait();
+            {
+               // app._UseInitalSeeds_In_Developement().Wait();
             }
             else if(env.IsProduction())
             {
-                app._UseInitalSeeds_In_Production().Wait();
+               // app._UseInitalSeeds_In_Production().Wait();
             }
             return app;
         }
@@ -77,7 +80,53 @@ namespace Microsoft.AspNetCore.Builder
                   
                 });
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            }
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404 &&
+                    !context.Request.Path.Value.Contains("/api/", StringComparison.OrdinalIgnoreCase) &&
+                    context.Request.Path.Value.Contains("/AdminPanel/", StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Request.Path = "/AdminPanel/Home/Error";
+                    await next();
+                }
+            });
+            return app;
+        }
 
+        public static IApplicationBuilder _useCustomFunctionToBeImplemented(this IApplicationBuilder app,IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                var userManager = RequestStaticServices.GetUserManager();
+                var context = RequestStaticServices.GetDbContext();
+                var mainUser = userManager.FindByNameAsync("MahmoudAnwar").Result;
+                /*if (user != null)
+                {
+                    userManager.DeleteAsync(user).Wait();
+                    DataSeeder.SeedDefaultAdminstrator().Wait();
+                }*/
+                /*var user = new AppUser
+                {
+                    UserName = "ahmed251",
+                    PhoneNumber = "01154585695"
+                };
+                userManager.CreateAsync(user, "AAaa123").Wait();
+                userManager.AddToRoleAsync(user, Variables.adminer).Wait();
+                userManager.AddClaimsAsync(user, new List<Claim> { 
+                new Claim(Variables.AdminClaimsTypes.AdminType,AdminType.Administrator),
+                new Claim(Variables.AdminClaimsTypes.Priviligs,
+                $"{AdminerPreviligs.HaveControlOnAdminersPage.ToString()},{AdminerPreviligs.HaveControlOnStocksPage}")
+                }).Wait();
+                var admin = new Admin
+                {
+                    Name = "ahmed ali",
+                    SuperAdminId = mainUser.Id,
+                    User = user
+                };
+                context.Admins.Add(admin);
+                context.SaveChanges();*/
             }
             return app;
         }

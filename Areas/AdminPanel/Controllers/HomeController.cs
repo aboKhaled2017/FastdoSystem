@@ -5,14 +5,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Areas.AdminPanel.Models;
 using Fastdo.backendsys.Repositories;
+using Fastdo.Repositories.Models;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fastdo.backendsys.Areas.AdminPanel.Controllers
 {
     public class HomeController : MainController
     {
-        public HomeController(IAdminRepository adminRepository) : base(adminRepository)
+        public HomeController(IAdminRepository adminRepository, UserManager<AppUser> userManager) : base(adminRepository, userManager)
         {
         }
 

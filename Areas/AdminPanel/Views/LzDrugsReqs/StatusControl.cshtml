@@ -1,0 +1,12 @@
+﻿<div class="col-md-3 col-6">
+    <select class="form-control" id="reqStatusSelectInp">
+        <option disabled selected class="d-none">حالة الطلب</option>
+        <option value="">الكل</option>
+        <option value=@LzDrugRequestStatus.Pending>لم يتم الرد</option>
+        <option value=@LzDrugRequestStatus.Rejected>تم الرفض</option>
+        <option value=@LzDrugRequestStatus.Accepted>تم القبول</option>
+        <option value=@LzDrugRequestStatus.AtNegotioation>فى حالة تفاوض</option>
+        <option value=@LzDrugRequestStatus.AcceptedForAnotherOne>تم طلبة من قبل اخر</option>
+        <option value=@LzDrugRequestStatus.Completed>اكتمل</option>
+    </select>
+</div>

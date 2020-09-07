@@ -21,4 +21,13 @@ namespace Fastdo.backendsys
         add,
         update
     }
+    public enum AdminerPreviligs
+    {
+        HaveFullControl,
+        HaveControlOnAdminersPage,
+        HaveControlOnPharmaciesPage,
+        HaveControlOnStocksPage,
+        HaveControlOnVStockPage,
+        HaveControlOnDrugsREquestsPage
+    }
 }

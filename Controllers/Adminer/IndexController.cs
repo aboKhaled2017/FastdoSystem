@@ -16,8 +16,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admin", Name = "Admin")]
     [ApiController]
-    [Authorize(Policy = "AdminPolicy")]
-    public class IndexController : SharedAPIController
+    public class IndexController : MainAdminController
     {
 
         #region constructor and properties

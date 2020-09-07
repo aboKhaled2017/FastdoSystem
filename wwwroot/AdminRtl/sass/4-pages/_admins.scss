@@ -1,0 +1,83 @@
+﻿.adminsPageSection {
+    position: relative;
+    .dataTables_info {
+        display: none;
+    }
+
+    table {
+        tr > td {
+            &:first-of-type, &:last-of-type {
+                .btn {
+                    border-radius: 0;
+                }
+            }
+        }
+    }
+}
+
+#modal {
+    .modalImageInBody{
+        width:100%;
+    }
+}
+
+.modalForm {
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+
+        .addNewAdmin-box {
+            min-width: 350px;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0px 29px 147.5px 102.5px rgba(0, 0, 0, 0.05), 0px 29px 95px 0px rgba(0, 0, 0, 0.16);
+            perspective: 800px;
+            transition: all 0.5s ease-in-out;
+
+            .form-control-feedback {
+                color: red;
+            }
+
+            label {
+                color: #666;
+                font-weight: 700;
+            }
+
+            .utility {
+                display: flex;
+                padding: 1px;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .btn-container {
+                margin-bottom: 20px;
+            }
+
+            .addNewAdmin-form {
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 40px;
+                padding-bottom: 0;
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                transition: all 0.5s ease-in-out;
+            }
+        }
+    }
+
+    .modal-footer {
+        padding: 5px;
+
+        button {
+            width: 20%;
+        }
+
+        background: #fff;
+    }
+}

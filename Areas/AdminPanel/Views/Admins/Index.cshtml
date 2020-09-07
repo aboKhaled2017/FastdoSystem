@@ -1,0 +1,453 @@
+﻿
+@{
+    ViewData["Title"] = "صفحة المسؤلين";
+}
+<h3>صفحة المسؤلين</h3>
+
+<div class="row adminsPageSection">
+    <div class="ContainerOverlay">
+        <div class="inner-overlay">
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="tile">
+            <div class="tile-body" style="position:relative">
+                @{await Html.RenderPartialAsync(
+                      "PagingControls", 
+                      new PageingControlsViewModel {
+                          SearchPlaceholder = "ابحث بأسم المسؤل",
+                          OtherSections=new HtmlString($"<button id=\"addNewAdminerBtn\" class=\"btn btn-primary\"><i class=\"fa fa-user-plus\"></i> اضف مسؤل جديد </button>")
+                      });;}
+                <table class="table table-hover table-bordered dt-responsive" id="AdminsTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>التحكم</th>
+                            <th>الاسم</th>
+                            <th>اسم المستخدم</th>
+                            <th>النوع</th>
+                            <th>رقم الهاتف</th>
+                            <th>الصلاحيات</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6">
+                                <div>
+                                    <ul class="pagination" id="paginationUI">
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal -->
+<div class="modal fade" id="modal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="confirmModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="position:relative">
+            <div class="ContainerOverlay d-none">
+                <div class="inner-overlay">
+                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                </div>
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title">هل انت متأكد من حذف هذا المسؤل</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    حالة حذف حذف هذا الحساب ,سيتم انساب المسؤلين الذين تمت اضافتهم من خلال هذا لحساب الى المسؤل الذى قام باضافة هذا الى الحساب
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger cancel" data-dismiss="modal">الغاء</button>
+                <button type="button" class="btn btn-primary agree">موافق على حذف الحساب</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade modalForm" id="addNewAdminModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">اضافة مسؤل جديد</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="addNewAdmin-box">
+                    <div id="addNewAdminLoadingEl" class="ContainerOverlay d-none">
+                        <div class="inner-overlay">
+                            <i class="fa fa-circle-o-notch fa-spin"></i>
+                        </div>
+                    </div>
+                    <form class="addNewAdmin-form" id="addNewAdminForm">
+                        <h6 id="generalErrorOfAdd">
+                        </h6>
+                        <div class="form-group">
+                            <label class="control-label">اسم المستخدم</label>
+                            <input id="userNameAddInpt" name="userName" autocomplete="off"
+                                   class="form-control" type="text" placeholder="اسم المستخدم"
+                                   min="3" data-error="UserName"
+                                   autofocus required title="ادخل اسم المستخدم">
+                            <div class="form-control-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">اسم المسؤل</label>
+                            <input id="nameAddInpt" name="name"
+                                   class="form-control" type="text"
+                                   data-title="الاسم على الاقل من 5 حروف"
+                                   placeholder="اسم المسؤل" autofocus
+                                   min="3" data-error="Name"
+                                   required title="ادخل اسم المسؤل">
+                            <div class="form-control-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">رقم الهاتف</label>
+                            <input id="phoneNumberAddInpt" name="phoneNumber"
+                                   data-error="PhoneNumber"
+                                   data-title="رقم الهاتف غير صحيح"
+                                   pattern="^((010)|(011)|(012)|(015)|(017))[0-9]{8}$"
+                                   class="form-control" type="tel" placeholder="رقم الهاتف"
+                                   autofocus required title="ادخل رقم الهاتف">
+                            <div class="form-control-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">كلمة المرور</label>
+                            <input autocomplete="off" name="password" 
+                                   id="passwordAddInpt" class="form-control" 
+                                   data-title="كلمة المرور على الاقل 6 حروف او ارقام"
+                                   type="password" placeholder="كلمة المرور" 
+                                   data-error="Password"
+                                   required title="ادخل كلمة المرور">
+                            <div class="form-control-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">تأكيد كلمة المرور</label>
+                            <input autocomplete="off" name="confirmPassword" 
+                                   id="confirmPasswordAddInpt" class="form-control" 
+                                   data-title="كلمتى المرور غير متطابقتان"
+                                   type="password" placeholder="تأكيد كلمة المرور" 
+                                   data-error="ConfirmPassword"
+                                   required title="ادخل تأكيد كلمة المرور">
+                            <div class="form-control-feedback"></div>
+                        </div>
+                        <div class="btn-group d-none" role="group">
+                            <button class="btn btn-primary dropdown-toggle" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                نوع المسؤل
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#">Dropdown link</a>
+                                <a class="dropdown-item" href="#">Dropdown link</a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="adminType" value="Administrator" />
+                        <div class="form-group">
+                            <p>اختر صلاحيات المسؤل</p>
+                            <div class="utility">
+                                <div class="animated-checkbox priviligs d-block">
+                                    <label class="d-block">
+                                        <input id="priviligControll_All_AddInp" name="HaveFullControl" type="checkbox" value="false"><span class="label-text">تحكم كلى</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_Pharmas_AddInp" name="HaveControlOnPharmaciesPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة الصيدليات</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_Stocks_AddInp" name="HaveControlOnStocksPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة المخازن</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_VStock_AddInp" name="HaveControlOnVStockPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة المخزن الافتراضى</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_Admins_AddInp" name="HaveControlOnAdminersPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة المسؤلين</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_DrugsReqs_AddInp" name="HaveControlOnDrugsREquestsPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة طلبات الرواكد</span>
+                                    </label>
+                                </div>
+                                <div id="priviligsErrorOfAdd" class="form-control-feedback d-block" data-title="من فضلك اختر صلاحية على الاقل"></div>
+                            </div>
+                        </div>
+                        <div class="form-group btn-container">
+                            <button class="btn btn-primary btn-block" id="loginBtnSubmit">
+                                <i class="fa fa-user-plus fa-lg fa-fw"></i>ارسال
+                            </button>         
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button id="clearFormDataBtn" type="button" class="btn btn-primary">محو البيانات</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">اغلاق</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade modalForm" id="updateAdminModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">تعديل البيانات</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="addNewAdmin-box">
+                    <div id="updateAdminLoadingEl" class="ContainerOverlay d-none">
+                        <div class="inner-overlay">
+                            <i class="fa fa-circle-o-notch fa-spin"></i>
+                        </div>
+                    </div>
+                    <form class="addNewAdmin-form" id="updateAdminForm">
+                        <h6 id="generalErrorOfUpdate">
+                        </h6>
+                        <div class="form-group">
+                            <label class="control-label">اسم المسؤل</label>
+                            <input id="nameUpdateInpt" name="name"
+                                   class="form-control" type="text"
+                                   data-title="الاسم على الاقل من 5 حروف"
+                                   placeholder="اسم المسؤل" autofocus
+                                   min="3" data-error="Name"
+                                   required title="ادخل اسم المسؤل">
+                            <div class="form-control-feedback"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <p>اختر صلاحيات المسؤل</p>
+                            <div class="utility">
+                                <div class="animated-checkbox priviligs d-block">
+                                    <label class="d-block">
+                                        <input id="priviligControll_All_UpdateInp" name="HaveFullControl" type="checkbox" value="false"><span class="label-text">تحكم كلى</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_Pharmas_UpdateInp" name="HaveControlOnPharmaciesPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة الصيدليات</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_Stocks_UpdateInp" name="HaveControlOnStocksPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة المخازن</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_VStock_UpdateInp" name="HaveControlOnVStockPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة المخزن الافتراضى</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_Admins_UpdateInp" name="HaveControlOnAdminersPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة المسؤلين</span>
+                                    </label>
+                                    <label class="d-block">
+                                        <input id="priviligControll_DrugsReqs_UpdateInp" name="HaveControlOnDrugsREquestsPage" type="checkbox" value="false"><span class="label-text">تحكم فى صفحة طلبات الرواكد</span>
+                                    </label>
+                                </div>
+                                <div id="priviligsErrorOfUpdate" class="form-control-feedback d-block" data-title="من فضلك اختر صلاحية على الاقل"></div>
+                            </div>
+                        </div>
+                        <div class="form-group btn-container">
+                            <button class="btn btn-primary btn-block" id="updateAdminBtnSubmit">
+                                <i class="fa fa-edit fa-lg fa-fw"></i>تعديل
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">اغلاق</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade modalForm" id="updateUserNameAdminModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">تعديل اسم المستخدم</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="addNewAdmin-box">
+                    <div id="updateUserNameAdminLoadingEl" class="ContainerOverlay d-none">
+                        <div class="inner-overlay">
+                            <i class="fa fa-circle-o-notch fa-spin"></i>
+                        </div>
+                    </div>
+                    <form class="addNewAdmin-form" id="updateUserNameAdminForm">
+                        <h6 id="generalErrorOfUpdateUserName">
+                        </h6>
+                        <div class="form-group">
+                            <label class="control-label">اسم المستخدم</label>
+                            <input id="userNameUpdateInpt" name="newUserName" autocomplete="off"
+                                   class="form-control" type="text" placeholder="اسم المستخدم"
+                                   min="3" data-error="NewUserName"
+                                   data-title="اسم المستخدم غير صالح"
+                                   autofocus required title="ادخل اسم المستخدم">
+                            <div class="form-control-feedback"></div>
+                        </div>                        
+                        <div class="form-group btn-container">
+                            <button class="btn btn-primary btn-block" id="updateUserNameAdminBtnSubmit">
+                                <i class="fa fa-edit fa-lg fa-fw"></i>تعديل
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">اغلاق</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade modalForm" id="updatePhoneAdminModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">تعديل رقم الهاتف</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="addNewAdmin-box">
+                    <div id="updatePhoneAdminLoadingEl" class="ContainerOverlay d-none">
+                        <div class="inner-overlay">
+                            <i class="fa fa-circle-o-notch fa-spin"></i>
+                        </div>
+                    </div>
+                    <form class="addNewAdmin-form" id="updatePhoneAdminForm">
+                        <h6 id="generalErrorOfUpdatePhone">
+                        </h6>
+                        <div class="form-group">
+                            <label class="control-label">رقم الهاتف</label>
+                            <input id="phoneNumberUpdateInpt" name="phoneNumber" autocomplete="off"
+                                   class="form-control" type="text" placeholder="رقم الهاتف"
+                                   pattern="^((010)|(011)|(012)|(015)|(017))[0-9]{8}$" data-error="PhoneNumber"
+                                   autofocus required title="ادخل رقم الهاتف">
+                            <div class="form-control-feedback"></div>
+                        </div>
+                        <div class="form-group btn-container">
+                            <button class="btn btn-primary btn-block" id="updatePhoneAdminBtnSubmit">
+                                <i class="fa fa-edit fa-lg fa-fw"></i>تعديل
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">اغلاق</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade modalForm" id="updatePasswordAdminModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">تغيير كلمة المرور</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="addNewAdmin-box">
+                    <div id="updatePasswordAdminLoadingEl" class="ContainerOverlay d-none">
+                        <div class="inner-overlay">
+                            <i class="fa fa-circle-o-notch fa-spin"></i>
+                        </div>
+                    </div>
+                    <form class="addNewAdmin-form" id="updatePasswordAdminForm">
+                        <h6 id="generalErrorOfAdd">
+                        </h6>
+                        <div class="form-group">
+                            <label class="control-label">كلمة المرور الجديدة</label>
+                            <input autocomplete="off" name="newPassword"
+                                   id="newPasswordUpdateInpt" class="form-control"
+                                   data-title="كلمة المرور على الاقل 6 حروف او ارقام"
+                                   type="password" placeholder="كلمة المرور الجديدة"
+                                   data-error="NewPassword"
+                                   required title="ادخل كلمة المرور">
+                            <div class="form-control-feedback"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">تأكيد كلمة المرور</label>
+                            <input autocomplete="off" name="confirmPassword"
+                                   id="confirmPasswordUpdateInpt" class="form-control"
+                                   data-title="كلمتى المرور غير متطابقتان"
+                                   type="password" placeholder="تأكيد كلمة المرور"
+                                   data-error="ConfirmPassword"
+                                   required title="ادخل تأكيد كلمة المرور">
+                            <div class="form-control-feedback"></div>
+                        </div>
+                        <div class="form-group btn-container">
+                            <button class="btn btn-primary btn-block" id="updatePasswordAdminBtnSubmit">
+                                <i class="fa fa-edit fa-lg fa-fw"></i>تعديل
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">اغلاق</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts{
+    
+    <script src="~/AdminRtl/js/Scripts/AdminsPageScripts.js"></script>
+}
+
+

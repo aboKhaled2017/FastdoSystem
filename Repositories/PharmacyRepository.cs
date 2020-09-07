@@ -64,6 +64,7 @@ namespace Fastdo.backendsys.Repositories
                 .Select(p => new Get_PageOf_Pharmacies_ADMModel
             {
                 Id=p.Id,
+                Email=p.User.Email,
                 MgrName=p.MgrName,
                 Name=p.Name,
                 OwnerName=p.OwnerName,
@@ -72,8 +73,8 @@ namespace Fastdo.backendsys.Repositories
                 LicenseImgSrc=p.LicenseImgSrc,
                 CommercialRegImgSrc=p.CommercialRegImgSrc,
                 Status=p.Status,
-                Address=p.Address,
-                AreaId=p.AreaId,
+                Address = $"{p.Area.SuperArea.Name}/{p.Area.Name}",
+                AreaId =p.AreaId,
                 joinedStocksCount=p.GoinedStocks.Count,
                 lzDrugsCount=p.LzDrugs.Count,
                 requestedDrugsCount=p.RequestedLzDrugs.Count               

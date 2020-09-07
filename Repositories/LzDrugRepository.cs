@@ -21,10 +21,11 @@ namespace Fastdo.backendsys.Repositories
         {
             var sourceData = _context.LzDrugs
                         .OrderBy(d => d.Name)
-                        .GroupBy(d => d.Name)
-                        .Select(drgGroup => new Show_VStock_LzDrg_ADM_Model { 
-                         Name=drgGroup.First().Name,
-                         Products=drgGroup.Select(d=>new VStock_LzDrg_For_Pharmacy_ADM_Model { 
+                        .GroupBy(d =>new {d.Name,d.Type})                       
+                        .Select(g => new Show_VStock_LzDrg_ADM_Model { 
+                         Name=g.Key.Name,
+                         Type=g.Key.Type,
+                         Products=g.Select(d=>new VStock_LzDrg_For_Pharmacy_ADM_Model { 
                             DrugId=d.Id,
                             ConsumeType=d.ConsumeType,
                             Discount=d.Discount,
@@ -35,9 +36,16 @@ namespace Fastdo.backendsys.Repositories
                             Quantity=d.Quantity,
                             Type=d.Type,
                             UnitType=d.UnitType,
-                            ValideDate=d.ValideDate
+                            ValideDate=d.ValideDate,
+                            Desc=d.Desc
                          })
                         });
+            if (!string.IsNullOrEmpty(_params.S))
+            {
+                var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
+                sourceData = sourceData
+                     .Where(d => d.Name.ToLowerInvariant().Contains(searchQueryForWhereClause));
+            }
             return await PagedList<Show_VStock_LzDrg_ADM_Model>.CreateAsync(sourceData, _params);
         }
         public async Task<PagedList<LzDrugModel_BM>> GetAll_BM(LzDrgResourceParameters _params)
@@ -89,6 +97,7 @@ namespace Fastdo.backendsys.Repositories
         public void Add(LzDrug drug)
         {
             drug.PharmacyId = UserId;
+            drug.Name = drug.Name.Trim();
             _context.LzDrugs.Add(drug);
         }
         public void Update(LzDrug drug)
