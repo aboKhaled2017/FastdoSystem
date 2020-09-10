@@ -17,13 +17,13 @@ namespace Fastdo.backendsys.Controllers.Adminer
     [Route("api/admins/drgsReq",Name = "AdminLzDrugRequests")]
     [ApiController]
     [Authorize(Policy = "ControlOnDrugsRequestsPagePolicy")]
-    public class LzDrugsRequestController : MainAdminController
+    public class AdminLzDrugsRequestController : MainAdminController
     {
         #region constructor and properties
         private readonly ILzDrgRequestsRepository _lzDrgRequestsRepository;
         private readonly ILzDrugRepository _lzDrugRepository;
 
-        public LzDrugsRequestController(AccountService accountService, IMapper mapper, UserManager<AppUser> userManager,
+        public AdminLzDrugsRequestController(AccountService accountService, IMapper mapper, UserManager<AppUser> userManager,
             ILzDrgRequestsRepository lzDrgRequestsRepository,ILzDrugRepository lzDrugRepository) 
             : base(accountService, mapper, userManager)
         {

@@ -92,18 +92,14 @@ namespace Fastdo.backendsys
             {
                 op.TokenLifespan = TimeSpan.FromDays(1);
             });
-            services
-                .AddSwaggerDocument(c=> {
-                    c.Title = "Fastdo Api v1";                                  
-            });
+            services._AddSwaggr();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,IServiceProvider serviceProvider)
         {
-            app.UseOpenApi(c => {});
-            app.UseSwaggerUi3(c=> { });
+            app._UserSwagger();
             app._UseExceptions(env);
             if (env.IsProduction())
             {

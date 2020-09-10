@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fastdo.backendsys.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    [Migration("20200904203551_initLocal")]
-    partial class initLocal
+    [Migration("20200910135523_migHostV4.1")]
+    partial class migHostV41
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -252,9 +252,11 @@ namespace Fastdo.backendsys.Migrations
 
                     b.Property<string>("StockId");
 
-                    b.Property<int>("PharmacyClass");
+                    b.Property<string>("PharmacyClass");
 
                     b.Property<int>("PharmacyReqStatus");
+
+                    b.Property<bool>("Seen");
 
                     b.HasKey("PharmacyId", "StockId");
 
@@ -268,12 +270,14 @@ namespace Fastdo.backendsys.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<double>("Discount");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("Discount")
                         .IsRequired();
 
-                    b.Property<int>("Quantity");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60);
+
+                    b.Property<double>("Price");
 
                     b.Property<string>("StockId")
                         .IsRequired();
@@ -313,6 +317,8 @@ namespace Fastdo.backendsys.Migrations
 
                     b.Property<string>("PersPhone")
                         .IsRequired();
+
+                    b.Property<string>("PharmasClasses");
 
                     b.Property<int>("Status");
 
@@ -443,7 +449,7 @@ namespace Fastdo.backendsys.Migrations
                     b.HasOne("Fastdo.Repositories.Models.Admin", "SuperAdmin")
                         .WithMany("SubAdmins")
                         .HasForeignKey("SuperAdminId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Fastdo.Repositories.Models.Area", b =>

@@ -18,10 +18,10 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admin/auth", Name = "AdminAuth")]
     [ApiController]
-    public class AuthController : MainAdminController
+    public class AdminAuthController : MainAdminController
     {
         #region constructor and properties
-        public AuthController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
+        public AdminAuthController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
         {
         }
         #endregion

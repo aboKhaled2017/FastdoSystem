@@ -22,11 +22,11 @@ namespace Fastdo.backendsys.Controllers.Adminer
     [Route("api/admins", Name = "AdminAccount")]
     [ApiController]
     [Authorize(Policy = "ControlOnAdministratorsPagePolicy")]
-    public class AdminersController : MainAdminController
+    public class AdminerCRUDController : MainAdminController
     {
         #region constructor and properties
         IAdminRepository _adminRepository;
-        public AdminersController(UserManager<AppUser> userManager, IEmailSender emailSender, IAdminRepository adminRepository,
+        public AdminerCRUDController(UserManager<AppUser> userManager, IEmailSender emailSender, IAdminRepository adminRepository,
             AccountService accountService, IMapper mapper, TransactionService transactionService)
             : base(userManager, emailSender, accountService, mapper, transactionService)
         {

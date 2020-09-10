@@ -5,6 +5,7 @@ using System.Linq;
 using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Models;
+using Fastdo.backendsys.Controllers.Pharmacies;
 
 namespace Fastdo.backendsys.Repositories
 {
@@ -121,6 +122,19 @@ namespace Fastdo.backendsys.Repositories
         public async Task<Pharmacy> Get_IfExists(string id)
         {
             return await _context.Pharmacies.FindAsync(id);
+        }
+
+        public async Task<List<ShowSentRequetsToStockByPharmacyModel>> GetDentRequestsToStocks()
+        {
+          return await _context.PharmaciesInStocks
+                 .Where(r => r.PharmacyId == UserId)
+                .Select(r => new ShowSentRequetsToStockByPharmacyModel
+                {
+                    StockId = r.StockId,
+                    Seen = r.Seen,
+                    Status = r.PharmacyReqStatus,
+                    PharmaClass = r.PharmacyClass
+                }).ToListAsync();
         }
     }
 }

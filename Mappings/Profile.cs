@@ -6,6 +6,7 @@ using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys.InitSeeds.Helpers;
 using Fastdo.backendsys.Models;
+using Fastdo.backendsys.Controllers.Stocks;
 
 namespace Fastdo.backendsys.Mappings
 {
@@ -56,11 +57,18 @@ namespace Fastdo.backendsys.Mappings
             CreateMap<LzDrugRequest,LzDrgRequest_ForUpdate_BM>();
             CreateMap<LzDrgRequest_ForUpdate_BM, LzDrugRequest>();
 
+            CreateMap<LzDrugRequest, LzDrgRequest_ForUpdate_BM>();
+            CreateMap<LzDrgRequest_ForUpdate_BM, LzDrugRequest>();
+
             CreateMap<Pharmacy, Pharmacy_Update_ADM_Model>();
             CreateMap<Pharmacy_Update_ADM_Model, Pharmacy>();
 
-            CreateMap<Stock, Stock_Update_ADM_Model>();
-            CreateMap<Stock_Update_ADM_Model, Stock>();
+            CreateMap<PharmacyInStock, HandlePharmaRequestModel>()
+                .ForMember(dest => dest.PharmaClass, o => o.MapFrom(s => s.PharmacyClass))
+                .ForMember(dest => dest.Status, o => o.MapFrom(s => s.PharmacyReqStatus));
+            CreateMap<HandlePharmaRequestModel, PharmacyInStock>()
+                .ForMember(dest => dest.PharmacyClass, o => o.MapFrom(s => s.PharmaClass))
+                .ForMember(dest => dest.PharmacyReqStatus, o => o.MapFrom(s => s.Status));
 
 
             /*CreateMap<LzDrug, LzDrugCard_Info_BM>();

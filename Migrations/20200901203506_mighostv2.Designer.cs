@@ -4,14 +4,16 @@ using Fastdo.Repositories.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fastdo.backendsys.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    partial class SysDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200901203506_mighostv2")]
+    partial class mighostv2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,11 +252,9 @@ namespace Fastdo.backendsys.Migrations
 
                     b.Property<string>("StockId");
 
-                    b.Property<string>("PharmacyClass");
+                    b.Property<int>("PharmacyClass");
 
                     b.Property<int>("PharmacyReqStatus");
-
-                    b.Property<bool>("Seen");
 
                     b.HasKey("PharmacyId", "StockId");
 
@@ -268,14 +268,12 @@ namespace Fastdo.backendsys.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Discount")
-                        .IsRequired();
+                    b.Property<double>("Discount");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(60);
+                        .IsRequired();
 
-                    b.Property<double>("Price");
+                    b.Property<int>("Quantity");
 
                     b.Property<string>("StockId")
                         .IsRequired();
@@ -315,8 +313,6 @@ namespace Fastdo.backendsys.Migrations
 
                     b.Property<string>("PersPhone")
                         .IsRequired();
-
-                    b.Property<string>("PharmasClasses");
 
                     b.Property<int>("Status");
 
@@ -446,8 +442,7 @@ namespace Fastdo.backendsys.Migrations
 
                     b.HasOne("Fastdo.Repositories.Models.Admin", "SuperAdmin")
                         .WithMany("SubAdmins")
-                        .HasForeignKey("SuperAdminId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("SuperAdminId");
                 });
 
             modelBuilder.Entity("Fastdo.Repositories.Models.Area", b =>

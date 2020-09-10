@@ -14,11 +14,11 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admins/drgs", Name = "AdminLzDrugs")]
     [ApiController]
-    public class LzDrgsController : MainAdminController
+    public class AdminLzDrgsController : MainAdminController
     {
         #region Constructors and properties
         public ILzDrugRepository _lzDrugRepository { get; }
-        public LzDrgsController(AccountService accountService, IMapper mapper, UserManager<AppUser> userManager,ILzDrugRepository lzDrugRepository) 
+        public AdminLzDrgsController(AccountService accountService, IMapper mapper, UserManager<AppUser> userManager,ILzDrugRepository lzDrugRepository) 
             : base(accountService, mapper, userManager)
         {
             _lzDrugRepository = lzDrugRepository;

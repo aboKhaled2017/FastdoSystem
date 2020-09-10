@@ -49,6 +49,16 @@ namespace Fastdo.backendsys
             public static string Priviligs = "Priviligs";
 
         }
+        public static class ExcelPaths
+        {
+            public static string StockDrugsReportFilePath
+            {
+                get
+                {
+                    return Path.Combine(RequestStaticServices.GetHostingEnv().WebRootPath, "Sheets", "Stocks", "Orders");
+                }
+            }
+        }
         public static class ImagesPaths
         {
             public static string PharmacyLicenseImgSrc 

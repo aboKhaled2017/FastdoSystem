@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
+  <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
@@ -8,6 +8,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
@@ -15,34 +17,45 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="LocalMigrations\**" />
     <Compile Remove="Logs\**" />
     <Compile Remove="wwwroot\Images\**" />
     <Compile Remove="wwwroot\node_modules\**" />
+    <Content Remove="LocalMigrations\**" />
     <Content Remove="Logs\**" />
     <Content Remove="wwwroot\Images\**" />
     <Content Remove="wwwroot\node_modules\**" />
+    <EmbeddedResource Remove="LocalMigrations\**" />
     <EmbeddedResource Remove="Logs\**" />
     <EmbeddedResource Remove="wwwroot\Images\**" />
     <EmbeddedResource Remove="wwwroot\node_modules\**" />
+    <None Remove="LocalMigrations\**" />
     <None Remove="Logs\**" />
     <None Remove="wwwroot\Images\**" />
     <None Remove="wwwroot\node_modules\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="nlog.config" />
+    <Content Remove="web.config" />
     <Content Remove="wwwroot\AdminRtl\js\Scripts\Interfaces.d.ts" />
     <Content Remove="wwwroot\AdminRtl\js\Scripts\Services\commonServices.ts" />
     <Content Remove="wwwroot\AdminRtl\js\Scripts\Utiles.ts" />
     <Content Remove="wwwroot\package-lock.json" />
     <Content Remove="wwwroot\package.json" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="LocalMigrations.rar" />
+    <None Remove="system.db" />
+  </ItemGroup>
   
  
    
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
+    <PackageReference Include="EFCore.BulkExtensions" Version="2.6.4" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
   </ItemGroup>
 
@@ -50,7 +63,9 @@
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="IdentityServer4" Version="2.5.4" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.0">
+      <AllowExplicitVersion>true</AllowExplicitVersion>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
 
     <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
@@ -59,22 +74,35 @@
 
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.2.0" />
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
     <PackageReference Include="NHibernate" Version="5.2.7" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.3" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.7.0" />
     <PackageReference Include="NSwag.Core" Version="13.7.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.5" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
   </ItemGroup>
 
 
   <ItemGroup>
     <Folder Include="Areas\AdminPanel\Data\" />
     <Folder Include="wwwroot\AdminRtl\js\dest\" />
+    <Folder Include="wwwroot\Sheets\Stocks\Orders\" />
   </ItemGroup>
 
 
@@ -267,12 +295,6 @@
     <ProjectReference Include="..\Fastdo.Repositories\Fastdo.Repositories.csproj" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Reference Include="System.Models">
-      <HintPath>..\..\System.Models\bin\Release\netcoreapp2.2\System.Models.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
 
   <ItemGroup>

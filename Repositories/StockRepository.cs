@@ -5,6 +5,8 @@ using System.Linq;
 using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Models;
+using Fastdo.backendsys.Controllers.Stocks.Models;
+using Fastdo.backendsys.Controllers.Stocks;
 
 namespace Fastdo.backendsys.Repositories
 {
@@ -22,6 +24,45 @@ namespace Fastdo.backendsys.Repositories
         public IQueryable GetAllAsync()
         {
             return _context.Stocks;
+        }
+        public async Task<PagedList<GetPageOfSearchedStocks>> GetPageOfSearchedStocks(StockSearchResourceParameters _params)
+        {
+            var originalData = _context.Stocks
+            .OrderBy(d => d.Name)
+            .Where(s => s.User.EmailConfirmed);
+            
+            if (!string.IsNullOrEmpty(_params.S))
+            {
+                var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
+                originalData = originalData
+                     .Where(d => d.Name.ToLowerInvariant().Contains(searchQueryForWhereClause));
+            }
+
+            if (_params.AreaIds != null && _params.AreaIds.Count() != 0)
+            {
+                originalData = originalData
+                .Where(d => _params.AreaIds.Any(aid => aid == d.AreaId));
+            }
+            else if (_params.CityIds != null && _params.CityIds.Count() != 0)
+            {
+                originalData = originalData
+                .Where(d => _params.CityIds.Any(cid => cid == d.Area.SuperAreaId));
+            }
+
+            var selectedData= originalData
+                .Select(p => new GetPageOfSearchedStocks
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    PersPhone = p.PersPhone,
+                    LandlinePhone = p.LandlinePhone,
+                    AddressInDetails = p.Address,
+                    Address = $"{p.Area.SuperArea.Name}/{p.Area.Name}",
+                    AreaId = p.AreaId,
+                    joinedPharmesCount = p.GoinToPharmacies.Count,
+                    drugsCount = p.SDrugs.Count
+                });
+            return await PagedList<GetPageOfSearchedStocks>.CreateAsync(selectedData, _params);
         }
         public async Task<bool> UpdateAsync(Stock stock)
         {
@@ -114,6 +155,65 @@ namespace Fastdo.backendsys.Repositories
         public async Task<Stock> Get_IfExists(string id)
         {
             return await _context.Stocks.FindAsync(id);
+        }
+
+        public async Task<PagedList<ShowPharmaReqToStkModelModel>> GetPharmaRequests(PharmaReqsResourceParameters _params)
+        {
+            var originalData = _context.PharmaciesInStocks
+                 .Where(r => r.StockId == UserId);                
+            if (!string.IsNullOrEmpty(_params.S))
+            {
+                var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
+                originalData = originalData
+                     .Where(d => d.Pharmacy.Name.ToLowerInvariant().Contains(searchQueryForWhereClause));
+            }
+            if (_params.Status != null)
+            {
+                originalData = originalData
+                     .Where(p => p.PharmacyReqStatus == _params.Status);
+            }
+            if (_params.PharmaClass != null)
+            {
+                originalData = originalData
+                     .Where(p => p.PharmacyClass.Equals(_params.PharmaClass));
+            }
+            var data = originalData
+                .Select(r => new ShowPharmaReqToStkModelModel
+                {
+                    PharmacyId = r.PharmacyId,
+                    Seen = r.Seen,
+                    Status = r.PharmacyReqStatus,
+                    PharmaClass = r.PharmacyClass
+                });
+            return await PagedList<ShowPharmaReqToStkModelModel>.CreateAsync(data, _params);
+        }
+        public async Task<bool> MakeRequestToStock(string stockId)
+        {
+            if (!_context.Stocks.Any(s => s.Id == stockId && !s.GoinToPharmacies.Any(p => p.PharmacyId == UserId)))
+                return false;
+            _context.PharmaciesInStocks.Add(new PharmacyInStock
+            {
+                PharmacyId = UserId,
+                StockId = stockId
+            });
+            return await SaveAsync();
+        }
+
+        public async Task<bool> DeletePharmacyRequest(string PharmaId)
+        {
+            if (!await _context.PharmaciesInStocks.AnyAsync(s => s.StockId == UserId && s.PharmacyId == PharmaId))
+                return false;
+            _context.PharmaciesInStocks.Remove(
+                await _context.PharmaciesInStocks
+                .SingleOrDefaultAsync(r => r.PharmacyId == PharmaId && r.StockId == UserId));
+            return await SaveAsync();
+        }
+        public async Task<bool> HandlePharmacyRequest(string pharmaId,Action<PharmacyInStock>OnRequestFounded)
+        {
+            var request =await _context.PharmaciesInStocks.SingleOrDefaultAsync(r=>r.StockId==UserId&&r.PharmacyId==pharmaId);
+            if (request == null) return false;
+            OnRequestFounded(request);
+            return await UpdateFieldsAsync_And_Save<PharmacyInStock>(request, prop => prop.Seen, prop => prop.PharmacyReqStatus);
         }
     }
 }

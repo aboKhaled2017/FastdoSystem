@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 using Fastdo.backendsys;
 using Fastdo.backendsys.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Diagnostics;
-using Fastdo.Repositories.Models;
-using System.Security.Claims;
-using Fastdo.backendsys.Global;
+
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -94,7 +91,13 @@ namespace Microsoft.AspNetCore.Builder
             });
             return app;
         }
+        public static IApplicationBuilder _UserSwagger(this IApplicationBuilder app)
+        {
+            app.UseOpenApi(c => { });
+            app.UseSwaggerUi3();
 
+            return app;
+        }
         public static IApplicationBuilder _useCustomFunctionToBeImplemented(this IApplicationBuilder app,IHostingEnvironment env)
         {
             if (env.IsDevelopment())

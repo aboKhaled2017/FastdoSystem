@@ -43,10 +43,12 @@ namespace Fastdo.backendsys.Controllers
 
         #region common methods for child controllers
         [Authorize]
+        [ApiExplorerSettings(IgnoreApi = true)]
         protected string GetUserId()
         {
             return _userManager.GetUserId(User);
         }
+        [ApiExplorerSettings(IgnoreApi = true)]
         protected void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)

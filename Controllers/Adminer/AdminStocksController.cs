@@ -19,11 +19,11 @@ namespace Fastdo.backendsys.Controllers.Adminer
     [Route("api/admins/stocks", Name = "AdminStocks")]
     [ApiController]
     [Authorize(Policy = "ControlOnStocksPagePolicy")]
-    public class StocksController : MainAdminController
+    public class AdminStocksController : MainAdminController
     {
         #region constructor and properties
         private readonly IStockRepository _stockRepository;
-        public StocksController(UserManager<AppUser> userManager, IEmailSender emailSender,
+        public AdminStocksController(UserManager<AppUser> userManager, IEmailSender emailSender,
             AccountService accountService, IMapper mapper, TransactionService transactionService,
             IStockRepository stockRepository) : base(userManager, emailSender, accountService, mapper, transactionService)
         {

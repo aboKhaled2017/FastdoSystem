@@ -16,12 +16,12 @@ namespace Fastdo.backendsys.Controllers.Adminer
 {
     [Route("api/admin", Name = "Admin")]
     [ApiController]
-    public class IndexController : MainAdminController
+    public class AdminIndexController : MainAdminController
     {
 
         #region constructor and properties
         IAdminRepository _adminRepository;
-        public IndexController(UserManager<AppUser> userManager, IEmailSender emailSender, IAdminRepository  adminRepository,
+        public AdminIndexController(UserManager<AppUser> userManager, IEmailSender emailSender, IAdminRepository  adminRepository,
             AccountService accountService, IMapper mapper, TransactionService transactionService) 
             : base(userManager, emailSender, accountService, mapper, transactionService)
         {

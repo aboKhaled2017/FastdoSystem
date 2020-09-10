@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using Fastdo.Repositories.Enums;
@@ -21,6 +20,8 @@ using Fastdo.backendsys.Services;
 using Fastdo.backendsys.Services.Auth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using NSwag.Generation.Processors.Security;
+using NSwag;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -46,6 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<TransactionService>();
             services.AddSingleton<HandlingProofImgsServices>();
             services.AddSingleton<IEmailSender,EmailSender>();
+            services.AddTransient<StkDrugsReportFromExcelService>();
             services.AddSingleton<IActionContextAccessor,ActionContextAccessor>();
             services.AddScoped<IUrlHelper,UrlHelper>(implementationFactory=> {
                 var actionContext = implementationFactory.GetService<IActionContextAccessor>().ActionContext;
@@ -64,6 +66,50 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ILzDrg_Search_Repository,LzDrg_Search_Repository>();
             services.AddScoped<IAreaRepository, AreaRepository>();
             services.AddScoped<IAdminRepository, AdminRepository>();
+            services.AddScoped<IStkDrugsRepository, StkDrugsRepository>();
+            return services;
+        }
+        public static IServiceCollection _AddSwaggr(this IServiceCollection services)
+        {
+            services
+               .AddOpenApiDocument(c => {
+                   c.Title = "Fastdo Api v1";
+                   c.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                   {
+                       Type = OpenApiSecuritySchemeType.ApiKey,
+                       Name = "Authorization",
+                       In = OpenApiSecurityApiKeyLocation.Header,
+                       Description = "Type into the textbox: Bearer {your JWT token}."
+                   });
+
+                   c.OperationProcessors.Add(
+                       new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+               });
+            /* services.AddSwaggerGen(c =>
+             {
+                 c.SwaggerDoc("v1", new Info
+                 {
+                     Title = "Fastdo API",
+                     Description="Fisrt version of Fastdo API",
+                     Version = "v1"
+                 });
+
+                 /*var security = new Dictionary<string, IEnumerable<string>>
+                 {
+                     {"Bearer",new string[0] }
+                 };
+                 c.AddSecurityDefinition("Bearer",
+                     new ApiKeyScheme
+                     {
+                         In = "header",
+                         Description = "Please enter into field the word 'Bearer' following by space and JWT",
+                         Name = "Authorization",
+                         Type = "apiKey"
+                     });
+                             c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
+                     { "Bearer", Enumerable.Empty<string>() },
+                 });
+             });*/
             return services;
         }
         public static IServiceCollection _AddSystemAuthentication(this IServiceCollection services)
