@@ -63,6 +63,9 @@ namespace Fastdo.backendsys.Mappings
             CreateMap<Pharmacy, Pharmacy_Update_ADM_Model>();
             CreateMap<Pharmacy_Update_ADM_Model, Pharmacy>();
 
+            CreateMap<Stock_Update_ADM_Model, Stock>();
+            CreateMap<Stock, Stock_Update_ADM_Model>();
+
             CreateMap<PharmacyInStock, HandlePharmaRequestModel>()
                 .ForMember(dest => dest.PharmaClass, o => o.MapFrom(s => s.PharmacyClass))
                 .ForMember(dest => dest.Status, o => o.MapFrom(s => s.PharmacyReqStatus));

@@ -50,7 +50,39 @@ namespace Fastdo.backendsys.Controllers.Stocks
         #region override methods from parent class
         [ApiExplorerSettings(IgnoreApi = true)]
         public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
-        {           
+        {
+            var _cardParams = _params as LzDrgResourceParameters;
+            switch (resourceUriType)
+            {
+                case ResourceUriType.PreviousPage:
+                    return Url.Link(routeName,
+                    new LzDrgResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber - 1,
+                        PageSize = _cardParams.PageSize,
+                        S = _cardParams.S
+                    }); ;
+                case ResourceUriType.NextPage:
+                    return Url.Link(routeName,
+                    new LzDrgResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber + 1,
+                        PageSize = _cardParams.PageSize,
+                        S = _cardParams.S
+                    });
+                default:
+                    return Url.Link(routeName,
+                    new LzDrgResourceParameters
+                    {
+                        PageNumber = _cardParams.PageNumber,
+                        PageSize = _cardParams.PageSize,
+                        S = _cardParams.S
+                    });
+            }            
+        }
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public string CreateResourceUriForPhamaReques(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        {
             var _requestsParams = _params as PharmaReqsResourceParameters;
             switch (resourceUriType)
             {
@@ -60,9 +92,9 @@ namespace Fastdo.backendsys.Controllers.Stocks
                     {
                         PageNumber = _requestsParams.PageNumber - 1,
                         PageSize = _requestsParams.PageSize,
-                        S = _requestsParams.S ,
-                        PharmaClass=_requestsParams.PharmaClass,
-                        Status=_requestsParams.Status
+                        S = _requestsParams.S,
+                        PharmaClass = _requestsParams.PharmaClass,
+                        Status = _requestsParams.Status
                     }); ;
                 case ResourceUriType.NextPage:
                     return Url.Link(routeName,
@@ -86,38 +118,6 @@ namespace Fastdo.backendsys.Controllers.Stocks
                     });
             }
         }
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public string CreateResourceUriForPhamaReques(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
-        {
-                var _cardParams = _params as LzDrgResourceParameters;
-                switch (resourceUriType)
-                {
-                    case ResourceUriType.PreviousPage:
-                        return Url.Link(routeName,
-                        new LzDrgResourceParameters
-                        {
-                            PageNumber = _cardParams.PageNumber - 1,
-                            PageSize = _cardParams.PageSize,
-                            S = _cardParams.S
-                        }); ;
-                    case ResourceUriType.NextPage:
-                        return Url.Link(routeName,
-                        new LzDrgResourceParameters
-                        {
-                            PageNumber = _cardParams.PageNumber + 1,
-                            PageSize = _cardParams.PageSize,
-                            S = _cardParams.S
-                        });
-                    default:
-                        return Url.Link(routeName,
-                        new LzDrgResourceParameters
-                        {
-                            PageNumber = _cardParams.PageNumber,
-                            PageSize = _cardParams.PageSize,
-                            S = _cardParams.S
-                        });
-                }
-        }
         #endregion
 
         #region update the stock report
@@ -130,11 +130,10 @@ namespace Fastdo.backendsys.Controllers.Stocks
             var response = _stkDrugsReportFromExcelService.ProcessFileAndGetReport(id, currentDrugs, model);
             if (!response.Status)
                 return BadRequest(Functions.MakeError(response.ErrorMess));
-            _transactionService.Begin();
-            await _stkDrugsRepository.AddListOfDrugs(response.StkDrugsReport.ToList(), currentDrugs,id);
-
             try
             {
+                _transactionService.Begin();
+                await _stkDrugsRepository.AddListOfDrugs(response.StkDrugsReport.ToList(), currentDrugs, id);
                 _transactionService.CommitChanges().End();
                     return NoContent();
             }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fastdo.backendsys.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    [Migration("20200910135523_migHostV4.1")]
-    partial class migHostV41
+    [Migration("20200912091956_fastdoSqlServer_Init")]
+    partial class fastdoSqlServer_Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

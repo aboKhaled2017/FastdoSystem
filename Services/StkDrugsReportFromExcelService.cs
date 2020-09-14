@@ -60,6 +60,12 @@ namespace Fastdo.backendsys.Services
                 _ServiceResponse.ErrorMess = "تأكد بانك ادخلت ترتيب الاعمدة بشكل صحيح الاسم رقم1 والسعر رقم2 والخصم رقم3";
                 return _ServiceResponse;
             }
+            catch (IndexOutOfRangeException e)
+            {
+                if (!reader.IsClosed) reader.Close();
+                _ServiceResponse.ErrorMess = "يبدو انك ادخلت رقم عمود غير موجود,تأكد من ترتيب ارقام الاعمدة";
+                return _ServiceResponse;
+            }
             catch(NullReferenceException e)
             {
                 if (!reader.IsClosed) reader.Close();

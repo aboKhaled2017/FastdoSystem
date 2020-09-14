@@ -82,9 +82,6 @@ const helperFunctions = {
     },
     setAutherizations() {
         const token = localStorage.getItem('token');
-        if (!token) {
-            alert('problem detected at server')
-        }
         $.ajaxSetup({
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('Authorization', `bearer ${token}`);

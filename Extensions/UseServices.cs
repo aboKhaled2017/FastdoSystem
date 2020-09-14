@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Fastdo.backendsys;
 using Fastdo.backendsys.Services;
 using Microsoft.AspNetCore.Http;
-
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -60,8 +60,10 @@ namespace Microsoft.AspNetCore.Builder
 
                 app.UseExceptionHandler(appBuilder =>
                 {                    
+
                     appBuilder.Run(async context =>
-                    {                       
+                    {
+                        var exceptionDetails = context.Features.Get<IExceptionHandlerPathFeature>();
                         if (context.Request.Path.Value.Contains("/AdminPanel", StringComparison.OrdinalIgnoreCase) &&
                             !context.Request.Path.Value.Contains("/api/", StringComparison.OrdinalIgnoreCase))
                         {
@@ -70,7 +72,7 @@ namespace Microsoft.AspNetCore.Builder
                         else
                         {
                             context.Response.StatusCode = 500;
-                            await context.Response.WriteJsonAsync(Functions.MakeError("unhandled exception happend,try again"));
+                            await context.Response.WriteJsonAsync(Functions.MakeError(exceptionDetails.Error.Message));
                         }                     
                         
                     });

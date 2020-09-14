@@ -26,7 +26,7 @@
         _addNewAdminModalBody: $('#addNewAdminModal .modal-body'),
         _addNewAdminerBtn: $('#addNewAdminerBtn'),
         handleFormControls: function () {
-            var _this = this;
+            var _this_1 = this;
             var _this = this;
             this.form.find('input[type="text"],input[type="password"],input[type="tel"]').keyup(function (e) {
                 var $inp = $(this);
@@ -45,7 +45,7 @@
                     $this.parent('label').siblings().find('input').removeAttr('disabled').removeClass('n');
                 }
             });
-            this.clearFormDataBtn.click(function (e) { _this.clearFormFields(); });
+            this.clearFormDataBtn.click(function (e) { _this_1.clearFormFields(); });
         },
         addNewAdminAsync: function (executeOnErrors, executOnDone, executeAlwys) {
             if (executOnDone === void 0) { executOnDone = undefined; }
@@ -95,14 +95,14 @@
             return isValide;
         },
         handleOnSubmit: function () {
-            var _this = this;
+            var _this_1 = this;
             this.form.submit(function (e) {
                 e.preventDefault();
-                _this.setDataModelData();
-                if (!_this.validateForm())
+                _this_1.setDataModelData();
+                if (!_this_1.validateForm())
                     return;
-                _this.addNewAdminLoadingEl.toggleClass('d-none');
-                _this.addNewAdminAsync(function (errors) {
+                _this_1.addNewAdminLoadingEl.toggleClass('d-none');
+                _this_1.addNewAdminAsync(function (errors) {
                     $('#addNewAdminForm').find('input[type=text],input[type=password],input[type=tel]')
                         .next().each(function (i, el) {
                         var $el = $(el);
@@ -113,15 +113,15 @@
                         }
                     });
                     if (errors.G)
-                        _this.generalErrorOfAddEl.text(errors.G);
+                        _this_1.generalErrorOfAddEl.text(errors.G);
                     if (errors.Priviligs)
-                        _this.priviligsErrorEl.text(helperFunctions.getInputError(errors.Priviligs));
+                        _this_1.priviligsErrorEl.text(helperFunctions.getInputError(errors.Priviligs));
                 }, function () {
                     alert('تمت الاضافة بنجاح');
-                    _this.dtExecuterContext.refreshTableData();
-                    _this.clearFormFields();
+                    _this_1.dtExecuterContext.refreshTableData();
+                    _this_1.clearFormFields();
                 }, function () {
-                    _this.addNewAdminLoadingEl.toggleClass('d-none');
+                    _this_1.addNewAdminLoadingEl.toggleClass('d-none');
                     //(this._addNewAdminModal as any).modal('hide');
                 });
             });
@@ -143,9 +143,9 @@
             $('#addNewAdminForm').find('input[type=checkbox]:checked').removeAttr('disabled').click();
         },
         handleOnAddNewAdmin: function () {
-            var _this = this;
+            var _this_1 = this;
             this._addNewAdminerBtn.on('click', function (e) {
-                _this._addNewAdminModal.modal('show');
+                _this_1._addNewAdminModal.modal('show');
             });
         },
         start: function (dtExecuterContext) {
@@ -251,28 +251,28 @@
             });
         },
         handleOnSubmit: function () {
-            var _this = this;
+            var _this_1 = this;
             this.form.submit(function (e) {
                 e.preventDefault();
-                _this.setDataModelData();
-                if (!_this.validateForm())
+                _this_1.setDataModelData();
+                if (!_this_1.validateForm())
                     return;
-                _this.updateAdminLoadingEl.toggleClass('d-none');
-                _this.updateAdminAsync(_this.id, function (errors) {
-                    var attrib = _this.nameInp.prev().data('error');
+                _this_1.updateAdminLoadingEl.toggleClass('d-none');
+                _this_1.updateAdminAsync(_this_1.id, function (errors) {
+                    var attrib = _this_1.nameInp.prev().data('error');
                     if (errors[attrib]) {
-                        _this.nameInp.addClass('is-invalid');
-                        _this.nameInp.next().text(helperFunctions.getInputError(errors[attrib]));
+                        _this_1.nameInp.addClass('is-invalid');
+                        _this_1.nameInp.next().text(helperFunctions.getInputError(errors[attrib]));
                     }
                     if (errors.G)
-                        _this.generalErrorOfUpdateEl.text(errors.G);
+                        _this_1.generalErrorOfUpdateEl.text(errors.G);
                     if (errors.Priviligs)
-                        _this.priviligsErrorEl.text(helperFunctions.getInputError(errors.Priviligs));
+                        _this_1.priviligsErrorEl.text(helperFunctions.getInputError(errors.Priviligs));
                 }, function () {
                     alert('تمت التعديل بنجاح');
-                    _this.dtExecuterContext.refreshTableData();
+                    _this_1.dtExecuterContext.refreshTableData();
                 }, function () {
-                    _this.updateAdminLoadingEl.toggleClass('d-none');
+                    _this_1.updateAdminLoadingEl.toggleClass('d-none');
                     //(this._addNewAdminModal as any).modal('hide');
                 });
             });
@@ -354,26 +354,26 @@
             this.userNameInp.val(oldData.userName);
         },
         handleOnSubmit: function () {
-            var _this = this;
+            var _this_1 = this;
             this.form.submit(function (e) {
                 e.preventDefault();
-                _this.setDataModelData();
-                if (!_this.validateForm())
+                _this_1.setDataModelData();
+                if (!_this_1.validateForm())
                     return;
-                _this.updateAdminLoadingEl.toggleClass('d-none');
-                _this.updateAdminUserNameAsync(_this.id, function (errors) {
-                    var attrib = _this.userNameInp.data('error');
+                _this_1.updateAdminLoadingEl.toggleClass('d-none');
+                _this_1.updateAdminUserNameAsync(_this_1.id, function (errors) {
+                    var attrib = _this_1.userNameInp.data('error');
                     if (errors[attrib]) {
-                        _this.userNameInp.addClass('is-invalid');
-                        _this.userNameInp.next().text(helperFunctions.getInputError(errors[attrib]));
+                        _this_1.userNameInp.addClass('is-invalid');
+                        _this_1.userNameInp.next().text(helperFunctions.getInputError(errors[attrib]));
                     }
                     if (errors.G)
-                        _this.generalErrorOfUpdateEl.text(errors.G);
+                        _this_1.generalErrorOfUpdateEl.text(errors.G);
                 }, function () {
                     alert('تمت التعديل بنجاح');
-                    _this.dtExecuterContext.refreshTableData();
+                    _this_1.dtExecuterContext.refreshTableData();
                 }, function () {
-                    _this.updateAdminLoadingEl.toggleClass('d-none');
+                    _this_1.updateAdminLoadingEl.toggleClass('d-none');
                     //(this._addNewAdminModal as any).modal('hide');
                 });
             });
@@ -455,26 +455,26 @@
             this.phoneNumberInp.val(oldData.phoneNumber);
         },
         handleOnSubmit: function () {
-            var _this = this;
+            var _this_1 = this;
             this.form.submit(function (e) {
                 e.preventDefault();
-                _this.setDataModelData();
-                if (!_this.validateForm())
+                _this_1.setDataModelData();
+                if (!_this_1.validateForm())
                     return;
-                _this.updateAdminLoadingEl.toggleClass('d-none');
-                _this.updateAdminPhoneNumberAsync(_this.id, function (errors) {
-                    var attrib = _this.phoneNumberInp.data('error');
+                _this_1.updateAdminLoadingEl.toggleClass('d-none');
+                _this_1.updateAdminPhoneNumberAsync(_this_1.id, function (errors) {
+                    var attrib = _this_1.phoneNumberInp.data('error');
                     if (errors[attrib]) {
-                        _this.phoneNumberInp.addClass('is-invalid');
-                        _this.phoneNumberInp.next().text(helperFunctions.getInputError(errors[attrib]));
+                        _this_1.phoneNumberInp.addClass('is-invalid');
+                        _this_1.phoneNumberInp.next().text(helperFunctions.getInputError(errors[attrib]));
                     }
                     if (errors.G)
-                        _this.generalErrorOfUpdateEl.text(errors.G);
+                        _this_1.generalErrorOfUpdateEl.text(errors.G);
                 }, function () {
                     alert('تمت التعديل بنجاح');
-                    _this.dtExecuterContext.refreshTableData();
+                    _this_1.dtExecuterContext.refreshTableData();
                 }, function () {
-                    _this.updateAdminLoadingEl.toggleClass('d-none');
+                    _this_1.updateAdminLoadingEl.toggleClass('d-none');
                     //(this._addNewAdminModal as any).modal('hide');
                 });
             });
@@ -553,31 +553,31 @@
             return isValide;
         },
         handleOnSubmit: function () {
-            var _this = this;
+            var _this_1 = this;
             this.form.submit(function (e) {
                 e.preventDefault();
-                if (!_this.validateForm())
+                if (!_this_1.validateForm())
                     return;
-                _this.updateAdminLoadingEl.toggleClass('d-none');
-                _this.updateAdminPasswordAsync(_this.id, function (errors) {
-                    var attrib1 = _this.passwordInp.data('error');
+                _this_1.updateAdminLoadingEl.toggleClass('d-none');
+                _this_1.updateAdminPasswordAsync(_this_1.id, function (errors) {
+                    var attrib1 = _this_1.passwordInp.data('error');
                     if (errors[attrib1]) {
-                        _this.passwordInp.addClass('is-invalid');
-                        _this.passwordInp.next().text(helperFunctions.getInputError(errors[attrib1]));
+                        _this_1.passwordInp.addClass('is-invalid');
+                        _this_1.passwordInp.next().text(helperFunctions.getInputError(errors[attrib1]));
                     }
-                    var attrib2 = _this.confirmPasswordInp.data('error');
+                    var attrib2 = _this_1.confirmPasswordInp.data('error');
                     if (errors[attrib2]) {
-                        _this.confirmPasswordInp.addClass('is-invalid');
-                        _this.confirmPasswordInp.next().text(helperFunctions.getInputError(errors[attrib2]));
+                        _this_1.confirmPasswordInp.addClass('is-invalid');
+                        _this_1.confirmPasswordInp.next().text(helperFunctions.getInputError(errors[attrib2]));
                     }
                     if (errors.G)
-                        _this.generalErrorOfUpdateEl.text(errors.G);
+                        _this_1.generalErrorOfUpdateEl.text(errors.G);
                 }, function () {
                     alert('تمت التعديل بنجاح');
-                    _this.clearForm();
-                    _this.dtExecuterContext.refreshTableData();
+                    _this_1.clearForm();
+                    _this_1.dtExecuterContext.refreshTableData();
                 }, function () {
-                    _this.updateAdminLoadingEl.toggleClass('d-none');
+                    _this_1.updateAdminLoadingEl.toggleClass('d-none');
                     //(this._addNewAdminModal as any).modal('hide');
                 });
             });
@@ -736,15 +736,15 @@
         },
         onRemovePharmacyConfirmed: function () { },
         handleConfirmModal: function () {
-            var _this = this;
+            var _this_1 = this;
             this._confirmModal.data('agree', false);
             this._confirmModal.find('.modal-footer .cancel').eq(0).click(function (e) {
-                _this._confirmModal.data('agree', false);
-                _this.onRemovePharmacyConfirmed();
+                _this_1._confirmModal.data('agree', false);
+                _this_1.onRemovePharmacyConfirmed();
             });
             this._confirmModal.find('.modal-footer .agree').eq(0).click(function (e) {
-                _this._confirmModal.data('agree', true).modal('hide');
-                _this.onRemovePharmacyConfirmed();
+                _this_1._confirmModal.data('agree', true).modal('hide');
+                _this_1.onRemovePharmacyConfirmed();
             });
         },
         deleteAdminAsync: function (rowData, afterDelete, alwysExecute) {
