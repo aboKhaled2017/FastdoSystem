@@ -11,7 +11,8 @@ namespace Fastdo.backendsys.Repositories
 {
     public interface IStockRepository:IMainRepository
     {
-        Task<PagedList<ShowPharmaReqToStkModelModel>> GetPharmaRequests(PharmaReqsResourceParameters _params);
+        Task<List<string>> GetStockClassesOfJoinedPharmas(string stockId);
+        Task<PagedList<ShowPharmaReqToStkModel>> GetPharmaRequests(PharmaReqsResourceParameters _params);
         Task<bool> HandlePharmacyRequest(string pharmaId, Action<PharmacyInStock> OnRequestFounded);
         Task<bool> DeletePharmacyRequest(string PharmaId);
         Task<bool> MakeRequestToStock(string stockId);
@@ -27,7 +28,9 @@ namespace Fastdo.backendsys.Repositories
          void UpdateName(Stock stock);
          void UpdateContacts(Stock stock);
         Task<bool> Patch_Apdate_ByAdmin(Stock stk);
-        Task<Stock> Get_IfExists(string id);      
-
+        Task<Stock> Get_IfExists(string id);
+        Task<string> AddNewPharmaClass(string newClass);
+        Task<string> RemovePharmaClass(string deletedClass);
+        Task<string> RenamePharmaClass(UpdateStockClassForPharmaModel model);
     }
 }

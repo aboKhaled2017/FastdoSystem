@@ -12,6 +12,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
         public int ColPriceOrder { get; set; } = 1;
 
         public int ColDiscountOrder { get; set; } = 2;
+        [Required(ErrorMessage ="من فضلك اختر التصنيف")]
         public string ForClass { get; set; }
 
         [Required(ErrorMessage ="من فضلك ادخل  ملف الاكسل الخاص بالبيانات")]

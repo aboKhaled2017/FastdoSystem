@@ -93,15 +93,20 @@ namespace Fastdo.backendsys.Controllers
             Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
             return Ok(BM_Cards);
         }
-        [HttpGet("stkRequests")]
+        [HttpGet("sentReqsStks")]
         public async Task<IActionResult> GetSentReqiestsToStocks()
         {
-            return Ok(await _pharmacyRepository.GetDentRequestsToStocks());
+            return Ok(await _pharmacyRepository.GetSentRequestsToStocks());
+        }
+        [HttpGet("joinedStks")]
+        public async Task<IActionResult> GetJoinedStocks()
+        {
+            return Ok(await _pharmacyRepository.GetUserJoinedStocks());
         }
 
         #endregion
 
-        #region Post
+        #region Put
         [HttpPut("stkRequests/{stockId}")]
         public async Task<IActionResult> MakeRequestToStock(string stockId)
         {

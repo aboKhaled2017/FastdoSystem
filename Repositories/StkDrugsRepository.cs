@@ -59,7 +59,6 @@ namespace Fastdo.backendsys.Repositories
             
         }
 
-
         public async Task<List<DiscountPerStkDrug>> GetDiscountsForEachStockDrug(string id)
         {
             return await _context.StkDrugs

@@ -25,10 +25,10 @@ namespace Fastdo.backendsys.Services
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub,user.Id),
-                new Claim("UserId",user.Id),
+                new Claim(Variables.UserClaimsTypes.UserId,user.Id),
                 new Claim(ClaimTypes.Name,name),
-                new Claim("Phone",user.PhoneNumber),
-                new Claim("UserName",user.UserName),
+                new Claim(Variables.UserClaimsTypes.Phone,user.PhoneNumber),
+                new Claim(Variables.UserClaimsTypes.UserName,user.UserName),
                 new Claim(ClaimTypes.Role,Variables.adminer),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString())
@@ -41,9 +41,9 @@ namespace Fastdo.backendsys.Services
             var token = new JwtSecurityTokenHandler().WriteToken(jwt);
             return CreateTokenModel(token, DateTime.UtcNow.Ticks);
         }
-        public TokenModel CreateAccessToken(AppUser user, string role,string compName)
+        public TokenModel CreateAccessToken(AppUser user, string role,string compName,Action<List<Claim>> addOtherClaims=null)
         {
-            var claims = new Claim[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub,user.Id),
                 new Claim("UserId",user.Id),
@@ -56,6 +56,7 @@ namespace Fastdo.backendsys.Services
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),
             };
+            addOtherClaims?.Invoke(claims);
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JWT.GetValue<string>("signingKey")));
             var signingCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
             //addClaims(claims);

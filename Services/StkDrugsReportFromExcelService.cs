@@ -29,7 +29,10 @@ namespace Fastdo.backendsys.Services
             _env = env;
             _ServiceResponse = new StkDrgsReportFromExcelResponse { };
         }
-        public StkDrgsReportFromExcelResponse ProcessFileAndGetReport(object Id, List<DiscountPerStkDrug> currentDrgs,StockDrugsReporstModel model)
+        public StkDrgsReportFromExcelResponse ProcessFileAndGetReport(
+            object Id, 
+            List<DiscountPerStkDrug> currentDrgs,
+            StockDrugsReporstModel model)
         {
             if (model.Sheet == null)
                 return _ServiceResponse;

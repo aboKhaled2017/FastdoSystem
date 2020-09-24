@@ -10,8 +10,10 @@ namespace Fastdo.backendsys.Repositories
 {
     public interface IPharmacyRepository:IMainRepository
     {
+        Task<List<List<string>>> GetPharmaClassesOfJoinedStocks(string pharmaId);
+        Task<IEnumerable<ShowJoinedStocksOfPharmaModel>> GetUserJoinedStocks();
         Task<bool> AddAsync(Pharmacy pharmacy);
-        Task<List<ShowSentRequetsToStockByPharmacyModel>> GetDentRequestsToStocks();
+        Task<List<ShowSentRequetsToStockByPharmacyModel>> GetSentRequestsToStocks();
         IQueryable<Pharmacy> GetAllAsync();
         Task<PagedList<Get_PageOf_Pharmacies_ADMModel>> Get_PageOf_PharmacyModels_ADM(PharmaciesResourceParameters _params);
         Task<bool> UpdateAsync(Pharmacy pharmacy);

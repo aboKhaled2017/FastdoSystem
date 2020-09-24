@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Controllers.Stocks
 {
-    public class ShowPharmaReqToStkModelModel
+    public class ShowPharmaReqToStkModel
     {
         public string PharmacyId { get; set; }
         public PharmacyRequestStatus Status { get; set; }

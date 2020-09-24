@@ -12,6 +12,8 @@ using System.Text;
 using Fastdo.backendsys.Models;
 using AutoMapper;
 using Fastdo.backendsys.Repositories;
+using System.Security.Claims;
+using Newtonsoft.Json;
 
 namespace Fastdo.backendsys.Services.Auth
 {
@@ -73,19 +75,35 @@ namespace Fastdo.backendsys.Services.Auth
         }
         public ISigningResponseModel GetSigningInResponseModelForPharmacy(AppUser user, Pharmacy pharmacy)
         {
-                return new SigningPharmacyClientInResponseModel
+            var classesOfJoinedStocks = JsonConvert.SerializeObject(_pharmacyRepository.GetPharmaClassesOfJoinedStocks(user.Id).Result);
+            var userResponse = _mapper.MergeInto<PharmacyClientResponseModel>(user, pharmacy);
+            userResponse.stockClasses = classesOfJoinedStocks;
+            return new SigningPharmacyClientInResponseModel
                 {
-                    user = _mapper.MergeInto<PharmacyClientResponseModel>(user, pharmacy),
-                    accessToken = _jWThandlerService.CreateAccessToken(user,Variables.pharmacier,pharmacy.Name)
+                    user = userResponse,
+                    accessToken = _jWThandlerService.CreateAccessToken(
+                        user,
+                        Variables.pharmacier,
+                        pharmacy.Name,
+                        claims=> { claims.Append(new Claim("classesOfJoinedStocks", classesOfJoinedStocks)); })
                 };   
                       
         }
         public ISigningResponseModel GetSigningInResponseModelForStock(AppUser user, Stock stock)
         {
+
+            var responseUser = _mapper.MergeInto<StockClientResponseModel>(user, stock);
+            var classes = _stockRepository.GetStockClassesOfJoinedPharmas(user.Id).Result;
+            responseUser.PharmasClasses =classes;
             return new SigningStockClientInResponseModel
             {
-                user = _mapper.MergeInto<StockClientResponseModel>(user, stock),
-                accessToken = _jWThandlerService.CreateAccessToken(user, Variables.stocker,stock.Name)
+                user = responseUser,
+                accessToken = _jWThandlerService.CreateAccessToken(
+                    user, Variables.stocker,
+                    stock.Name,
+                    claims=> {
+                        claims.Add(new Claim(Variables.StockUserClaimsTypes.PharmasClasses, JsonConvert.SerializeObject(classes))); 
+                    })
             };
         }
 

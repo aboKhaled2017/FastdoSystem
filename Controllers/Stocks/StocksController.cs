@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -126,6 +127,8 @@ namespace Fastdo.backendsys.Controllers.Stocks
         {
             //var id = _userManager.GetUserId(User);
             var id = _userManager.GetUserId(User);
+            if (!IsTheStockClassExists(model.ForClass))
+                return BadRequest(Functions.MakeError(nameof(model.ForClass),"هذا التصنيف غير موجود"));
             var currentDrugs =await _stkDrugsRepository.GetDiscountsForEachStockDrug(id);
             var response = _stkDrugsReportFromExcelService.ProcessFileAndGetReport(id, currentDrugs, model);
             if (!response.Status)
@@ -162,7 +165,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
         public async Task<IActionResult> GetPharmasRequests([FromQuery]PharmaReqsResourceParameters _params)
         {
             var requests = await _stockRepository.GetPharmaRequests(_params);
-            var paginationMetaData = new PaginationMetaDataGenerator<ShowPharmaReqToStkModelModel, PharmaReqsResourceParameters>(
+            var paginationMetaData = new PaginationMetaDataGenerator<ShowPharmaReqToStkModel, PharmaReqsResourceParameters>(
                 requests, "GetPharmaciesRequests", _params, CreateResourceUriForPhamaReques
                 ).Generate();
             Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
@@ -215,6 +218,69 @@ namespace Fastdo.backendsys.Controllers.Stocks
             /*if (!await _stkDrugsRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));*/
             return NoContent();
+        }
+
+        #endregion
+
+        #region Stock classes for pharmas [rename/delete]
+        [HttpPost("phclasses/{NewClass}")]
+        public async Task<IActionResult> AddStockClassForPharma([Required(ErrorMessage ="ادخل قيمة")]string NewClass)
+        {
+            if (!ModelState.IsValid)
+                return new UnprocessableEntityObjectResult(ModelState);
+            if (string.IsNullOrWhiteSpace(NewClass))
+                return BadRequest();
+            if (IsTheStockClassExists(NewClass))
+                return BadRequest(Functions.MakeError(nameof(NewClass),"هذا التصنيف موجود بالفعل"));
+            await _stockRepository.AddNewPharmaClass(NewClass);
+            return Ok(_accountService.GetSigningInResponseModelForStock(await _userManager.FindByIdAsync(_userManager.GetUserId(User))));
+
+        }
+        [HttpDelete("phclasses/{DeletedClass}")]
+        public async Task<IActionResult> DeleteStockClassForPharma([Required(ErrorMessage = "ادخل قيمة")]string DeletedClass)
+        {
+            if (!ModelState.IsValid)
+                return new UnprocessableEntityObjectResult(ModelState);
+            if (string.IsNullOrWhiteSpace(DeletedClass))
+                return BadRequest();
+            if (IsStockHasSinglePharmaClasses())
+                return BadRequest(Functions.MakeError("لا يمكن حذف التصنيف الافتراضى ,يمكنك فقط اعادة تسميته"));
+            if (!IsTheStockClassExists(DeletedClass))
+                return BadRequest(Functions.MakeError(nameof(DeletedClass), "هذا التصنيف غير موجود"));
+            await _stockRepository.RemovePharmaClass(DeletedClass);
+            return Ok(_accountService.GetSigningInResponseModelForStock(await _userManager.FindByIdAsync(_userManager.GetUserId(User))));
+
+        }
+      
+
+        [HttpPut("phclasses")]
+        public async Task<IActionResult> RenameStockClassForPharma(UpdateStockClassForPharmaModel model)
+        {
+            if (!ModelState.IsValid)
+                return new UnprocessableEntityObjectResult(ModelState);
+            if (string.IsNullOrWhiteSpace(model.NewClass)|| string.IsNullOrWhiteSpace(model.OldClass))
+                return BadRequest();
+            if (!IsTheStockClassExists(model.OldClass))
+                return BadRequest(Functions.MakeError(nameof(model.OldClass), "هذا التصنيف غير موجود"));
+            if (IsTheStockClassExists(model.NewClass))
+                return BadRequest(Functions.MakeError(nameof(model.NewClass), "هذا التصنيف موجود بالفعل"));
+            await _stockRepository.RenamePharmaClass(model);
+            return Ok(_accountService.GetSigningInResponseModelForStock(await _userManager.FindByIdAsync(_userManager.GetUserId(User))));
+
+        }
+        #endregion
+
+        #region private methods 
+        private bool IsTheStockClassExists(string forClass)
+        {
+           string classes=User.Claims.SingleOrDefault(t => t.Type == Variables.StockUserClaimsTypes.PharmasClasses)?.Value??null;
+           if (string.IsNullOrEmpty(classes)) return false;
+            return (classes.Split(',').Contains(forClass));
+        }
+        private bool IsStockHasSinglePharmaClasses()
+        {
+            string classes = User.Claims.SingleOrDefault(t => t.Type == Variables.StockUserClaimsTypes.PharmasClasses)?.Value ?? null;
+            return classes == null ? true : classes.Split(',').Count() == 1;
         }
 
         #endregion

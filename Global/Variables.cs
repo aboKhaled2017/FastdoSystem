@@ -49,6 +49,16 @@ namespace Fastdo.backendsys
             public static string Priviligs = "Priviligs";
 
         }
+        public static class UserClaimsTypes
+        {
+            public static string UserName = "UserName";
+            public static string Phone = "Phone";
+            public static string UserId = "UserId";
+        }
+        public static class StockUserClaimsTypes
+        {
+            public static string PharmasClasses = "PharmasClasses";
+        }
         public static class ExcelPaths
         {
             public static string StockDrugsReportFilePath

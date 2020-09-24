@@ -6,6 +6,8 @@ using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Models;
 using Fastdo.backendsys.Controllers.Pharmacies;
+using Fastdo.Repositories.Enums;
+using System.Collections;
 
 namespace Fastdo.backendsys.Repositories
 {
@@ -124,17 +126,44 @@ namespace Fastdo.backendsys.Repositories
             return await _context.Pharmacies.FindAsync(id);
         }
 
-        public async Task<List<ShowSentRequetsToStockByPharmacyModel>> GetDentRequestsToStocks()
+        public async Task<List<ShowSentRequetsToStockByPharmacyModel>> GetSentRequestsToStocks()
         {
           return await _context.PharmaciesInStocks
-                 .Where(r => r.PharmacyId == UserId)
+                 .Where(r => r.PharmacyId == UserId && r.PharmacyReqStatus!=PharmacyRequestStatus.Accepted)
                 .Select(r => new ShowSentRequetsToStockByPharmacyModel
                 {
                     StockId = r.StockId,
                     Seen = r.Seen,
                     Status = r.PharmacyReqStatus,
-                    PharmaClass = r.PharmacyClass
+                    Address = $"{r.Stock.Area.SuperArea.Name}/{r.Stock.Area.Name}",
+                    AddressInDetails=r.Stock.Address,
+                    LandLinePhone=r.Stock.LandlinePhone,
+                    Name=r.Stock.Name,
+                    PersPhone=r.Stock.PersPhone
                 }).ToListAsync();
+        }
+
+        public async Task<IEnumerable<ShowJoinedStocksOfPharmaModel>> GetUserJoinedStocks()
+        {
+            return await _context.PharmaciesInStocks
+                .Where(s => s.PharmacyId == UserId && s.PharmacyReqStatus == PharmacyRequestStatus.Accepted)
+                .Select(s => new ShowJoinedStocksOfPharmaModel{ 
+                 StockId=s.StockId,
+                 Address = $"{s.Stock.Area.SuperArea.Name} / {s.Stock.Area.Name}",
+                 AddressInDetails=s.Stock.Address,
+                 Name =s.Stock.Name,
+                 PhoneNumber=s.Stock.PersPhone,
+                 LandeLinePhone=s.Stock.LandlinePhone
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<List<string>>> GetPharmaClassesOfJoinedStocks(string pharmaId)
+        {
+                 return await _context.PharmaciesInStocks
+                .Where(r => r.PharmacyId == pharmaId)
+                .Select(r => new List<string> { r.StockId, r.PharmacyClass })
+                .ToListAsync();
         }
     }
 }
