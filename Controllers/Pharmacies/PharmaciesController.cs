@@ -114,6 +114,14 @@ namespace Fastdo.backendsys.Controllers
                return NoContent();
             return NotFound();
         }
+
+        [HttpDelete("stkRequests/{stockId}")]
+        public async Task<IActionResult> CancelRequestToStock(string stockId)
+        {
+            if (await _stockRepository.CancelRequestToStock(stockId))
+                return NoContent();
+            return NotFound();
+        }
         #endregion
 
     }

@@ -51,34 +51,43 @@ namespace Fastdo.backendsys.Controllers.Auth
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
             SigningStockClientInResponseModel response = null;
+            string ErrorMessage = null;
             try
             {
                 var stockModel = _mapper.Map<Stock>(model);
                 _transactionService.Begin();
-                 response = await _accountService.SignUpStockAsync(model,_executerDelayer) as SigningStockClientInResponseModel;
-                if (response == null)
+                 response = await _accountService.SignUpStockAsync(
+                     model,
+                     error=> {
+                     _transactionService.RollBackChanges().End();
+                     ErrorMessage =error;
+                     },
+                     (stock,OnFinishAdding)=> {
+                         stockModel.Id = stock.Id;
+                         var savingImgsResponse = _handlingProofImgsServices
+                             .SaveStockProofImgs(model.LicenseImg, model.CommerialRegImg, stockModel.Id);
+                         if (!savingImgsResponse.Status)
+                         {
+                             _transactionService.RollBackChanges().End();
+                             ErrorMessage= savingImgsResponse.errorMess;
+                         }
+                         stockModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
+                         stockModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
+                         var res = _stockRepository.AddAsync(stockModel).Result;
+                         if (!res)
+                         {
+                             _transactionService.RollBackChanges().End();
+                             ErrorMessage = "لقد فشلت عملية التسجيل,حاول مرة اخرى";
+                         }
+                         OnFinishAdding.Invoke();
+                     },
+                     () => {
+                         _transactionService.CommitChanges().End();
+                     }) as SigningStockClientInResponseModel;
+                if (ErrorMessage != null || response== null)
                 {
-                    _transactionService.RollBackChanges().End();
-                    return BadRequest(Functions.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
+                    return BadRequest(Functions.MakeError(ErrorMessage ?? "لقد فشلت عملية التسجيل,حاول مرة اخرى"));
                 }
-                stockModel.Id = response.user.Id;               
-                var savingImgsResponse = _handlingProofImgsServices
-                    .SaveStockProofImgs(model.LicenseImg, model.CommerialRegImg, stockModel.Id);
-                if(!savingImgsResponse.Status)
-                {
-                    _transactionService.RollBackChanges().End();
-                    return BadRequest(Functions.MakeError(savingImgsResponse.errorMess));
-                }
-                stockModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
-                stockModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
-                var res=await _stockRepository.AddAsync(stockModel);
-                if(!res)
-                {
-                    _transactionService.RollBackChanges().End();
-                    return BadRequest(Functions.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
-                }
-                _executerDelayer.Execute();
-                _transactionService.CommitChanges().End();               
 
             }
             catch (Exception ex)

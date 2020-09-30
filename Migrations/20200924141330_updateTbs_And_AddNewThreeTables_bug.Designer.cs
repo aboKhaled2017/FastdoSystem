@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fastdo.backendsys.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    [Migration("20200910135523_migHostV4.1")]
-    partial class migHostV41
+    [Migration("20200924141330_updateTbs_And_AddNewThreeTables_bug")]
+    partial class updateTbs_And_AddNewThreeTables_bug
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -252,8 +252,6 @@ namespace Fastdo.backendsys.Migrations
 
                     b.Property<string>("StockId");
 
-                    b.Property<string>("PharmacyClass");
-
                     b.Property<int>("PharmacyReqStatus");
 
                     b.Property<bool>("Seen");
@@ -263,6 +261,19 @@ namespace Fastdo.backendsys.Migrations
                     b.HasIndex("StockId");
 
                     b.ToTable("PharmaciesInStocks");
+                });
+
+            modelBuilder.Entity("Fastdo.Repositories.Models.PharmacyInStockClass", b =>
+                {
+                    b.Property<string>("PharmacyId");
+
+                    b.Property<Guid>("StockClassId");
+
+                    b.HasKey("PharmacyId", "StockClassId");
+
+                    b.HasIndex("StockClassId");
+
+                    b.ToTable("PharmaciesInStockClasses");
                 });
 
             modelBuilder.Entity("Fastdo.Repositories.Models.StkDrug", b =>
@@ -318,8 +329,6 @@ namespace Fastdo.backendsys.Migrations
                     b.Property<string>("PersPhone")
                         .IsRequired();
 
-                    b.Property<string>("PharmasClasses");
-
                     b.Property<int>("Status");
 
                     b.HasKey("Id");
@@ -327,6 +336,25 @@ namespace Fastdo.backendsys.Migrations
                     b.HasIndex("AreaId");
 
                     b.ToTable("Stocks");
+                });
+
+            modelBuilder.Entity("Fastdo.Repositories.Models.StockWithPharmaClass", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ClassName");
+
+                    b.Property<string>("StockId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StockId", "ClassName")
+                        .IsUnique()
+                        .HasFilter("[ClassName] IS NOT NULL");
+
+                    b.ToTable("StocksWithPharmaClasses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -501,9 +529,22 @@ namespace Fastdo.backendsys.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Fastdo.Repositories.Models.Stock", "Stock")
-                        .WithMany("GoinToPharmacies")
+                        .WithMany("GoinedPharmacies")
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Fastdo.Repositories.Models.PharmacyInStockClass", b =>
+                {
+                    b.HasOne("Fastdo.Repositories.Models.Pharmacy", "Pharmacy")
+                        .WithMany("StocksClasses")
+                        .HasForeignKey("PharmacyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Fastdo.Repositories.Models.StockWithPharmaClass", "StockClass")
+                        .WithMany("PharmaciesOfThatClass")
+                        .HasForeignKey("StockClassId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Fastdo.Repositories.Models.StkDrug", b =>
@@ -524,6 +565,14 @@ namespace Fastdo.backendsys.Migrations
                     b.HasOne("Fastdo.Repositories.Models.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Fastdo.Repositories.Models.StockWithPharmaClass", b =>
+                {
+                    b.HasOne("Fastdo.Repositories.Models.Stock", "Stock")
+                        .WithMany("PharmasClasses")
+                        .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

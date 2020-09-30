@@ -21,6 +21,7 @@ namespace Fastdo.backendsys.Mappings
                 .ForMember(dest => dest.UserType, o => o.MapFrom(s => UserType.pharmacier));
             CreateMap<AppUser, StockClientResponseModel>();
             CreateMap<Stock,   StockClientResponseModel>()
+                .ForMember(d=>d.PharmasClasses,o=>o.Ignore())
                 .ForMember(dest => dest.UserType, o => o.MapFrom(s => UserType.stocker));
             CreateMap<AppUser, AdministratorClientResponseModel>();
             CreateMap<Admin, AdministratorClientResponseModel>();
@@ -67,10 +68,8 @@ namespace Fastdo.backendsys.Mappings
             CreateMap<Stock, Stock_Update_ADM_Model>();
 
             CreateMap<PharmacyInStock, HandlePharmaRequestModel>()
-                .ForMember(dest => dest.PharmaClass, o => o.MapFrom(s => s.PharmacyClass))
                 .ForMember(dest => dest.Status, o => o.MapFrom(s => s.PharmacyReqStatus));
             CreateMap<HandlePharmaRequestModel, PharmacyInStock>()
-                .ForMember(dest => dest.PharmacyClass, o => o.MapFrom(s => s.PharmaClass))
                 .ForMember(dest => dest.PharmacyReqStatus, o => o.MapFrom(s => s.Status));
 
 

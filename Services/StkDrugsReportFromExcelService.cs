@@ -114,7 +114,7 @@ namespace Fastdo.backendsys.Services
                             Id=oldModel?.Id??Guid.Empty,
                             Name = name,
                             Price =price,
-                            Discount =DiscountClassifier.GetNewPrice(
+                            Discount =DiscountClassifier.GetNewDiscount(
                                 oldModel==null?null:oldModel.DiscountStr,
                                 string.IsNullOrEmpty(model.ForClass)?"A":model.ForClass,
                                 Convert.ToDouble(reader.GetValue(model.ColDiscountOrder)))

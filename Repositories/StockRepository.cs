@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using Fastdo.backendsys.Models;
 using Fastdo.backendsys.Controllers.Stocks.Models;
 using Fastdo.backendsys.Controllers.Stocks;
+using Fastdo.backendsys.Services;
+using EFCore.BulkExtensions;
+using Fastdo.Repositories.Enums;
 
 namespace Fastdo.backendsys.Repositories
 {
@@ -18,6 +21,8 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<bool> AddAsync(Stock stock)
         {
+            
+            stock.PharmasClasses=new List<StockWithPharmaClass>(){ new StockWithPharmaClass { ClassName = "الافتراضى"}};
             _context.Stocks.Add(stock);
             return (await _context.SaveChangesAsync()) > 0;
         }
@@ -29,7 +34,7 @@ namespace Fastdo.backendsys.Repositories
         {
             var originalData = _context.Stocks
             .OrderBy(d => d.Name)
-            .Where(s => s.User.EmailConfirmed && !s.GoinToPharmacies.Any(g=>g.PharmacyId==UserId));
+            .Where(s => s.User.EmailConfirmed && !s.GoinedPharmacies.Any(g=>g.PharmacyId==UserId));
             
             if (!string.IsNullOrEmpty(_params.S))
             {
@@ -59,7 +64,7 @@ namespace Fastdo.backendsys.Repositories
                     AddressInDetails = p.Address,
                     Address = $"{p.Area.SuperArea.Name}/{p.Area.Name}",
                     AreaId = p.AreaId,
-                    joinedPharmesCount = p.GoinToPharmacies.Count,
+                    joinedPharmesCount = p.GoinedPharmacies.Count,
                     drugsCount = p.SDrugs.Count
                 });
             return await PagedList<GetPageOfSearchedStocks>.CreateAsync(selectedData, _params);
@@ -76,6 +81,7 @@ namespace Fastdo.backendsys.Repositories
             .Select(p => new Get_PageOf_Stocks_ADMModel
             {
                 Id = p.Id,
+                Email=p.User.Email,
                 MgrName = p.MgrName,
                 Name = p.Name,
                 OwnerName = p.OwnerName,
@@ -86,7 +92,7 @@ namespace Fastdo.backendsys.Repositories
                 Status = p.Status,
                 Address = $"{p.Area.SuperArea.Name}/{p.Area.Name}",
                 AreaId = p.AreaId,
-                joinedPharmesCount = p.GoinToPharmacies.Count,
+                joinedPharmesCount = p.GoinedPharmacies.Count,
                 drugsCount=p.SDrugs.Count
             });
             if (!string.IsNullOrEmpty(_params.S))
@@ -120,7 +126,7 @@ namespace Fastdo.backendsys.Repositories
                     Status = p.Status,
                     Address = p.Address,
                     AreaId = p.AreaId,
-                    joinedPharmesCount = p.GoinToPharmacies.Count,
+                    joinedPharmesCount = p.GoinedPharmacies.Count,
                 })
                .SingleOrDefaultAsync();
         }
@@ -157,10 +163,10 @@ namespace Fastdo.backendsys.Repositories
             return await _context.Stocks.FindAsync(id);
         }
 
-        public async Task<PagedList<ShowPharmaReqToStkModel>> GetPharmaRequests(PharmaReqsResourceParameters _params)
+        public async Task<PagedList<ShowJoinRequestToStkModel>> GetJoinRequestsPharmas(PharmaReqsResourceParameters _params)
         {
             var originalData = _context.PharmaciesInStocks
-                 .Where(r => r.StockId == UserId);                
+                 .Where(r => r.StockId == UserId && r.PharmacyReqStatus!=PharmacyRequestStatus.Accepted);                
             if (!string.IsNullOrEmpty(_params.S))
             {
                 var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
@@ -172,34 +178,56 @@ namespace Fastdo.backendsys.Repositories
                 originalData = originalData
                      .Where(p => p.PharmacyReqStatus == _params.Status);
             }
+            var data = originalData
+                .Select(r => new ShowJoinRequestToStkModel
+                {
+                    Pharma=new ShowJoinRequestToStk_pharmaDataModel
+                    {
+                        Id = r.PharmacyId,
+                        Name = r.Pharmacy.Name,
+                        AddressInDetails = r.Pharmacy.Address,
+                        Address = $"{r.Pharmacy.Area.Name} / {r.Pharmacy.Area.SuperArea.Name??"غير محدد"}",
+                        PhoneNumber = r.Pharmacy.PersPhone,
+                        LandlinePhone = r.Pharmacy.LandlinePhone,
+                    },
+                    Seen = r.Seen,
+                    Status = r.PharmacyReqStatus,
+                    PharmaClass = r.Pharmacy.StocksClasses.SingleOrDefault(s => s.StockClass.StockId == r.StockId).StockClass.ClassName,
+
+                });
+            return await PagedList<ShowJoinRequestToStkModel>.CreateAsync(data, _params);
+        }
+        public async Task<PagedList<ShowJoinedPharmaToStkModel>> GetJoinedPharmas(PharmaReqsResourceParameters _params)
+        {
+            var originalData = _context.PharmaciesInStocks
+                 .Where(r => r.StockId == UserId && r.PharmacyReqStatus==PharmacyRequestStatus.Accepted);
+            if (!string.IsNullOrEmpty(_params.S))
+            {
+                var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
+                originalData = originalData
+                     .Where(d => d.Pharmacy.Name.ToLowerInvariant().Contains(searchQueryForWhereClause));
+            }
             if (_params.PharmaClass != null)
             {
                 originalData = originalData
-                     .Where(p => p.PharmacyClass.Equals(_params.PharmaClass));
+                     .Where(p => p.Pharmacy.StocksClasses.Any(s => s.StockClass.StockId == p.StockId && s.StockClass.ClassName == _params.PharmaClass));
             }
             var data = originalData
-                .Select(r => new ShowPharmaReqToStkModel
+                .Select(r => new ShowJoinedPharmaToStkModel
                 {
-                    PharmacyId = r.PharmacyId,
-                    Seen = r.Seen,
-                    Status = r.PharmacyReqStatus,
-                    PharmaClass = r.PharmacyClass,
+                    Pharma=new ShowJoinRequestToStk_pharmaDataModel {
+                        Id = r.PharmacyId,
+                        Name = r.Pharmacy.Name,
+                        AddressInDetails = r.Pharmacy.Address,
+                        Address = $"{r.Pharmacy.Area.Name} / {r.Pharmacy.Area.SuperArea.Name ?? "غير محدد"}",
+                        PhoneNumber = r.Pharmacy.PersPhone,
+                        LandlinePhone = r.Pharmacy.LandlinePhone
+                    },
+                    PharmaClass = r.Pharmacy.StocksClasses.SingleOrDefault(s => s.StockClass.StockId == r.StockId).StockClass.ClassName,
 
                 });
-            return await PagedList<ShowPharmaReqToStkModel>.CreateAsync(data, _params);
+            return await PagedList<ShowJoinedPharmaToStkModel>.CreateAsync(data, _params);
         }
-        public async Task<bool> MakeRequestToStock(string stockId)
-        {
-            if (!_context.Stocks.Any(s => s.Id == stockId && !s.GoinToPharmacies.Any(p => p.PharmacyId == UserId)))
-                return false;
-            _context.PharmaciesInStocks.Add(new PharmacyInStock
-            {
-                PharmacyId = UserId,
-                StockId = stockId
-            });
-            return await SaveAsync();
-        }
-
         public async Task<bool> DeletePharmacyRequest(string PharmaId)
         {
             if (!await _context.PharmaciesInStocks.AnyAsync(s => s.StockId == UserId && s.PharmacyId == PharmaId))
@@ -216,73 +244,105 @@ namespace Fastdo.backendsys.Repositories
             OnRequestFounded(request);
             return await UpdateFieldsAsync_And_Save<PharmacyInStock>(request, prop => prop.Seen, prop => prop.PharmacyReqStatus);
         }
-        public async Task<List<string>> GetStockClassesOfJoinedPharmas(string stockId)
+
+        public async Task AddNewPharmaClass(string newClass)
         {
-            var classes = (await _context.Stocks
-                .Where(s => s.Id == stockId)
-                .Select(s => s.PharmasClasses).SingleAsync()).Split(',');
-
-            var pharmas = _context.PharmaciesInStocks.Where(s => s.StockId == stockId);
-
-            for(int i = 0; i < classes.Length; i++)
-            {
-                classes[i] = $"{classes[i]},{pharmas.Where(p=>p.PharmacyClass==classes[i]).Count()}";
-            }
-            return classes.ToList();
-        }
-
-        public async Task<string> AddNewPharmaClass(string newClass)
-        {
-            var stockModel =await _context.Stocks.FindAsync(UserId);
-            if (stockModel.PharmasClasses.Split(',').Contains(newClass))
+            if(_context.StocksWithPharmaClasses.Any(s=>s.StockId==UserId && s.ClassName==newClass))
                 throw new Exception("هذا التصنيف موجود بالفعل");
-            stockModel.PharmasClasses += ',' + newClass;
-            UpdateFields<Stock>(stockModel, s => s.PharmasClasses);
-            await SaveAsync();
-            return stockModel.PharmasClasses;
-        }
-
-        public async Task<string> RemovePharmaClass(string deletedClass)
-        {
-            var stockModel = await _context.Stocks.FindAsync(UserId);
-            if (!stockModel.PharmasClasses.Split(',').Contains(deletedClass))
-                throw new Exception("هذا التصنيف غير موجود");
-            var classes = stockModel.PharmasClasses.Split(',');
-            stockModel.PharmasClasses= classes
-                .Where(c => !c.Equals(deletedClass))
-                .Select(c=>c)
-                 .Aggregate("", (prev, c) => "," + prev + c)
-                .Remove(0, 1);
-            UpdateFields<Stock>(stockModel, s => s.PharmasClasses);
-            await SaveAsync();
-            return stockModel.PharmasClasses;
-        }
-
-        public async Task<string> RenamePharmaClass(UpdateStockClassForPharmaModel model)
-        {
-            var stockModel = await _context.Stocks.FindAsync(UserId);
-            var classes = stockModel.PharmasClasses.Split(',');
-            if (classes.Contains(model.NewClass))
-                throw new Exception("هذا التصنيف موجود بالفعل");
-            if (!classes.Contains(model.OldClass))
-                throw new Exception("هذا التصنيف غير موجود");
-            stockModel.PharmasClasses = classes
-                .Where(c => !c.Equals(model.OldClass))
-                .Select(c => c)
-                .Append(model.NewClass)
-                .Aggregate("", (prev, c) => ","+prev + c)
-                .Remove(0, 1);
-            UpdateFields<Stock>(stockModel, s => s.PharmasClasses);
-            await SaveAsync();
-        /*    var drugs = _context.StkDrugs.Where(s => s.StockId == UserId).ToList();
-            if (drugs.Count > 0)
+            _context.StocksWithPharmaClasses.Add(new StockWithPharmaClass
             {
-                drugs.ForEach(drug =>
+                StockId = UserId,
+                ClassName = newClass
+            });
+            await SaveAsync();
+        }
+
+        public async Task RemovePharmaClass(DeleteStockClassForPharmaModel model)
+        {
+            if(!await _context.StocksWithPharmaClasses.AnyAsync(s=>s.StockId==UserId && s.ClassName==model.DeletedClass))
+                throw new Exception("هذا التصنيف غير موجود");
+            var entityClass = await _context.StocksWithPharmaClasses.SingleOrDefaultAsync(s => s.StockId == UserId && s.ClassName == model.DeletedClass);
+            if (await _context.StocksWithPharmaClasses.AnyAsync(s=>s.StockId==UserId && s.ClassName==model.DeletedClass && s.PharmaciesOfThatClass.Count > 0))
+            {
+                var joinedPharmasToClass = _context.PharmaciesInStockClasses.Where(s => s.StockClassId == entityClass.Id).ToList();
+                var replacedEntityClass = await _context.StocksWithPharmaClasses.SingleOrDefaultAsync(s => s.StockId == UserId && s.ClassName == model.ReplaceClass);
+
+                _context.StocksWithPharmaClasses.Remove(entityClass);
+                await SaveAsync();
+
+                joinedPharmasToClass.ForEach(el =>
                 {
-                    drug.Discount = drug.Discount;
+                    el.StockClassId = replacedEntityClass.Id;
                 });
-            }*/
-            return stockModel.PharmasClasses;
+                await _context.BulkInsertOrUpdateAsync(joinedPharmasToClass, new BulkConfig { UpdateByProperties = new List<string> { nameof(PharmacyInStockClass.StockClassId) } });
+                await SaveAsync();
+            }
+
+            
+            
+        }
+
+        public async Task RenamePharmaClass(UpdateStockClassForPharmaModel model)
+        {
+            var entity =await _context.StocksWithPharmaClasses.SingleOrDefaultAsync(s => s.StockId == UserId && s.ClassName == model.OldClass);
+            if(entity==null)
+                throw new Exception("هذا التصنيف غير موجود");
+            if (_context.StocksWithPharmaClasses.Any(s => s.StockId == UserId && s.ClassName == model.NewClass))
+                throw new Exception("هذا التصنيف موجود بالفعل");
+
+            entity.ClassName = model.NewClass;
+            _context.Entry(entity).State = EntityState.Modified;
+            await SaveAsync();
+        }
+        public async Task<List<StockClassWithPharmaCountsModel>> GetStockClassesOfJoinedPharmas(string stockId)
+        {
+            return await _context.StocksWithPharmaClasses
+                .Where(s => s.StockId == stockId)
+                .Select(s => new StockClassWithPharmaCountsModel
+                {
+                    Name = s.ClassName,
+                    Count = s.PharmaciesOfThatClass.Count
+                }).ToListAsync();
+
+        }
+
+        public List<StockClassWithPharmaCountsModel> GetStockClassesOfJoinedPharmas(Stock stock)
+        {
+           return stock.PharmasClasses
+                .Select(s => new StockClassWithPharmaCountsModel
+                {
+                    Name = s.ClassName,
+                    Count = s.PharmaciesOfThatClass.Count
+                }).ToList();
+        }
+
+        public async Task<bool> MakeRequestToStock(string stockId)
+        {
+            if (!_context.Stocks.Any(s => s.Id == stockId && !s.GoinedPharmacies.Any(p => p.PharmacyId == UserId)))
+                return false;
+            _context.PharmaciesInStocks.Add(new PharmacyInStock
+            {
+                PharmacyId = UserId,
+                StockId = stockId
+            });
+            var pharmaClassId = await _context.StocksWithPharmaClasses
+                .Where(s => s.StockId == stockId)
+                .Select(s => s.Id).FirstOrDefaultAsync();
+            _context.PharmaciesInStockClasses.Add(new PharmacyInStockClass
+            {
+                PharmacyId = UserId,
+                StockClassId = pharmaClassId
+            });
+            return await SaveAsync();
+        }
+        public async Task<bool> CancelRequestToStock(string stockId)
+        {
+            var request =await _context.PharmaciesInStocks.SingleOrDefaultAsync(s => s.PharmacyId == UserId && s.StockId == stockId);
+            if (request == null) return false;
+            _context.PharmaciesInStockClasses.Where(p => p.PharmacyId == UserId && p.StockClass.StockId == stockId).BatchDelete();
+            _context.PharmaciesInStocks.Remove(request);
+
+            return await SaveAsync();
         }
     }
 }

@@ -45,6 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<JWThandlerService>();          
             services.AddTransient<AccountService>();
             services.AddTransient<TransactionService>();
+            services.AddTransient<StockUserServices>();
             services.AddSingleton<HandlingProofImgsServices>();
             services.AddSingleton<IEmailSender,EmailSender>();
             services.AddTransient<StkDrugsReportFromExcelService>();

@@ -29,14 +29,6 @@
       },
       "nativeDebugging": true,
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
-    },
-    "IIS": {
-      "commandName": "IIS",
-      "launchBrowser": true,
-      "launchUrl": "https://localhost/fastdo",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production"
-      }
     }
   }
 }

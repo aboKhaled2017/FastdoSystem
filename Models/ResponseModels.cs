@@ -19,11 +19,11 @@ namespace Fastdo.backendsys.Models
     }
     public class PharmacyClientResponseModel:GeneralResponseModel
     {
-        public string stockClasses { get; set; }
+       
     }
     public class StockClientResponseModel : GeneralResponseModel
     {
-        public List<string> PharmasClasses { get; set; }
+        public List<StockClassWithPharmaCountsModel> PharmasClasses { get; set; }
     }
     public class AdministratorClientResponseModel
     {

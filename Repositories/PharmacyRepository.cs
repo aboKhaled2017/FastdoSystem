@@ -162,7 +162,7 @@ namespace Fastdo.backendsys.Repositories
         {
                  return await _context.PharmaciesInStocks
                 .Where(r => r.PharmacyId == pharmaId)
-                .Select(r => new List<string> { r.StockId, r.PharmacyClass })
+                .Select(r => new List<string> { r.StockId, r.Pharmacy.StocksClasses.SingleOrDefault(s=>s.StockClass.StockId==r.StockId).StockClass.ClassName??string.Empty})
                 .ToListAsync();
         }
     }

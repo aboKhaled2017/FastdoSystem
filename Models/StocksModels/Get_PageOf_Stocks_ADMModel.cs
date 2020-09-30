@@ -9,6 +9,7 @@ namespace Fastdo.backendsys.Models
     public class Get_PageOf_Stocks_ADMModel
     {
         public string Id { get; set; }
+        public string Email { get; set; }
         public string Name { get; set; }
         public string MgrName { get; set; }
         public string OwnerName { get; set; }

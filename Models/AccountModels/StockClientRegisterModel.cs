@@ -52,8 +52,6 @@ namespace Fastdo.backendsys.Models
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "كلمة السر وتأكيدها غير متطابقتان")]
         public string ConfirmPassword { get; set; }
-
-        public UserType UserType { get; set; } = UserType.pharmacier;
         [Required(ErrorMessage = "من فضلك اختر المدينة")]
         [Range(1, 256, ErrorMessage = "من فضلك اختر المدينة")]
         public byte CityId { get; set; }

@@ -21,7 +21,18 @@ namespace Fastdo.backendsys.Services
             this._forClass = forClass;
             this._discountForThisClass = discountForThisClass;
         }
-        public static string GetNewPrice(string oldDiscount, string forClass, double discountForClass)
+        public static string ReplaceClassForDiscount(string oldDiscount,string oldForClass,string newForClass)
+        {
+            var oldDiscountEntries= JsonConvert.DeserializeObject<List<Tuple<string, double>>>(oldDiscount);
+            var updatedEntry = oldDiscountEntries.SingleOrDefault(e => e.Item1 == oldForClass);
+
+            var filteredEntries = oldDiscountEntries
+                .Where(e => e.Item1 != oldForClass).ToList();
+            var newEntry = new Tuple<string, double>(newForClass, updatedEntry.Item2);
+            filteredEntries.Add(newEntry);
+            return JsonConvert.SerializeObject(filteredEntries);
+        }
+        public static string GetNewDiscount(string oldDiscount, string forClass, double discountForClass)
         {
             var discountClassifier = new DiscountClassifier(oldDiscount, forClass, discountForClass);
             var newEntry= new Tuple<string, double>(forClass,discountForClass);
