@@ -26,11 +26,17 @@ namespace Fastdo.backendsys.Services
                 : JsonConvert.DeserializeObject<List<StockClassWithPharmaCountsModel>>(classesStr);
                 
         }
-        public bool IsStockHasClass(string forClass,ClaimsPrincipal User)
+        public bool IsStockHasClass(Guid forClassId,ClaimsPrincipal User)
         {
             string classes = User.Claims.SingleOrDefault(t => t.Type == Variables.StockUserClaimsTypes.PharmasClasses)?.Value ?? null;
             if (string.IsNullOrEmpty(classes)) return false;
-            return (JsonConvert.DeserializeObject<List<StockClassWithPharmaCountsModel>>(classes).Any(c=>c.Name==forClass));
+            return (JsonConvert.DeserializeObject<List<StockClassWithPharmaCountsModel>>(classes).Any(c=>c.Id== forClassId));
+        }
+        public bool IsStockHasClassName(string forClass, ClaimsPrincipal User)
+        {
+            string classes = User.Claims.SingleOrDefault(t => t.Type == Variables.StockUserClaimsTypes.PharmasClasses)?.Value ?? null;
+            if (string.IsNullOrEmpty(classes)) return false;
+            return (JsonConvert.DeserializeObject<List<StockClassWithPharmaCountsModel>>(classes).Any(c => c.Name == forClass));
         }
         public bool IsStockHasSinglePharmaClasses(ClaimsPrincipal User)
         {

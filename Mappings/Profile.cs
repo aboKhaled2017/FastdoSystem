@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Fastdo.backendsys.InitSeeds.Helpers;
 using Fastdo.backendsys.Models;
 using Fastdo.backendsys.Controllers.Stocks;
+using Fastdo.backendsys.Controllers.Pharmacies;
+using Newtonsoft.Json;
 
 namespace Fastdo.backendsys.Mappings
 {
@@ -71,7 +73,7 @@ namespace Fastdo.backendsys.Mappings
                 .ForMember(dest => dest.Status, o => o.MapFrom(s => s.PharmacyReqStatus));
             CreateMap<HandlePharmaRequestModel, PharmacyInStock>()
                 .ForMember(dest => dest.PharmacyReqStatus, o => o.MapFrom(s => s.Status));
-
+ 
 
             /*CreateMap<LzDrug, LzDrugCard_Info_BM>();
             CreateMap<Pharmacy,LzDrugCard_Info_BM>()

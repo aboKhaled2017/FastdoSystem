@@ -7,6 +7,7 @@ namespace Fastdo.backendsys.Models
 {
     public class StockClassWithPharmaCountsModel
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public int Count { get; set; }
     }

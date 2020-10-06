@@ -166,7 +166,10 @@ namespace Fastdo.backendsys.Repositories
         public async Task<PagedList<ShowJoinRequestToStkModel>> GetJoinRequestsPharmas(PharmaReqsResourceParameters _params)
         {
             var originalData = _context.PharmaciesInStocks
-                 .Where(r => r.StockId == UserId && r.PharmacyReqStatus!=PharmacyRequestStatus.Accepted);                
+                 .Where(r => 
+                 r.StockId == UserId &&
+                 r.PharmacyReqStatus!=PharmacyRequestStatus.Accepted&&
+                 r.PharmacyReqStatus!=PharmacyRequestStatus.Disabled);                
             if (!string.IsNullOrEmpty(_params.S))
             {
                 var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
@@ -200,7 +203,9 @@ namespace Fastdo.backendsys.Repositories
         public async Task<PagedList<ShowJoinedPharmaToStkModel>> GetJoinedPharmas(PharmaReqsResourceParameters _params)
         {
             var originalData = _context.PharmaciesInStocks
-                 .Where(r => r.StockId == UserId && r.PharmacyReqStatus==PharmacyRequestStatus.Accepted);
+                 .Where(r =>
+                 r.StockId == UserId &&
+                 (r.PharmacyReqStatus==PharmacyRequestStatus.Accepted||r.PharmacyReqStatus==PharmacyRequestStatus.Disabled));
             if (!string.IsNullOrEmpty(_params.S))
             {
                 var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
@@ -210,7 +215,12 @@ namespace Fastdo.backendsys.Repositories
             if (_params.PharmaClass != null)
             {
                 originalData = originalData
-                     .Where(p => p.Pharmacy.StocksClasses.Any(s => s.StockClass.StockId == p.StockId && s.StockClass.ClassName == _params.PharmaClass));
+                     .Where(p => p.Pharmacy.StocksClasses.Any(sc => sc.StockClass.StockId == p.StockId && sc.StockClass.ClassName == _params.PharmaClass));
+            }
+            if (_params.Status != null)
+            {
+                originalData = originalData
+                     .Where(p => p.PharmacyReqStatus==_params.Status);
             }
             var data = originalData
                 .Select(r => new ShowJoinedPharmaToStkModel
@@ -223,7 +233,8 @@ namespace Fastdo.backendsys.Repositories
                         PhoneNumber = r.Pharmacy.PersPhone,
                         LandlinePhone = r.Pharmacy.LandlinePhone
                     },
-                    PharmaClass = r.Pharmacy.StocksClasses.SingleOrDefault(s => s.StockClass.StockId == r.StockId).StockClass.ClassName,
+                    PharmaClassId = r.Pharmacy.StocksClasses.SingleOrDefault(s => s.StockClass.StockId == r.StockId).StockClassId,
+                    Status=r.PharmacyReqStatus
 
                 });
             return await PagedList<ShowJoinedPharmaToStkModel>.CreateAsync(data, _params);
@@ -257,29 +268,94 @@ namespace Fastdo.backendsys.Repositories
             await SaveAsync();
         }
 
-        public async Task RemovePharmaClass(DeleteStockClassForPharmaModel model)
+        public async Task RemovePharmaClass(DeleteStockClassForPharmaModel model,Action<object>SendError=null)
         {
-            if(!await _context.StocksWithPharmaClasses.AnyAsync(s=>s.StockId==UserId && s.ClassName==model.DeletedClass))
-                throw new Exception("هذا التصنيف غير موجود");
-            var entityClass = await _context.StocksWithPharmaClasses.SingleOrDefaultAsync(s => s.StockId == UserId && s.ClassName == model.DeletedClass);
-            if (await _context.StocksWithPharmaClasses.AnyAsync(s=>s.StockId==UserId && s.ClassName==model.DeletedClass && s.PharmaciesOfThatClass.Count > 0))
-            {
-                var joinedPharmasToClass = _context.PharmaciesInStockClasses.Where(s => s.StockClassId == entityClass.Id).ToList();
-                var replacedEntityClass = await _context.StocksWithPharmaClasses.SingleOrDefaultAsync(s => s.StockId == UserId && s.ClassName == model.ReplaceClass);
 
-                _context.StocksWithPharmaClasses.Remove(entityClass);
-                await SaveAsync();
+            if (!await _context.StocksWithPharmaClasses
+            .AnyAsync(s=>s.Id==model.getDeletedClassId))
+            {
+                SendError?.Invoke(Functions.MakeError(nameof(model.DeletedClassId), "هذا التصنيف غير موجود"));
+                return;
+            }
+
+            var deletedEntityClass = await _context.StocksWithPharmaClasses
+                .SingleOrDefaultAsync(s =>s.Id == model.getDeletedClassId);
+
+            var stkDrugs = new List<StkDrug>();
+
+
+            //this class has subscribed pharmacies ,so they will be assigned another existed class
+            if (await _context.StocksWithPharmaClasses
+                .AnyAsync(s=>
+                s.Id==model.getDeletedClassId
+                && s.PharmaciesOfThatClass.Count > 0))
+            
+            {
+                //get subscibed pharmacies list
+                var joinedPharmasToClass = _context
+                    .PharmaciesInStockClasses
+                    .Where(s => s.StockClassId == deletedEntityClass.Id)
+                    .ToList();
+                //get the replaced existed class
+                var replacedEntityClass = await _context
+                    .StocksWithPharmaClasses
+                    .SingleOrDefaultAsync(s => s.StockId == UserId && s.Id == model.getReplaceClassId);
+                
+
+                if (replacedEntityClass == null)
+                {
+                    SendError?.Invoke(Functions.MakeError(nameof(model.ReplaceClassId), "هذا التصنيف غير موجود"));
+                    return;
+                }
 
                 joinedPharmasToClass.ForEach(el =>
                 {
                     el.StockClassId = replacedEntityClass.Id;
                 });
-                await _context.BulkInsertOrUpdateAsync(joinedPharmasToClass, new BulkConfig { UpdateByProperties = new List<string> { nameof(PharmacyInStockClass.StockClassId) } });
+
+                await _context.BulkInsertOrUpdateOrDeleteAsync(
+                    joinedPharmasToClass,
+                    new BulkConfig { UpdateByProperties = new List<string> { nameof(PharmacyInStockClass.StockClassId) } }
+                    );
+                //get all drugs for this stock
+                stkDrugs = _context.StkDrugs.Where(s => s.StockId == UserId).ToList();
+
+                //performe edit for discount of class
+                stkDrugs.ForEach(drug =>
+                {
+                    drug.Discount = DiscountClassifier<Guid>
+                    .ReplaceClassForDiscount(drug.Discount, model.getDeletedClassId, model.getReplaceClassId);
+                });
+
+            }
+            else
+            {
+                //get all drugs for this stock
+                stkDrugs = _context.StkDrugs.Where(s => s.StockId == UserId).ToList();
+
+                //performe edit for discount of class
+                stkDrugs.ForEach(drug =>
+                {
+                    drug.Discount = DiscountClassifier<Guid>
+                    .RemoveClassForDiscount(drug.Discount, model.getDeletedClassId);
+                });                    
+            }
+            
+            var removedStkDrugs = stkDrugs.Where(s => s.Discount == null).ToList();
+            var updatedStkDrugs= stkDrugs.Where(s => s.Discount != null).ToList();
+            if (removedStkDrugs.Count > 0)
+            {
+                _context.StkDrugs.RemoveRange(removedStkDrugs);
                 await SaveAsync();
             }
-
-            
-            
+            if (updatedStkDrugs.Count > 0)
+                await _context.BulkUpdateAsync(updatedStkDrugs, new BulkConfig
+                {
+                    UpdateByProperties = new List<string> { nameof(StkDrug.Discount) }
+                });
+                //alwys remove this class
+            _context.StocksWithPharmaClasses.Remove(deletedEntityClass);
+            await SaveAsync();
         }
 
         public async Task RenamePharmaClass(UpdateStockClassForPharmaModel model)
@@ -300,6 +376,7 @@ namespace Fastdo.backendsys.Repositories
                 .Where(s => s.StockId == stockId)
                 .Select(s => new StockClassWithPharmaCountsModel
                 {
+                    Id=s.Id,
                     Name = s.ClassName,
                     Count = s.PharmaciesOfThatClass.Count
                 }).ToListAsync();
@@ -311,6 +388,7 @@ namespace Fastdo.backendsys.Repositories
            return stock.PharmasClasses
                 .Select(s => new StockClassWithPharmaCountsModel
                 {
+                    Id=s.Id,
                     Name = s.ClassName,
                     Count = s.PharmaciesOfThatClass.Count
                 }).ToList();
@@ -343,6 +421,24 @@ namespace Fastdo.backendsys.Repositories
             _context.PharmaciesInStocks.Remove(request);
 
             return await SaveAsync();
+        }
+
+        public async Task AssignAnotherClassForPharmacy(AssignAnotherClassForPharmacyModel model,Action<dynamic>onError)
+        {
+            var res =await _context.PharmaciesInStockClasses.AnyAsync(s =>
+              s.PharmacyId == model.PharmaId &&
+              s.StockClassId == model.getOldClassId);
+            var res2 = await _context.StocksWithPharmaClasses.AnyAsync(s => s.Id == model.getNewClassId && s.StockId == UserId);
+            if(!res || !res2)
+            {
+                onError(Functions.MakeError("انت تحاول ادخال بيانات غير صحيحة"));
+                return;
+            }
+            var pharmaInStockClass =await _context.PharmaciesInStockClasses
+                .SingleAsync(p => p.StockClassId == model.getOldClassId && p.PharmacyId == model.PharmaId);
+            pharmaInStockClass.StockClassId = model.getNewClassId;
+            _context.Entry(pharmaInStockClass).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

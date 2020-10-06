@@ -4,14 +4,16 @@ using Fastdo.Repositories.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fastdo.backendsys.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    partial class SysDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201006082223_addStkDrugPackageTb_fix")]
+    partial class addStkDrugPackageTb_fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,17 +312,15 @@ namespace Fastdo.backendsys.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreateAt");
-
-                    b.Property<string>("PackageDetails")
-                        .IsRequired();
-
                     b.Property<string>("PharmacyId")
                         .IsRequired();
 
                     b.Property<bool>("Seen");
 
                     b.Property<int>("Status");
+
+                    b.Property<string>("StkDrugsIds")
+                        .IsRequired();
 
                     b.HasKey("Id");
 

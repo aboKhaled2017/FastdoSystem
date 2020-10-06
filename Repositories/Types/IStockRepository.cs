@@ -32,8 +32,9 @@ namespace Fastdo.backendsys.Repositories
         Task<bool> Patch_Apdate_ByAdmin(Stock stk);
         Task<Stock> Get_IfExists(string id);
         Task AddNewPharmaClass(string newClass);
-        Task RemovePharmaClass(DeleteStockClassForPharmaModel model);
+        Task RemovePharmaClass(DeleteStockClassForPharmaModel model,Action<object>SendError= null);
         Task RenamePharmaClass(UpdateStockClassForPharmaModel model);
         Task<bool> CancelRequestToStock(string stockId);
+        Task AssignAnotherClassForPharmacy(AssignAnotherClassForPharmacyModel model, Action<dynamic>onError);
     }
 }

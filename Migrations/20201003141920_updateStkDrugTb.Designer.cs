@@ -4,14 +4,16 @@ using Fastdo.Repositories.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fastdo.backendsys.Migrations
 {
     [DbContext(typeof(SysDbContext))]
-    partial class SysDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201003141920_updateStkDrugTb")]
+    partial class updateStkDrugTb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -305,52 +307,6 @@ namespace Fastdo.backendsys.Migrations
                     b.ToTable("StkDrugs");
                 });
 
-            modelBuilder.Entity("Fastdo.Repositories.Models.StkDrugPackageRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreateAt");
-
-                    b.Property<string>("PackageDetails")
-                        .IsRequired();
-
-                    b.Property<string>("PharmacyId")
-                        .IsRequired();
-
-                    b.Property<bool>("Seen");
-
-                    b.Property<int>("Status");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PharmacyId");
-
-                    b.ToTable("StkDrugPackagesRequests");
-                });
-
-            modelBuilder.Entity("Fastdo.Repositories.Models.StkDrugRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("PharmacyId")
-                        .IsRequired();
-
-                    b.Property<bool>("Seen");
-
-                    b.Property<int>("Status");
-
-                    b.Property<Guid>("StkDrugId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StkDrugId", "PharmacyId")
-                        .IsUnique();
-
-                    b.ToTable("StkDrugRequests");
-                });
-
             modelBuilder.Entity("Fastdo.Repositories.Models.Stock", b =>
                 {
                     b.Property<string>("Id");
@@ -602,14 +558,6 @@ namespace Fastdo.backendsys.Migrations
                     b.HasOne("Fastdo.Repositories.Models.Stock", "Stock")
                         .WithMany("SDrugs")
                         .HasForeignKey("StockId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Fastdo.Repositories.Models.StkDrugPackageRequest", b =>
-                {
-                    b.HasOne("Fastdo.Repositories.Models.Pharmacy", "Pharmacy")
-                        .WithMany("RequestedStkDrugsPackages")
-                        .HasForeignKey("PharmacyId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

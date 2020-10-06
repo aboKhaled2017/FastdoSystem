@@ -1,4 +1,5 @@
-﻿using Fastdo.backendsys.Controllers.Stocks.Models;
+﻿using Fastdo.backendsys.Controllers.Pharmacies;
+using Fastdo.backendsys.Controllers.Stocks.Models;
 using Fastdo.Repositories.Models;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,9 @@ namespace Fastdo.backendsys.Repositories
         Task<StkDrug> GetIfExists(Guid id);
 
         Task<bool> LzDrugExists(Guid id);
-
+        Task<PagedList<SearchStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(string v, LzDrgResourceParameters _params);
+        Task<PagedList<SearchGenralStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(LzDrgResourceParameters _params);
+        Task<List<StockOfStkDrugModel_TragetPharma>> GetStocksOfSpecifiedStkDrug(string stkDrgName);
+        Task MakePharmaReqToListOfStkDrugs(IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList,Action<dynamic>onError);
     }
 }

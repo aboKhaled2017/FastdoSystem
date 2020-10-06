@@ -43,5 +43,19 @@ namespace Fastdo.backendsys
                 items,count, _params
             );
         }
+        public static async Task<PagedList<Y>> CreateAsync<Y>(IQueryable<T> source, ResourceParameters _params,Func<T,Y>mappItem)
+        {
+            int count = source.Count();
+            var items = await source.Skip(_params.PageSize * (_params.PageNumber - 1))
+                .Take(_params.PageSize).ToListAsync();
+            var mappedItems = new List<Y>();
+            items.ForEach(item =>
+            {
+                mappedItems.Add(mappItem(item));
+            });
+            return new PagedList<Y>(
+                mappedItems, count, _params
+            );
+        }
     }
 }

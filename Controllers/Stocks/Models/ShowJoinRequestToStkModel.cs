@@ -25,6 +25,8 @@ namespace Fastdo.backendsys.Controllers.Stocks
     public class ShowJoinedPharmaToStkModel
     {
         public ShowJoinRequestToStk_pharmaDataModel Pharma { get; set; }
-        public string PharmaClass { get; set; }
+        public Guid PharmaClassId { get; set; }
+        public PharmacyRequestStatus Status { get; set; }
+
     }
 }

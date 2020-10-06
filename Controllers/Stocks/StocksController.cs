@@ -13,6 +13,7 @@ using Fastdo.Repositories.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
     public class StocksController : SharedAPIController
     {
 
+        
         #region constructors and properties
         public StkDrugsReportFromExcelService _stkDrugsReportFromExcelService { get; private set; }
         public StockUserServices _stockUserServices { get; private set; }
@@ -31,19 +33,21 @@ namespace Fastdo.backendsys.Controllers.Stocks
         public IStkDrugsRepository _stkDrugsRepository { get; private set; }
 
         public StocksController(
-            AccountService accountService, IMapper mapper,
+            UserManager<AppUser> userManager, 
+            IEmailSender emailSender,
+            AccountService accountService,
+            IMapper mapper,
+            TransactionService transactionService,
             StkDrugsReportFromExcelService StkDrugsReportFromExcelService,
             IStkDrugsRepository stkDrugsRepository,
             StockUserServices stockUserServices,
-            IStockRepository stockRepository,
-            UserManager<AppUser> userManager) 
-            : base(accountService, mapper, userManager)
+            IStockRepository stockRepository) : base(userManager, emailSender, accountService, mapper, transactionService)
         {
             _stkDrugsReportFromExcelService = StkDrugsReportFromExcelService;
             _stkDrugsRepository = stkDrugsRepository;
             _stockRepository = stockRepository;
             _stockUserServices = stockUserServices;
-    }
+        }
 
 
         #endregion
@@ -127,8 +131,8 @@ namespace Fastdo.backendsys.Controllers.Stocks
         {
             //var id = _userManager.GetUserId(User);
             var id = _userManager.GetUserId(User);
-            if (!_stockUserServices.IsStockHasClass(model.ForClass,User))
-                return BadRequest(Functions.MakeError(nameof(model.ForClass),"هذا التصنيف غير موجود"));
+            if (!_stockUserServices.IsStockHasClass(model.ForClassId,User))
+                return BadRequest(Functions.MakeError(nameof(model.ForClassId),"هذا التصنيف غير موجود"));
             var currentDrugs =await _stkDrugsRepository.GetDiscountsForEachStockDrug(id);
             var response = _stkDrugsReportFromExcelService.ProcessFileAndGetReport(id, currentDrugs, model);
             if (!response.Status)
@@ -149,7 +153,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
 
         #endregion
 
-        #region Get
+        #region GET
         [HttpGet("prods",Name ="GetStockDrugsOfReport")]
         public async Task<IActionResult> GetStockDrugsOfReport([FromQuery]LzDrgResourceParameters _params)
         {
@@ -203,6 +207,33 @@ namespace Fastdo.backendsys.Controllers.Stocks
 
         #endregion
 
+        #region Update
+
+        [HttpPut("joinedPharmas")]
+        public async Task<IActionResult> updateJoinedPharmaClass(AssignAnotherClassForPharmacyModel model)
+        {
+            if (!ModelState.IsValid)
+                return new UnprocessableEntityObjectResult(ModelState);
+            if (
+                model.getNewClassId==null ||
+                model.getNewClassId==Guid.Empty |
+                model.getOldClassId == null ||
+                model.getOldClassId == Guid.Empty)
+                return BadRequest();
+            if (!_stockUserServices.IsStockHasClass(model.getNewClassId, User))
+                return BadRequest(Functions.MakeError(nameof(model.NewClassId), "هذا التصنيف غير موجود"));
+            if (!_stockUserServices.IsStockHasClass(model.getOldClassId, User))
+                return BadRequest(Functions.MakeError(nameof(model.OldClassId), "هذا التصنيف غير موجود"));
+            dynamic error = null;
+            await _stockRepository.AssignAnotherClassForPharmacy(model,err=> {
+                error = err;
+            });
+            if(error!=null)
+                return BadRequest(error);
+            return NoContent();
+        }
+        #endregion
+
         #region delete
         // DELETE: api/ApiWithActions/5
         [HttpDelete("prods/{id}")]
@@ -218,7 +249,6 @@ namespace Fastdo.backendsys.Controllers.Stocks
         }
 
         
-
         [HttpDelete("prods")]
         public async Task<IActionResult> DeleteAllDrugs()
         {
@@ -240,7 +270,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
                 return new UnprocessableEntityObjectResult(ModelState);
             if (string.IsNullOrWhiteSpace(NewClass))
                 return BadRequest();
-            if (_stockUserServices.IsStockHasClass(NewClass,User))
+            if (_stockUserServices.IsStockHasClassName(NewClass,User))
                 return BadRequest(Functions.MakeError(nameof(NewClass),"هذا التصنيف موجود بالفعل"));
             await _stockRepository.AddNewPharmaClass(NewClass);
             return Ok(await _accountService.GetSigningInResponseModelForStock(await _userManager.FindByIdAsync(_userManager.GetUserId(User))));
@@ -251,24 +281,31 @@ namespace Fastdo.backendsys.Controllers.Stocks
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
-            if (string.IsNullOrWhiteSpace(model.DeletedClass))
+            if (model.getDeletedClassId==null || model.getDeletedClassId==Guid.Empty)
                 return BadRequest();
             if (_stockUserServices.IsStockHasSinglePharmaClasses(User))
                 return BadRequest(Functions.MakeError("لا يمكن حذف التصنيف الافتراضى ,يمكنك فقط اعادة تسميته"));
-            if (!_stockUserServices.IsStockHasClass(model.DeletedClass,User))
-                return BadRequest(Functions.MakeError(nameof(model.DeletedClass), "هذا التصنيف غير موجود"));
+            if (!_stockUserServices.IsStockHasClass(model.getDeletedClassId, User))
+                return BadRequest(Functions.MakeError(nameof(model.DeletedClassId), "هذا التصنيف غير موجود"));
             var classes = _stockUserServices.GetStockClassesForPharmas(User);
-            if(classes.Any(c=>c.Name==model.DeletedClass && c.Count > 0))
+            if(classes.Any(c=>c.Id==model.getDeletedClassId && c.Count > 0))
             {
-                if(!_stockUserServices.IsStockHasClass(model.ReplaceClass,User))
-                    return BadRequest(Functions.MakeError(nameof(model.ReplaceClass), "هذا التصنيف غير موجود"));
+                if(!_stockUserServices.IsStockHasClass(model.getReplaceClassId,User))
+                    return BadRequest(Functions.MakeError(nameof(model.ReplaceClassId), "هذا التصنيف غير موجود"));
             }
-            await _stockRepository.RemovePharmaClass(model);
+            dynamic _error = null;
+            _transactionService.Begin();
+            await _stockRepository.RemovePharmaClass(model,error=> {
+                _error = error;
+                _transactionService.RollBackChanges().End();
+            });
+            if (_error != null)
+                return NotFound(_error);
+            _transactionService.CommitChanges().End();
             return Ok(await _accountService.GetSigningInResponseModelForStock(await _userManager.FindByIdAsync(_userManager.GetUserId(User))));
 
         }
       
-
         [HttpPut("phclasses")]
         public async Task<IActionResult> RenameStockClassForPharma(UpdateStockClassForPharmaModel model)
         {
@@ -276,18 +313,18 @@ namespace Fastdo.backendsys.Controllers.Stocks
                 return new UnprocessableEntityObjectResult(ModelState);
             if (string.IsNullOrWhiteSpace(model.NewClass)|| string.IsNullOrWhiteSpace(model.OldClass))
                 return BadRequest();
-            if (!_stockUserServices.IsStockHasClass(model.OldClass,User))
+            if (!_stockUserServices.IsStockHasClassName(model.OldClass,User))
                 return BadRequest(Functions.MakeError(nameof(model.OldClass), "هذا التصنيف غير موجود"));
-            if (_stockUserServices.IsStockHasClass(model.NewClass,User))
+            if (_stockUserServices.IsStockHasClassName(model.NewClass,User))
                 return BadRequest(Functions.MakeError(nameof(model.NewClass), "هذا التصنيف موجود بالفعل"));
             await _stockRepository.RenamePharmaClass(model);
             return Ok(await _accountService.GetSigningInResponseModelForStock(await _userManager.FindByIdAsync(_userManager.GetUserId(User))));
 
-        }
+        }       
         #endregion
 
         #region private methods 
-   
+
 
         #endregion
     }

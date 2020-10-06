@@ -1,5 +1,6 @@
 ﻿using Fastdo.backendsys.Utilities;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Fastdo.backendsys.Controllers.Stocks
@@ -13,7 +14,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
 
         public int ColDiscountOrder { get; set; } = 2;
         [Required(ErrorMessage ="من فضلك اختر التصنيف")]
-        public string ForClass { get; set; }
+        public Guid ForClassId { get; set; }
 
         [Required(ErrorMessage ="من فضلك ادخل  ملف الاكسل الخاص بالبيانات")]
         [DataType(DataType.Upload,ErrorMessage ="هذه البيانات لا تمثل ملف")]
