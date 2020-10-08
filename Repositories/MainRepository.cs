@@ -7,6 +7,8 @@ using System.Linq.Expressions;
 using Fastdo.Repositories.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Services;
+using System.Text;
+using System.Data.Common;
 
 namespace Fastdo.backendsys.Repositories
 {
@@ -93,6 +95,20 @@ namespace Fastdo.backendsys.Repositories
                     if (original != null && !original.Equals(current))
                         entityEntry.Property(updatedProperties.FirstOrDefault(e => e.Type.Equals(property))).IsModified = true;
                 }
+            }
+        }
+
+        protected async Task<T> ExecuteScaler<T>(StringBuilder query)
+        {
+            var conn = _context.Database.GetDbConnection();
+            if(conn.State==System.Data.ConnectionState.Closed)
+            await conn.OpenAsync();
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = query.ToString();
+                command.CommandType = System.Data.CommandType.Text;
+                var res = command.ExecuteScalar();
+                return (T)res;
             }
         }
     }

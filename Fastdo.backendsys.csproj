@@ -11,6 +11,7 @@
     <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <UserSecretsId>d4eb3998-19ae-44ea-bb06-a728553d8ee4</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
@@ -32,6 +33,18 @@
     <None Remove="Logs\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Migrations\20201006152153_add_stkDrugRequestInPackge_TB.cs" />
+    <Compile Remove="Migrations\20201006152153_add_stkDrugRequestInPackge_TB.Designer.cs" />
+    <Compile Remove="Migrations\20201006153406_add_stkDrugRequestInPackge_TB_Fix.cs" />
+    <Compile Remove="Migrations\20201006153406_add_stkDrugRequestInPackge_TB_Fix.Designer.cs" />
+    <Compile Remove="Migrations\20201006153525_add_stkDrugRequestInPackge_TB_Fix2.cs" />
+    <Compile Remove="Migrations\20201006153525_add_stkDrugRequestInPackge_TB_Fix2.Designer.cs" />
+    <Compile Remove="Migrations\20201006153658_add_stkDrugRequestInPackge_TB_Fix3.cs" />
+    <Compile Remove="Migrations\20201006153658_add_stkDrugRequestInPackge_TB_Fix3.Designer.cs" />
+    <Compile Remove="Migrations\20201006191934_add_stkDrugRequestInPackge_TB_Fix4.cs" />
+    <Compile Remove="Migrations\20201006191934_add_stkDrugRequestInPackge_TB_Fix4.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Remove="nlog.config" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +63,7 @@
 
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions" Version="2.6.4" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />

@@ -175,11 +175,14 @@ namespace Fastdo.backendsys.Controllers
             if (stkDrugsList.Count() == 0)
                 return BadRequest();
             dynamic _error = null;
+             
              await _stkDrugsRepository.MakePharmaReqToListOfStkDrugs(stkDrugsList,error=> {
                  _error = error;
+                 
              });
             if (_error != null)
                 return BadRequest(_error);
+            
             return NoContent();
         }
         #endregion

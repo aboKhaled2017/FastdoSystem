@@ -10,6 +10,7 @@ using EFCore.BulkExtensions;
 using Fastdo.backendsys.Controllers.Pharmacies;
 using Newtonsoft.Json;
 using System.Text;
+using System.Data.Common;
 
 namespace Fastdo.backendsys.Repositories
 {
@@ -21,8 +22,6 @@ namespace Fastdo.backendsys.Repositories
         }
 
         #endregion
-
-       
 
         public async Task AddListOfDrugs(List<StkDrug> drugs,List<DiscountPerStkDrug> currentDrugs,string stockId)
         {
@@ -231,14 +230,12 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task MakePharmaReqToListOfStkDrugs(IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList, Action<dynamic> onError)
         {
-            var conn = _context.Database.GetDbConnection();
-            await conn.OpenAsync();
-            var command = conn.CreateCommand();
+           
             var idsList = new List<string>();
             stkDrugsList.ToList().ForEach(item =>
             {
                 string idsStr = item.DrugsList
-                .Select(e=>e.First())
+                .Select(e=>Guid.Parse(e.First()))
                 .Aggregate($"({nameof(StkDrug.Id)} in ('", (prev, val) => prev + val.ToString() + "','");
                 idsList.Add(idsStr.Substring(0,idsStr.Length-2)+ $") and {nameof(item.StockId)}='{item.StockId}')");
             });
@@ -247,20 +244,43 @@ namespace Fastdo.backendsys.Repositories
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($"select count(*) from {nameof(StkDrug)}s where (");
             stringBuilder.Append($"{AllIdsStr})");
-            command.CommandText = stringBuilder.ToString();
+            
             var expectedResult = stkDrugsList.Select(s => s.DrugsList.Count()).Aggregate(0, (prev, val) => prev + val);
-            if(int.Parse(command.ExecuteScalar().ToString())!= expectedResult){
+            if(await ExecuteScaler<int>(stringBuilder) != expectedResult){
                 onError(Functions.MakeError("لقد حاولت ادخال بيانات غير صحيحة"));
                 return;
             }
-            conn.Close();
-
-            _context.StkDrugPackagesRequests.Add(new StkDrugPackageRequest
+            
+            var newPackageRequest = new StkDrugPackageRequest
             {
+                Id=Guid.NewGuid(),
                 PharmacyId = UserId,
                 PackageDetails = JsonConvert.SerializeObject(stkDrugsList)
+            };
+            _context.StkDrugPackagesRequests.Add(newPackageRequest);
+
+            await SaveAsync();
+
+            var packageEntries = new List<StkDrugInStkDrgPackageReq>();
+
+            stkDrugsList.ToList().ForEach(drg =>
+            {
+                drg.DrugsList.ToList().ForEach(e =>
+                {
+                    packageEntries.Add(new StkDrugInStkDrgPackageReq
+                    {
+                        Id=Guid.NewGuid(),
+                        StkDrugId = Guid.Parse(e.First()),
+                        StkDrugPackageId = newPackageRequest.Id
+                    });
+                });
             });
-           await SaveAsync();
+
+            var res= _context.BulkInsertOrUpdateAsync(packageEntries, new BulkConfig { SetOutputIdentity = true ,PreserveInsertOrder=true});
+            await res;
+            if(!res.IsCompletedSuccessfully)
+                onError(Functions.MakeError("حدثت مشكلى اثناء معالجة الطلب"));
+            
         }
     }
 }

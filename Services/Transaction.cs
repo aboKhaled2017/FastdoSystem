@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using Fastdo.Repositories.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -42,6 +43,10 @@ namespace Fastdo.backendsys.Services
         {
             _actionOnDbTransaction.Commit();
             return this;
+        }
+        public DbConnection GetConnection()
+        {
+           return _actionOnDbTransaction.GetDbTransaction().Connection;
         }
         public TransactionService RollBackChanges()
         {
