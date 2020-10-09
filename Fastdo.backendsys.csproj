@@ -43,6 +43,10 @@
     <Compile Remove="Migrations\20201006153658_add_stkDrugRequestInPackge_TB_Fix3.Designer.cs" />
     <Compile Remove="Migrations\20201006191934_add_stkDrugRequestInPackge_TB_Fix4.cs" />
     <Compile Remove="Migrations\20201006191934_add_stkDrugRequestInPackge_TB_Fix4.Designer.cs" />
+    <Compile Remove="Migrations\20201009083901_add_stockInStkDrugPackageTb_fix1.cs" />
+    <Compile Remove="Migrations\20201009083901_add_stockInStkDrugPackageTb_fix1.Designer.cs" />
+    <Compile Remove="Migrations\20201009090322_add_stockInStkDrugPackageTb_fix2.cs" />
+    <Compile Remove="Migrations\20201009090322_add_stockInStkDrugPackageTb_fix2.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="nlog.config" />

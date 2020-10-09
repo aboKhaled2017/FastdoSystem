@@ -259,7 +259,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
             if (patchDoc == null)
                 return BadRequest();
             dynamic _error = null;
-            await _stockRepository.HandleStkDrugsRequest(packageId,
+            await _stockRepository.HandleStkDrugsPackageRequest_ForStock(packageId,
                 request =>
                 {
                     patchDoc.ApplyTo(request);

@@ -237,7 +237,7 @@ namespace Fastdo.backendsys.Controllers
                 return BadRequest();
             dynamic _error = null;
 
-            await _stkDrugsRepository.DeleteRequestForStkDrugsPackage(packageId, error => {
+            await _stkDrugsRepository.DeleteRequestForStkDrugsPackage_FromStk(packageId, error => {
                 _error = error;
             });
             if (_error != null)

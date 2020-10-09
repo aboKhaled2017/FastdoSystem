@@ -444,10 +444,10 @@ namespace Fastdo.backendsys.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task HandleStkDrugsRequest(Guid packageId, Action<dynamic> onProcess, Action<dynamic> onError)
+        public async Task HandleStkDrugsPackageRequest_ForStock(Guid packageId, Action<dynamic> onProcess, Action<dynamic> onError)
         {
-            var request =await _context.StkDrugPackagesRequests
-                .FirstOrDefaultAsync(e=>e.Id.Equals(packageId));
+            var request =await _context.StockInStkDrgPackageReqs
+                .FirstOrDefaultAsync(e=>e.PackageId.Equals(packageId) && e.StockId==UserId);
             if (request == null)
             {
                 onError(Functions.MakeError("هذا الطلب غير موجود"));
@@ -473,7 +473,8 @@ namespace Fastdo.backendsys.Repositories
             var data = originalData
                 .Select(r => new StkDrugsPackageReqModel
                 {
-                    Id=r.Id,
+                    StkPackageId=r.Id,
+                    PackageId=r.PackageId,
                     DrugDetails=r.Package.PackageDetails,
                     Status=r.Status,
                     CreatedAt=r.Package.CreateAt,

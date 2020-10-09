@@ -257,36 +257,40 @@ namespace Fastdo.backendsys.Repositories
             IEnumerable<StkDrugsReqOfPharmaModel> stksDrugsList,
             Action<dynamic> onError)
         {
-            var updatedPackageRequest = await _context.StkDrugPackagesRequests.FindAsync(packageId);
+            var updatedPackageRequest = await _context.StkDrugPackagesRequests
+                .Include(e=>e.AssignedStocks)
+                .FirstOrDefaultAsync(p=>p.Id==packageId && p.PharmacyId==UserId);
             if (updatedPackageRequest == null)
             {
                 onError(Functions.MakeError("هذه الباقة غير موجودة"));
                 return;
             }
             await ValidatePharmaRequestFor_StkDrugsList(stksDrugsList, _packageDetails => {
-
+               // _context.Set<StockInStkDrgPackageReq>().RemoveRange
                 updatedPackageRequest.PackageDetails = _packageDetails;
+                updatedPackageRequest.AssignedStocks.Clear();
+                updatedPackageRequest.AssignedStocks=GetAssignedStocksOfStkDrgPackageReq(stksDrugsList.ToList());
                 _context.Entry(updatedPackageRequest).State = EntityState.Modified;
                 //update the package
                 SaveAsync().Wait();
 
-                //add package details to new table that reference this package
-                UpdateRequestedPackedDrugsToDbWithReferenceToItsPackage(
-                    packageId,
-                    stksDrugsList,
-                    onError).Wait();
             }, onError,"update");
         }
 
         //delete
-        public async Task DeleteRequestForStkDrugsPackage(Guid packageId, Action<dynamic> onError)
+        public async Task DeleteRequestForStkDrugsPackage_FromStk(Guid packageId, Action<dynamic> onError)
         {
-            var package =await _context.StkDrugPackagesRequests.FindAsync(packageId);
+            var package =await _context.StkDrugPackagesRequests
+                .Include(e=>e.AssignedStocks)
+                .FirstOrDefaultAsync(e=>e.Id.Equals(packageId) && e.PharmacyId==UserId);
             if (package == null)
             {
                 onError(Functions.MakeError("هذه الباقة لم تعد موجودة"));
                 return;
             }
+            package.AssignedStocks = new List<StockInStkDrgPackageReq>();
+            _context.Entry(package).State = EntityState.Modified;
+            await SaveAsync();
             _context.StkDrugPackagesRequests.Remove(package);
             await SaveAsync();
         }
@@ -361,31 +365,6 @@ namespace Fastdo.backendsys.Repositories
             OnValid(JsonConvert.SerializeObject(stksDrugsList));
         }
         
-        private async Task AddRequestedPackedDrugsToDbWithReferenceToItsPackage(
-            IEnumerable<StkDrugsReqOfPharmaModel> stksDrugsList,
-            StkDrugPackageRequest newPackageRequest,
-            Action<dynamic>onError)
-        {
-            var packageEntries = new List<StkDrugInStkDrgPackageReq>();
-
-            var recievedDrugsIds = stksDrugsList.ToList()
-                .SelectMany(e => e.DrugsList.Select(e1 => (Guid)Guid.Parse(e1.First())))
-                .ToList();
-            recievedDrugsIds.ForEach(drugId =>
-            {
-                packageEntries.Add(new StkDrugInStkDrgPackageReq
-                {
-                    Id = Guid.NewGuid(),
-                    StkDrugId = drugId,
-                    //StkDrugPackageId = newPackageRequest.Id
-                });
-            });
-
-            var res = _context.BulkInsertOrUpdateAsync(packageEntries, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true });
-            await res;
-            if (!res.IsCompletedSuccessfully)
-                onError(Functions.MakeError("حدثت مشكلى اثناء معالجة الطلب"));
-        }
 
         private List<StkDrugInStkDrgPackageReq> GetAssignedStkDrugsForStockInPackage(List<IEnumerable<dynamic>> drugsWithProps,string stockId)
         {
@@ -400,6 +379,7 @@ namespace Fastdo.backendsys.Repositories
             });
             return assignedDrugs;
         }
+       
         private List<StockInStkDrgPackageReq> GetAssignedStocksOfStkDrgPackageReq(List<StkDrugsReqOfPharmaModel> stksDrugsListPerStock)
         {
             var assignedStocks = new List<StockInStkDrgPackageReq>();
@@ -412,6 +392,7 @@ namespace Fastdo.backendsys.Repositories
             });
             return assignedStocks;
         }
+       
         private async Task UpdateRequestedPackedDrugsToDbWithReferenceToItsPackage(
             Guid packageId,
             IEnumerable<StkDrugsReqOfPharmaModel> stksDrugsList,

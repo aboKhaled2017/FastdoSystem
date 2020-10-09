@@ -17,8 +17,9 @@ namespace Fastdo.backendsys.Controllers.Stocks
     }
     public class StkDrugsPackageReqModel
     {
-        public Guid Id { get; set; }
-       
+        public Guid PackageId { get; set; }
+        public Guid StkPackageId { get; set; }
+
         public StkDrugsPackageReqModel_PharmaData Pharma { get; set; }
         public string DrugDetails { get; set; }
         public StkDrugPackageRequestStatus Status { get; set; }
