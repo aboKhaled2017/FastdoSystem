@@ -169,22 +169,29 @@ namespace Fastdo.backendsys.Controllers
                 return BadRequest();
             return Ok(await _stkDrugsRepository.GetStocksOfSpecifiedStkDrug(stkDrugName.Trim()));
         }
-        [HttpPut("stkdrugs/req")]
-        public async Task<IActionResult> MakeRequestForListOfStkDrugs([FromBody]IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList)
+
+        #endregion
+
+        #region Post
+
+        [HttpPost("stkdrugpackage")]
+        public async Task<IActionResult> MakeRequestForStkDrugsPackage([FromBody] IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList)
         {
             if (stkDrugsList.Count() == 0)
                 return BadRequest();
-            dynamic _error = null;
-             
-             await _stkDrugsRepository.MakePharmaReqToListOfStkDrugs(stkDrugsList,error=> {
-                 _error = error;
-                 
-             });
+            dynamic _error = null,_addedPackage=null;
+
+            await _stkDrugsRepository.MakeRequestForStkDrugsPackage(stkDrugsList,package=> {
+                _addedPackage = package;
+            },error => {
+                _error = error;
+            });
             if (_error != null)
                 return BadRequest(_error);
-            
-            return NoContent();
+
+            return Ok(_addedPackage);
         }
+
         #endregion
 
         #region Put
@@ -203,6 +210,42 @@ namespace Fastdo.backendsys.Controllers
                 return NoContent();
             return NotFound();
         }
+
+        [HttpPut("stkdrugpackage/{packageId}")]
+        public async Task<IActionResult> UpdateRequestForStkDrugsPackage([FromRoute]Guid packageId,[FromBody] IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList)
+        {
+            if (stkDrugsList.Count() == 0 || packageId==null || packageId==Guid.Empty)
+                return BadRequest();
+            dynamic _error = null;
+
+            await _stkDrugsRepository.UpdateRequestForStkDrugsPackage(packageId,stkDrugsList, error => {
+                _error = error;
+            });
+            if (_error != null)
+                return BadRequest(_error);
+
+            return NoContent();
+        }
+        #endregion
+
+        #region Delete
+
+        [HttpDelete("stkdrugpackage/{packageId}")]
+        public async Task<IActionResult> DeletePackageOfRequestedDrugs(Guid packageId)
+        {
+            if (packageId==null || packageId==Guid.Empty)
+                return BadRequest();
+            dynamic _error = null;
+
+            await _stkDrugsRepository.DeleteRequestForStkDrugsPackage(packageId, error => {
+                _error = error;
+            });
+            if (_error != null)
+                return BadRequest(_error);
+
+            return NoContent();
+        }
+
         #endregion
 
     }

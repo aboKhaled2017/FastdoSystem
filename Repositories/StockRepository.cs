@@ -10,6 +10,9 @@ using Fastdo.backendsys.Controllers.Stocks;
 using Fastdo.backendsys.Services;
 using EFCore.BulkExtensions;
 using Fastdo.Repositories.Enums;
+using Namotion.Reflection;
+using Newtonsoft.Json;
+using Fastdo.backendsys.Controllers.Pharmacies;
 
 namespace Fastdo.backendsys.Repositories
 {
@@ -439,6 +442,61 @@ namespace Fastdo.backendsys.Repositories
             pharmaInStockClass.StockClassId = model.getNewClassId;
             _context.Entry(pharmaInStockClass).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task HandleStkDrugsRequest(Guid packageId, Action<dynamic> onProcess, Action<dynamic> onError)
+        {
+            var request =await _context.StkDrugPackagesRequests
+                .FirstOrDefaultAsync(e=>e.Id.Equals(packageId));
+            if (request == null)
+            {
+                onError(Functions.MakeError("هذا الطلب غير موجود"));
+                return;
+            }
+            onProcess(request);
+            _context.Entry(request).State = EntityState.Modified;
+            await SaveAsync();
+        }
+
+        public async Task<PagedList<StkDrugsPackageReqModel>> GetStkDrugsPackageRequests(StkDrugsPackageReqResourceParmaters _params)
+        {
+            var originalData = _context.StockInStkDrgPackageReqs
+                 .Where(r =>
+                 r.StockId==UserId &&
+                 r.Status!=StkDrugPackageRequestStatus.Completed);
+
+            if (_params.Status != null)
+            {
+                originalData = originalData
+                     .Where(p => p.Status == _params.Status);
+            }
+            var data = originalData
+                .Select(r => new StkDrugsPackageReqModel
+                {
+                    Id=r.Id,
+                    DrugDetails=r.Package.PackageDetails,
+                    Status=r.Status,
+                    CreatedAt=r.Package.CreateAt,
+                    Pharma=new StkDrugsPackageReqModel_PharmaData
+                    {
+                        Id=r.Package.PharmacyId,
+                        Name=r.Package.Pharmacy.Name,
+                        Address=$"{r.Package.Pharmacy.Area.Name} / {r.Package.Pharmacy.Area.SuperArea.Name}",
+                        AddressInDetails=r.Package.Pharmacy.Address,
+                        LandLinePhone=r.Package.Pharmacy.LandlinePhone,
+                        PhoneNumber=r.Package.Pharmacy.PersPhone
+                    }
+                });
+            var returnedData= await PagedList<StkDrugsPackageReqModel>.CreateAsync(data, _params);
+            returnedData.ForEach(el =>
+            {
+                var drugDetails =JsonConvert.DeserializeObject<IEnumerable<StkDrugsReqOfPharmaModel>>(el.DrugDetails);
+                el.DrugDetails = JsonConvert.SerializeObject(
+                    drugDetails.FirstOrDefault(e => e.StockId == UserId)
+                    .DrugsList
+                    );
+            });
+            return returnedData;
         }
     }
 }

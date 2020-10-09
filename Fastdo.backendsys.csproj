@@ -63,7 +63,6 @@
 
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions" Version="2.6.4" />
-    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />

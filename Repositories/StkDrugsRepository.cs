@@ -11,6 +11,7 @@ using Fastdo.backendsys.Controllers.Pharmacies;
 using Newtonsoft.Json;
 using System.Text;
 using System.Data.Common;
+using Fastdo.Repositories.Enums;
 
 namespace Fastdo.backendsys.Repositories
 {
@@ -22,6 +23,8 @@ namespace Fastdo.backendsys.Repositories
         }
 
         #endregion
+
+        #region add/delete/update/get StkDrugs
 
         public async Task AddListOfDrugs(List<StkDrug> drugs,List<DiscountPerStkDrug> currentDrugs,string stockId)
         {
@@ -84,19 +87,7 @@ namespace Fastdo.backendsys.Repositories
         {
             _context.StkDrugs.BatchDelete();
         }
-        public async Task<bool> IsUserHas(Guid id)
-        {
-            return await _context.StkDrugs.AnyAsync(d => d.Id == id && d.StockId == UserId);
-        }
-        public async Task<StkDrug> GetIfExists(Guid id)
-        {
-            return await _context.StkDrugs.FindAsync(id);
-        }
-        public async Task<bool> LzDrugExists(Guid id)
-        {
-            return await _context.StkDrugs.AnyAsync(d => d.Id == id);
-        }
-
+        
         public async Task<PagedList<StkShowDrugModel>> GetAllStockDrugsOfReport(string id, LzDrgResourceParameters _params)
         {
             var data = _context.StkDrugs.Where(s => s.StockId == id)
@@ -202,6 +193,9 @@ namespace Fastdo.backendsys.Repositories
             return dataList;
         }
 
+        #endregion
+
+        #region Others
         public async Task<List<StockOfStkDrugModel_TragetPharma>> GetStocksOfSpecifiedStkDrug(string stkDrgName)
         {
             var stocks = await _context.StkDrugs
@@ -228,59 +222,241 @@ namespace Fastdo.backendsys.Repositories
             }).ToList();
         }
 
-        public async Task MakePharmaReqToListOfStkDrugs(IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList, Action<dynamic> onError)
+        #endregion
+
+        #region StkDrugs Packages
+
+        //add
+        public async Task MakeRequestForStkDrugsPackage(
+            IEnumerable<StkDrugsReqOfPharmaModel> stksDrugsList,
+            Action<dynamic> onComplete,
+            Action<dynamic> onError)
         {
-           
-            var idsList = new List<string>();
-            stkDrugsList.ToList().ForEach(item =>
+            await ValidatePharmaRequestFor_StkDrugsList(stksDrugsList, _packageDetails => {
+
+                //create new package request
+                var newPackageRequest = new StkDrugPackageRequest
+                {
+                    Id = Guid.NewGuid(),
+                    PharmacyId = UserId,
+                    PackageDetails = _packageDetails,
+                    AssignedStocks=GetAssignedStocksOfStkDrgPackageReq(stksDrugsList.ToList())
+                };
+
+                //add new package
+                _context.StkDrugPackagesRequests.Add(newPackageRequest);
+                SaveAsync().Wait();
+
+                onComplete(new { newPackageRequest .Id, newPackageRequest .PackageDetails});
+            }, onError);
+        }
+
+        //update 
+        public async Task UpdateRequestForStkDrugsPackage(
+            Guid packageId,
+            IEnumerable<StkDrugsReqOfPharmaModel> stksDrugsList,
+            Action<dynamic> onError)
+        {
+            var updatedPackageRequest = await _context.StkDrugPackagesRequests.FindAsync(packageId);
+            if (updatedPackageRequest == null)
             {
-                string idsStr = item.DrugsList
-                .Select(e=>Guid.Parse(e.First()))
+                onError(Functions.MakeError("هذه الباقة غير موجودة"));
+                return;
+            }
+            await ValidatePharmaRequestFor_StkDrugsList(stksDrugsList, _packageDetails => {
+
+                updatedPackageRequest.PackageDetails = _packageDetails;
+                _context.Entry(updatedPackageRequest).State = EntityState.Modified;
+                //update the package
+                SaveAsync().Wait();
+
+                //add package details to new table that reference this package
+                UpdateRequestedPackedDrugsToDbWithReferenceToItsPackage(
+                    packageId,
+                    stksDrugsList,
+                    onError).Wait();
+            }, onError,"update");
+        }
+
+        //delete
+        public async Task DeleteRequestForStkDrugsPackage(Guid packageId, Action<dynamic> onError)
+        {
+            var package =await _context.StkDrugPackagesRequests.FindAsync(packageId);
+            if (package == null)
+            {
+                onError(Functions.MakeError("هذه الباقة لم تعد موجودة"));
+                return;
+            }
+            _context.StkDrugPackagesRequests.Remove(package);
+            await SaveAsync();
+        }
+
+        #endregion
+
+        #region  Checkers methods
+
+        public async Task<bool> IsUserHas(Guid id)
+        {
+            return await _context.StkDrugs.AnyAsync(d => d.Id == id && d.StockId == UserId);
+        }
+        public async Task<StkDrug> GetIfExists(Guid id)
+        {
+            return await _context.StkDrugs.FindAsync(id);
+        }
+        public async Task<bool> LzDrugExists(Guid id)
+        {
+            return await _context.StkDrugs.AnyAsync(d => d.Id == id);
+        }
+
+        #endregion
+
+        #region private methods
+
+        private async Task ValidatePharmaRequestFor_StkDrugsList(            
+            IEnumerable<StkDrugsReqOfPharmaModel> stksDrugsList,
+            Action<string> OnValid,
+            Action<dynamic> onError,
+            string operType = "add")
+        {
+            var and_ClauseListPerStockId = new List<string>(); // list of ids
+            //List of Drugs per stock = ListOf ([stockId,drugsListOfThatStock])
+            stksDrugsList.ToList().ForEach(item => //one item is [stockId,drugsListOfThatStock]
+            {
+                string stockDrugsClause = item.DrugsList //List of [Id:Guid,Quantity:int]
+                .Select(e => Guid.Parse(e.First())) //select the Id from [Id:Guid,Quantity:int]
                 .Aggregate($"({nameof(StkDrug.Id)} in ('", (prev, val) => prev + val.ToString() + "','");
-                idsList.Add(idsStr.Substring(0,idsStr.Length-2)+ $") and {nameof(item.StockId)}='{item.StockId}')");
+                and_ClauseListPerStockId
+                .Add(stockDrugsClause
+                .Substring(0, stockDrugsClause.Length - 2) + $") and {nameof(item.StockId)}='{item.StockId}')");
             });
-            string AllIdsStr = idsList.Aggregate("", (prev, val) => prev + val+" or ");
-            AllIdsStr = AllIdsStr.Substring(0,AllIdsStr.Length - 3);
+            string ClauseListGroup = and_ClauseListPerStockId.Aggregate("", (prev, val) => prev + val + " or ");
+            ClauseListGroup = ClauseListGroup.Substring(0, ClauseListGroup.Length - 3);
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($"select count(*) from {nameof(StkDrug)}s where (");
-            stringBuilder.Append($"{AllIdsStr})");
-            
-            var expectedResult = stkDrugsList.Select(s => s.DrugsList.Count()).Aggregate(0, (prev, val) => prev + val);
-            if(await ExecuteScaler<int>(stringBuilder) != expectedResult){
+            stringBuilder.Append($"{ClauseListGroup})");
+
+            var expectedResult = stksDrugsList.Select(s => s.DrugsList.Count()).Aggregate(0, (prev, val) => prev + val);
+            if (await ExecuteScaler<int>(stringBuilder) != expectedResult)
+            {
                 onError(Functions.MakeError("لقد حاولت ادخال بيانات غير صحيحة"));
                 return;
             }
-            
-            var newPackageRequest = new StkDrugPackageRequest
+
+            //check if these drugs requested before from the same stock and not accepted
+            var AllDrugsIds=stksDrugsList.ToList()
+                .SelectMany(s => s.DrugsList.Select(e => Guid.Parse(e.First())));
+            if (operType == "add")
             {
-                Id=Guid.NewGuid(),
-                PharmacyId = UserId,
-                PackageDetails = JsonConvert.SerializeObject(stkDrugsList)
-            };
-            _context.StkDrugPackagesRequests.Add(newPackageRequest);
-
-            await SaveAsync();
-
+                var isAnyOfDrugsRequestedBefore = await _context.StkDrugInStkDrgPackagesRequests
+                    .AnyAsync(e =>
+                    e.StockPackage.Package.PharmacyId == UserId &&
+                    AllDrugsIds.Contains(e.StkDrugId) &&
+                    e.StockPackage.Status != StkDrugPackageRequestStatus.Completed);
+                if (isAnyOfDrugsRequestedBefore)
+                {
+                    onError(Functions.MakeError("هذه الباقة تحتوى على راكد تم طلبه بالفعل"));
+                    return;
+                }
+            }
+            OnValid(JsonConvert.SerializeObject(stksDrugsList));
+        }
+        
+        private async Task AddRequestedPackedDrugsToDbWithReferenceToItsPackage(
+            IEnumerable<StkDrugsReqOfPharmaModel> stksDrugsList,
+            StkDrugPackageRequest newPackageRequest,
+            Action<dynamic>onError)
+        {
             var packageEntries = new List<StkDrugInStkDrgPackageReq>();
 
-            stkDrugsList.ToList().ForEach(drg =>
+            var recievedDrugsIds = stksDrugsList.ToList()
+                .SelectMany(e => e.DrugsList.Select(e1 => (Guid)Guid.Parse(e1.First())))
+                .ToList();
+            recievedDrugsIds.ForEach(drugId =>
             {
-                drg.DrugsList.ToList().ForEach(e =>
+                packageEntries.Add(new StkDrugInStkDrgPackageReq
                 {
-                    packageEntries.Add(new StkDrugInStkDrgPackageReq
-                    {
-                        Id=Guid.NewGuid(),
-                        StkDrugId = Guid.Parse(e.First()),
-                        StkDrugPackageId = newPackageRequest.Id
-                    });
+                    Id = Guid.NewGuid(),
+                    StkDrugId = drugId,
+                    //StkDrugPackageId = newPackageRequest.Id
                 });
             });
 
-            var res= _context.BulkInsertOrUpdateAsync(packageEntries, new BulkConfig { SetOutputIdentity = true ,PreserveInsertOrder=true});
+            var res = _context.BulkInsertOrUpdateAsync(packageEntries, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true });
             await res;
-            if(!res.IsCompletedSuccessfully)
+            if (!res.IsCompletedSuccessfully)
                 onError(Functions.MakeError("حدثت مشكلى اثناء معالجة الطلب"));
+        }
+
+        private List<StkDrugInStkDrgPackageReq> GetAssignedStkDrugsForStockInPackage(List<IEnumerable<dynamic>> drugsWithProps,string stockId)
+        {
+            var assignedDrugs = new List<StkDrugInStkDrgPackageReq>();
+            drugsWithProps.ForEach(drugProps =>
+            {
+                assignedDrugs.Add(new StkDrugInStkDrgPackageReq
+                {
+                    StkDrugId=Guid.Parse(drugProps.First()),
+                    StockId=stockId
+                });
+            });
+            return assignedDrugs;
+        }
+        private List<StockInStkDrgPackageReq> GetAssignedStocksOfStkDrgPackageReq(List<StkDrugsReqOfPharmaModel> stksDrugsListPerStock)
+        {
+            var assignedStocks = new List<StockInStkDrgPackageReq>();
+            stksDrugsListPerStock.ForEach(stkDrugs => {
+                assignedStocks.Add(new StockInStkDrgPackageReq
+                {
+                    StockId = stkDrugs.StockId,
+                    AssignedStkDrugs = GetAssignedStkDrugsForStockInPackage(stkDrugs.DrugsList.ToList(), stkDrugs.StockId)
+                }); ;
+            });
+            return assignedStocks;
+        }
+        private async Task UpdateRequestedPackedDrugsToDbWithReferenceToItsPackage(
+            Guid packageId,
+            IEnumerable<StkDrugsReqOfPharmaModel> stksDrugsList,
+            Action<dynamic> onError)
+        {
+            var oldPackageEntries = await _context
+                .StkDrugInStkDrgPackagesRequests
+                .Where(s => s.StockPackage.PackageId == packageId)
+                .ToListAsync();
+            var newpackageEntries = new List<StkDrugInStkDrgPackageReq>();
+            var removedpackageEntries = new List<StkDrugInStkDrgPackageReq>();
+
+            var recievedDrugsIds = stksDrugsList.ToList()
+                .SelectMany(e => e.DrugsList.Select(e1 => (Guid)Guid.Parse(e1.First())))
+                .ToList();
+
+            recievedDrugsIds.ForEach(drugId =>
+            {
+                var oldDrug = oldPackageEntries.FirstOrDefault(d => d.StkDrugId == drugId);
+                if (oldDrug!=null)
+                {
+                    newpackageEntries.Add(oldDrug);
+                }
+                else
+                {
+                    newpackageEntries.Add(new StkDrugInStkDrgPackageReq
+                    {
+                        Id = Guid.NewGuid(),
+                        StkDrugId = drugId,
+                        //StkDrugPackageId = packageId
+                    });
+                }
+            });
+
+            oldPackageEntries.ForEach(entry =>
+            {
+                if (!recievedDrugsIds.Contains(entry.StkDrugId))
+                    removedpackageEntries.Add(entry);
+            });
+            await _context.BulkDeleteAsync(removedpackageEntries);
+            
+            await _context.BulkInsertOrUpdateAsync(newpackageEntries, new BulkConfig { SetOutputIdentity = true, PreserveInsertOrder = true });
             
         }
+
+        #endregion
     }
 }

@@ -85,6 +85,40 @@ namespace Fastdo.backendsys.Controllers.Stocks
                     });
             }            
         }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public string Create_StkDrusPackageReqs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        {
+            var _cardParams = _params as StkDrugsPackageReqResourceParmaters;
+            switch (resourceUriType)
+            {
+                case ResourceUriType.PreviousPage:
+                    return Url.Link(routeName,
+                    new StkDrugsPackageReqResourceParmaters
+                    {
+                        PageNumber = _cardParams.PageNumber - 1,
+                        PageSize = _cardParams.PageSize,
+                        Status=_cardParams.Status
+                    }); ;
+                case ResourceUriType.NextPage:
+                    return Url.Link(routeName,
+                    new StkDrugsPackageReqResourceParmaters
+                    {
+                        PageNumber = _cardParams.PageNumber + 1,
+                        PageSize = _cardParams.PageSize,
+                        Status = _cardParams.Status
+                    });
+                default:
+                    return Url.Link(routeName,
+                    new StkDrugsPackageReqResourceParmaters
+                    {
+                        PageNumber = _cardParams.PageNumber,
+                        PageSize = _cardParams.PageSize,
+                        Status = _cardParams.Status
+                    });
+            }
+        }
+
         [ApiExplorerSettings(IgnoreApi = true)]
         public string CreateResourceUriForPhamaReques(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
@@ -123,6 +157,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
                     });
             }
         }
+       
         #endregion
 
         #region update the stock report
@@ -186,6 +221,19 @@ namespace Fastdo.backendsys.Controllers.Stocks
             Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
             return Ok(requests);
         }
+        
+        [HttpGet("drugsReqs",Name ="GetStkDrugsPackageRequests")]
+        public async Task<IActionResult> GetStockRequestsOfDrugsPackage([FromQuery] StkDrugsPackageReqResourceParmaters _params)
+        {
+            var requests = await _stockRepository.GetStkDrugsPackageRequests(_params);
+            var paginationMetaData = 
+                new PaginationMetaDataGenerator<StkDrugsPackageReqModel, StkDrugsPackageReqResourceParmaters>(
+                requests, "GetStkDrugsPackageRequests", _params, Create_StkDrusPackageReqs_ResourceUri
+                ).Generate();
+            Response.Headers.Add(Variables.X_PaginationHeader, paginationMetaData);
+            return Ok(requests);
+        }
+
         #endregion
 
         #region Patch
@@ -205,6 +253,25 @@ namespace Fastdo.backendsys.Controllers.Stocks
             return NoContent();
         }
 
+        [HttpPatch("drugsReqs/{packageId}")]
+        public async Task<IActionResult> HandlePharmaRequest([FromRoute]Guid packageId, [FromBody] JsonPatchDocument<dynamic> patchDoc)
+        {
+            if (patchDoc == null)
+                return BadRequest();
+            dynamic _error = null;
+            await _stockRepository.HandleStkDrugsRequest(packageId,
+                request =>
+                {
+                    patchDoc.ApplyTo(request);
+                },
+                error =>
+                {
+                    _error = error;
+                });
+            if (_error != null)
+                return BadRequest(_error);
+            return NoContent();
+        }
         #endregion
 
         #region Update

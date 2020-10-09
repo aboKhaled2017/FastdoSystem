@@ -36,5 +36,7 @@ namespace Fastdo.backendsys.Repositories
         Task RenamePharmaClass(UpdateStockClassForPharmaModel model);
         Task<bool> CancelRequestToStock(string stockId);
         Task AssignAnotherClassForPharmacy(AssignAnotherClassForPharmacyModel model, Action<dynamic>onError);
+        Task HandleStkDrugsRequest(Guid packageId, Action<dynamic> onProcess, Action<dynamic> onError);
+        Task<PagedList<StkDrugsPackageReqModel>> GetStkDrugsPackageRequests(StkDrugsPackageReqResourceParmaters _params);
     }
 }

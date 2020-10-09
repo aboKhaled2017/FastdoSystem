@@ -25,6 +25,8 @@ namespace Fastdo.backendsys.Repositories
         Task<PagedList<SearchStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(string v, LzDrgResourceParameters _params);
         Task<PagedList<SearchGenralStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(LzDrgResourceParameters _params);
         Task<List<StockOfStkDrugModel_TragetPharma>> GetStocksOfSpecifiedStkDrug(string stkDrgName);
-        Task MakePharmaReqToListOfStkDrugs(IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList, Action<dynamic>onError);
+        Task MakeRequestForStkDrugsPackage(IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList,Action<dynamic>OnComplete, Action<dynamic>onError);
+        Task DeleteRequestForStkDrugsPackage(Guid packageId, Action<dynamic> onError);
+        Task UpdateRequestForStkDrugsPackage(Guid packageId,IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList, Action<dynamic> onError);
     }
 }
