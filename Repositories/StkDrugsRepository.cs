@@ -18,11 +18,17 @@ using Namotion.Reflection;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class StkDrugsRepository : Repository, IStkDrugsRepository
+    public class StkDrugsRepository : Repository<StkDrug>, IStkDrugsRepository
     {
         #region constructor and properties
-        public StkDrugsRepository(SysDbContext context) : base(context)
+        private IStkDrugPackgesReqsRepository _PackgesReqsRepository { get; }
+        private IStkDrgInPackagesReqsRepository _StkDrgInPackagesReqs { get; }
+        public StkDrugsRepository(SysDbContext context,
+            IStkDrugPackgesReqsRepository packgesReqsRepository,
+            IStkDrgInPackagesReqsRepository stkDrgInPackagesReqsRepository) : base(context)
         {
+            _PackgesReqsRepository = packgesReqsRepository;
+            _StkDrgInPackagesReqs = stkDrgInPackagesReqsRepository;
         }
 
         #endregion
@@ -68,7 +74,7 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<List<DiscountPerStkDrug>> GetDiscountsForEachStockDrug(string id)
         {
-            return await _context.StkDrugs
+            return await GetAll()
                 .Where(s=>s.StockId==id)
                 .Select(s => new DiscountPerStkDrug
             {
@@ -78,22 +84,15 @@ namespace Fastdo.backendsys.Repositories
             }).ToListAsync();
         }
 
-        public async Task<StkDrug> GetByIdAsync(Guid id)
-        {
-            return await _context.StkDrugs.FindAsync(id);
-        }
-        public void Delete(StkDrug drug)
-        {
-            _context.StkDrugs.Remove(drug);
-        }
         public void DeleteAll()
         {
-            _context.StkDrugs.BatchDelete();
+            GetAll().BatchDelete();
         }
         
         public async Task<PagedList<StkShowDrugModel>> GetAllStockDrugsOfReport(string id, LzDrgResourceParameters _params)
         {
-            var data = _context.StkDrugs.Where(s => s.StockId == id)
+            var data = GetAll()
+                .Where(s => s.StockId == id)
                 .Select(s => new StkShowDrugModel
                 {
                     Id = s.Id,
@@ -111,7 +110,8 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<PagedList<SearchStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(string stockId, StkDrugResourceParameters _params)
         {
-            var data = _context.StkDrugs.Where(s => s.StockId == stockId)
+            var data = GetAll()
+                .Where(s => s.StockId == stockId)
                .Select(s => new SearchStkDrugModel
                {
                    Id = s.Id,
@@ -146,7 +146,7 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<PagedList<SearchGenralStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(StkDrugResourceParameters _params)
         {
-            var data = _context.StkDrugs.AsQueryable();
+            var data = GetAll();
             if (!string.IsNullOrEmpty(_params.S))
             {
                 var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
@@ -207,7 +207,7 @@ namespace Fastdo.backendsys.Repositories
         #region Others
         public async Task<List<StockOfStkDrugModel_TragetPharma>> GetStocksOfSpecifiedStkDrug(string stkDrgName)
         {
-            var stocks = await _context.StkDrugs
+            var stocks = await GetAll()
                 .Where(s => s.Name == stkDrgName)
                 .Select(s => new StockOfStkDrugModel
                 {
@@ -256,7 +256,7 @@ namespace Fastdo.backendsys.Repositories
                 };
 
                 //add new package
-                _context.StkDrugPackagesRequests.Add(newPackageRequest);
+                _PackgesReqsRepository.Add(newPackageRequest);
                 SaveAsync().Wait();
 
                 onComplete(new { newPackageRequest .Id, newPackageRequest .PackageDetails});
@@ -269,7 +269,7 @@ namespace Fastdo.backendsys.Repositories
             ShowStkDrugsPackageReqPhModel model,
             Action<dynamic> onError)
         {
-            var updatedPackageRequest = await _context.StkDrugPackagesRequests
+            var updatedPackageRequest = await _PackgesReqsRepository.GetAll()
                 .Include(e=>e.AssignedStocks)
                 .FirstOrDefaultAsync(p=>p.Id==packageId && p.PharmacyId==UserId);
             if (updatedPackageRequest == null)
@@ -295,7 +295,7 @@ namespace Fastdo.backendsys.Repositories
         //delete
         public async Task DeleteRequestForStkDrugsPackage_FromStk(Guid packageId, Action<dynamic> onError)
         {
-            var package =await _context.StkDrugPackagesRequests
+            var package =await _PackgesReqsRepository.GetAll()
                 .Include(e=>e.AssignedStocks)
                 .FirstOrDefaultAsync(e=>e.Id.Equals(packageId) && e.PharmacyId==UserId);
             if (package == null)
@@ -312,7 +312,7 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<PagedList<ShowStkDrugsPackagePhModel>> GetPageOfStkDrugsPackagesPh(StkDrugPackagePhResourceParameters _params)
         {
-            var originalData = _context.StkDrugPackagesRequests
+            var originalData = _PackgesReqsRepository.GetAll()
                 .Where(e => e.PharmacyId == UserId);
             if (!string.IsNullOrEmpty(_params.S))
             {
@@ -375,15 +375,14 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<bool> IsUserHas(Guid id)
         {
-            return await _context.StkDrugs.AnyAsync(d => d.Id == id && d.StockId == UserId);
+            return await GetAll()
+                .AnyAsync(d => d.Id == id && d.StockId == UserId);
         }
-        public async Task<StkDrug> GetIfExists(Guid id)
-        {
-            return await _context.StkDrugs.FindAsync(id);
-        }
+
         public async Task<bool> LzDrugExists(Guid id)
         {
-            return await _context.StkDrugs.AnyAsync(d => d.Id == id);
+            return await GetAll()
+                .AnyAsync(d => d.Id == id);
         }
 
         #endregion
@@ -430,7 +429,8 @@ namespace Fastdo.backendsys.Repositories
                 .SelectMany(s => s.DrugsList.Select(e => Guid.Parse(e.First())));
             if (operType == "add")
             {
-                var isAnyOfDrugsRequestedBefore = await _context.StkDrugInStkDrgPackagesRequests
+                var isAnyOfDrugsRequestedBefore = await _StkDrgInPackagesReqs
+                    .GetAll()
                     .AnyAsync(e =>
                     e.StockPackage.Package.PharmacyId == UserId &&
                     AllDrugsIds.Contains(e.StkDrugId) &&

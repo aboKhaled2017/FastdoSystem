@@ -42,11 +42,8 @@ namespace Fastdo.backendsys.Services.Auth
                 SuperAdminId=superId
             };
             onAddedSuccess(user,admin);
-            if( await _adminRepository.AddAsync(admin))
-            {
-                _transactionService.CommitChanges().End();
-                return true;
-            }
+            await _adminRepository.AddAsync(admin);
+            
             _transactionService.RollBackChanges().End();
             return false;
         }

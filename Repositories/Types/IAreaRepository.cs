@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Repositories
 {
-   public interface IAreaRepository:IRepository
+   public interface IAreaRepository:IRepository<Area>
     {
-        IQueryable<Area> GetAll();
-        Task<Area> GetById(byte id);
-        Task<bool> Add(Area area);
-        Task<Area> Delete(byte id);
         Task<bool> AreaExists(byte id);
     }
 }

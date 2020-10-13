@@ -11,14 +11,10 @@ using System.Collections;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class PharmacyRepository:Repository,IPharmacyRepository
+    public class PharmacyRepository:Repository<Pharmacy>,IPharmacyRepository
     {
         public PharmacyRepository(SysDbContext context) : base(context)
         {
-        }
-        public IQueryable<Pharmacy> GetAllAsync()
-        {
-            return _context.Pharmacies;
         }
         public async Task<PagedList<Get_PageOf_Pharmacies_ADMModel>> Get_PageOf_PharmacyModels_ADM(PharmaciesResourceParameters _params)
         {
@@ -56,10 +52,7 @@ namespace Fastdo.backendsys.Repositories
             }
             return await PagedList<Get_PageOf_Pharmacies_ADMModel>.CreateAsync(sourceData, _params);
         }
-        public async Task<Pharmacy> GetByIdAsync(string id)
-        {
-            return await _context.Pharmacies.FindAsync(id);
-        }
+
         public async Task<Get_PageOf_Pharmacies_ADMModel> Get_PharmacyModel_ADM(string id)
         {
             return await _context.Pharmacies
@@ -84,17 +77,13 @@ namespace Fastdo.backendsys.Repositories
                 })
                .SingleOrDefaultAsync();
         }
-        //public async Task<>
-        public async Task<bool> AddAsync(Pharmacy pharmacy)
-        {
-            _context.Pharmacies.Add(pharmacy);
-            return (await _context.SaveChangesAsync()) > 0;
-        }        
+       
         public async Task<bool> UpdateAsync(Pharmacy pharmacy)
         {
             _context.Entry(pharmacy).State = EntityState.Modified;
             return (await _context.SaveChangesAsync()) > 0;
-        }       
+        }
+
         public async Task Delete(Pharmacy pharm)
         {                   
             _context.LzDrugRequests.RemoveRange(
@@ -105,27 +94,24 @@ namespace Fastdo.backendsys.Repositories
         }
         public void UpdatePhone(Pharmacy pharmacy)
         {
-            UpdateFields<Pharmacy>(pharmacy, prop => prop.PersPhone);
+            UpdateFields(pharmacy, prop => prop.PersPhone);
         }
         public void UpdateName(Pharmacy pharmacy)
         {
-            UpdateFields<Pharmacy>(pharmacy, prop => prop.Name);
+            UpdateFields(pharmacy, prop => prop.Name);
         }
         public void UpdateContacts(Pharmacy pharmacy)
         {
-            UpdateFields<Pharmacy>(pharmacy,
+            UpdateFields(pharmacy,
                 prop => prop.LandlinePhone,
                 prop => prop.Address);
         }
         public async Task<bool> Patch_Apdate_ByAdmin(Pharmacy pharm)
         {
-            return await UpdateFieldsAsync_And_Save<Pharmacy>(pharm,prop => prop.Status);
-        }
-        public async Task<Pharmacy> Get_IfExists(string id)
-        {
-            return await _context.Pharmacies.FindAsync(id);
+            return await UpdateFieldsAsync_And_Save(pharm,prop => prop.Status);
         }
 
+        //will be moved from here/not suitable
         public async Task<List<ShowSentRequetsToStockByPharmacyModel>> GetSentRequestsToStocks()
         {
           return await _context.PharmaciesInStocks
@@ -143,6 +129,7 @@ namespace Fastdo.backendsys.Repositories
                 }).ToListAsync();
         }
 
+        //will be moved from here/not suitable
         public async Task<IEnumerable<ShowJoinedStocksOfPharmaModel>> GetUserJoinedStocks()
         {
             return await _context.PharmaciesInStocks
@@ -158,6 +145,7 @@ namespace Fastdo.backendsys.Repositories
                 .ToListAsync();
         }
 
+        //will be moved from here/not suitable
         public async Task<List<List<string>>> GetPharmaClassesOfJoinedStocks(string pharmaId)
         {
                  return await _context.PharmaciesInStocks

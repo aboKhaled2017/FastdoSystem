@@ -9,19 +9,20 @@ using Fastdo.backendsys.Models;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class AdminRepository : Repository, IAdminRepository
+    public class AdminRepository : Repository<Admin>, IAdminRepository
     {
-        public AdminRepository(SysDbContext context) : base(context)
+        /*public SysDbContext context
         {
-        }
-
-        public async Task<Admin> GetByIdAsync(string id)
+            get { return context as SysDbContext; }
+        }*/
+        private IPharmacyRepository _pharmacyRepository { get;}
+        public AdminRepository(SysDbContext context,IPharmacyRepository pharmacyRepository) : base(context)
         {
-            return await _context.Admins.FindAsync(id);
+            _pharmacyRepository = pharmacyRepository;
         }
         public async Task<ShowAdminModel> GetAdminsShownModelById(string id)
         {
-            return await GetAllAdmins().Select(a => new ShowAdminModel
+            return await GetAll().Select(a => new ShowAdminModel
             {
                 Id = a.Id,
                 Name = a.Name,
@@ -34,25 +35,21 @@ namespace Fastdo.backendsys.Repositories
                 .Where(a => a.Id == id)
                 .FirstOrDefaultAsync();
         }
-        public IQueryable<Admin> GetAllAdmins()
+        public override void Add(Admin model)
         {
-            return _context.Admins.AsQueryable();
-        }
-        public async Task<bool> AddAsync(Admin admin)
-        {
-            _context.Admins.Add(admin);
+            base.Add(model);
             _context.AdminHistoryEntries.Add(new AdminHistory
             {
                 IssuerId = UserId,
                 OperationType = "Insert",
-                ToId = admin.Id,
-                Desc = $"the user {UserName} with id {UserId} inserted new admin [{admin.Name}]"
+                ToId = model.Id,
+                Desc = $"the user {UserName} with id {UserId} inserted new admin [{model.Name}]"
             });
-            return (await _context.SaveChangesAsync()) > 0;
         }
+ 
         public async Task<StatisShowModel> GetGeneralStatisOfSystem()
         {           
-            var queryResult = _context.Pharmacies.Select(d=>new StatisShowModel
+            var queryResult = _pharmacyRepository.GetAll().Select(d=>new StatisShowModel
             { 
                 pharmacies=new PharmaciesStatis
                 {
@@ -96,15 +93,16 @@ namespace Fastdo.backendsys.Repositories
             _context.Entry(admin).State = EntityState.Modified;
 
         }
-        public async Task Delete(Admin admin)
+
+        public override void Remove(Admin admin)
         {
-            var subAdmins = _context.Admins.Where(a => a.SuperAdminId == admin.Id).ToList();
+            var subAdmins = GetAll().Where(a => a.SuperAdminId == admin.Id).ToList();
             foreach (var _subAdmin in subAdmins)
             {
                 _subAdmin.SuperAdminId = admin.SuperAdminId;
-                UpdateFields<Admin>(_subAdmin, a => a.SuperAdminId);               
+                UpdateFields(_subAdmin, a => a.SuperAdminId);               
             }
-            if(subAdmins.Count>0) _context.SaveChanges();
+            if (subAdmins.Count > 0) Save();
             _context.AdminHistoryEntries.Add(new AdminHistory
             {
                 IssuerId = UserId,
@@ -112,14 +110,14 @@ namespace Fastdo.backendsys.Repositories
                 ToId = admin.Id,
                 Desc = $"the user {UserName} with id {UserId} deleted  admin [{admin.Name}]"
             });
-            _context.Admins.Remove(admin);
-            await _context.SaveChangesAsync();
-            _context.Users.Remove(await _context.Users.FindAsync(admin.Id));
+            base.Remove(admin);
+            Save();
+            _context.Users.Remove(_context.Users.Find(admin.Id));
         }
 
         public async Task<PagedList<ShowAdminModel>> GET_PageOfAdminers_ShowModels_ADM(AdminersResourceParameters _params)
         {
-            var data = GetAllAdmins().Select(a => new ShowAdminModel
+            var data = GetAll().Select(a => new ShowAdminModel
             {
                 Id = a.Id,
                 Name = a.Name,

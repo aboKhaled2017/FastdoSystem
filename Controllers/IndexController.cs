@@ -98,7 +98,7 @@ namespace Fastdo.backendsys.Controllers
         [HttpGet("pharmacies/all")]
         public async Task<ActionResult> getAllPharmacies()
         {
-            var data = _pharmacyRepository.GetAllAsync().Select(p => new
+            var data = _pharmacyRepository.GetAll().Select(p => new
             {
                 p.Id,
                 email = p.User.Email,

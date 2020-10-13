@@ -110,7 +110,7 @@ namespace Fastdo.backendsys.Controllers
             if (!await _lzDrugsRepository.IsUserHas(id))
                 return NotFound();
             var drugToDelete =await _lzDrugsRepository.GetByIdAsync(id);
-            _lzDrugsRepository.Delete(drugToDelete);
+            _lzDrugsRepository.Remove(drugToDelete);
             if (!await _lzDrugsRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
             return NoContent();

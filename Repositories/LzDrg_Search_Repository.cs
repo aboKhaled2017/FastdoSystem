@@ -8,7 +8,8 @@ using Fastdo.backendsys.Services;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class LzDrg_Search_Repository : Repository, ILzDrg_Search_Repository
+    //all class will be moved from here/not suitable
+    public class LzDrg_Search_Repository : Repository<LzDrug>, ILzDrg_Search_Repository
     {
         private IpropertyMappingService _propertyMappingService;
         public LzDrg_Search_Repository(SysDbContext context,IpropertyMappingService propertyMappingService) 
@@ -19,7 +20,7 @@ namespace Fastdo.backendsys.Repositories
         
         public async Task<PagedList<LzDrugCard_Info_BM>> Get_All_LzDrug_Cards_BMs(LzDrg_Card_Info_BM_ResourceParameters _params)
         {
-            var generalQuerableData_BeforePaging = _context.LzDrugs
+            var generalQuerableData_BeforePaging = GetAll()
                 .ApplySort(_params.OrderBy,
                   _propertyMappingService.GetPropertyMapping<LzDrugCard_Info_BM, LzDrug>())
                 .Where(d => d.PharmacyId != UserId);

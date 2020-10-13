@@ -7,43 +7,28 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class AreaRepository : Repository,IAreaRepository
+    public class AreaRepository : Repository<Area>,IAreaRepository
     {
         public AreaRepository(SysDbContext context) : base(context)
         {
         }
 
-        public async Task<bool> Add(Area area)
-        {
-            _context.Areas.Add(area);
-            return await _context.SaveChangesAsync()>0;
-        }
-
         public async Task<bool> AreaExists(byte id)
-        {
-            return await _context.Areas.AnyAsync(a => a.Id == id);
+        {           
+            return await GetAll().AnyAsync(a => a.Id == id);
         }
 
         public async Task<Area> Delete(byte id)
         {
-            var area =await _context.Areas.FindAsync(id);
+            var area =await GetByIdAsync(id);
             var res = false;
             if (area != null)
             {
-                _context.Areas.Remove(area);
-                 res=await _context.SaveChangesAsync()>0;
+                Remove(area);
+                res = await SaveAsync();
             }
             return res ? area : null;
         }
 
-        public IQueryable<Area> GetAll()
-        {
-            return _context.Areas.AsQueryable();
-        }
-
-        public async Task<Area> GetById(byte id)
-        {
-            return await _context.Areas.FindAsync(id);
-        }
     }
 }

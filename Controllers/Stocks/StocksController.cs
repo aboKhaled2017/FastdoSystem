@@ -309,7 +309,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
             if (!await _stkDrugsRepository.IsUserHas(id))
                 return NotFound();
             var drugToDelete = await _stkDrugsRepository.GetByIdAsync(id);
-            _stkDrugsRepository.Delete(drugToDelete);
+            _stkDrugsRepository.Remove(drugToDelete);
             if (!await _stkDrugsRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
             return NoContent();

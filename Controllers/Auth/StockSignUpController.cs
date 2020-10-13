@@ -73,12 +73,7 @@ namespace Fastdo.backendsys.Controllers.Auth
                          }
                          stockModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                          stockModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
-                         var res = _stockRepository.AddAsync(stockModel).Result;
-                         if (!res)
-                         {
-                             _transactionService.RollBackChanges().End();
-                             ErrorMessage = "لقد فشلت عملية التسجيل,حاول مرة اخرى";
-                         }
+                         _stockRepository.AddAsync(stockModel).Wait();
                          OnFinishAdding.Invoke();
                      },
                      () => {

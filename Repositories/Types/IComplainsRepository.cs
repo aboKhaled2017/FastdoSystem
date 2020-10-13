@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface IComplainsRepository:IRepository
+    public interface IComplainsRepository:IRepository<Complain>
     {
-        IQueryable<Complain> GetAll();
-        Task<Complain> GetById(Guid id);
-        Task<bool> Add(Complain complain);
-        Task<Complain> Delete(Guid id);
-        Task<bool> Update(Complain complain);
         Task<bool> ComplainExists(Guid id);
+        Task Update(Complain complain);
+        Task<Complain> Delete(Guid id);
+
+
     }
 }

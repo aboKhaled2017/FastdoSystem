@@ -101,10 +101,10 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStockForAdmin([FromRoute]string id)
         {
-            var stk = await _stockRepository.Get_IfExists(id);
+            var stk = await _stockRepository.GetByIdAsync(id);
             if (stk == null)
                 return NotFound();
-            await _stockRepository.Delete(stk);
+             _stockRepository.Remove(stk);
             if (!await _stockRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
             return NoContent();
@@ -117,7 +117,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         {
             if (patchDoc == null)
                 return BadRequest();
-            var stk = await _stockRepository.Get_IfExists(id);
+            var stk = await _stockRepository.GetByIdAsync(id);
             if (stk == null)
                 return NotFound();
             var requestToPatch = _mapper.Map<Stock_Update_ADM_Model>(stk);

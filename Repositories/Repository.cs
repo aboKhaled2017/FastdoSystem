@@ -12,7 +12,7 @@ using System.Data.Common;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class Repository
+    public class Repository<TModel>:IRepository<TModel> where TModel:class
     {
         protected SysDbContext _context { get; }
         public Repository(SysDbContext context)
@@ -41,12 +41,11 @@ namespace Fastdo.backendsys.Repositories
         {
             return await _context.SaveChangesAsync() > 0;
         }
-        protected async Task<bool> UpdateFieldsAsync_And_Save<T>(
-           T entity,
-            params Expression<Func<T, object>>[] updatedProperties)
-            where T : class
+        public async Task<bool> UpdateFieldsAsync_And_Save(
+           TModel entity,
+            params Expression<Func<TModel, object>>[] updatedProperties)
         {
-            EntityEntry<T> entityEntry = _context.Entry(entity);
+            EntityEntry<TModel> entityEntry = _context.Entry(entity);
             entityEntry.State = EntityState.Modified;
             if (updatedProperties.Any())
             {
@@ -70,12 +69,12 @@ namespace Fastdo.backendsys.Repositories
             return (await _context.SaveChangesAsync()) > 0;
         }
 
-        protected void UpdateFields<T>(
-            T entity, 
-            params Expression<Func<T, object>>[] updatedProperties
-            ) where T : class
+         public void UpdateFields(
+            TModel entity, 
+            params Expression<Func<TModel, object>>[] updatedProperties
+            ) 
         {
-            EntityEntry<T> entityEntry = _context.Entry(entity);
+            EntityEntry<TModel> entityEntry = _context.Entry(entity);
             entityEntry.State = EntityState.Modified;
             if (updatedProperties.Any())
             {
@@ -98,7 +97,7 @@ namespace Fastdo.backendsys.Repositories
             }
         }
 
-        protected async Task<T> ExecuteScaler<T>(StringBuilder query)
+         public async Task<TValue> ExecuteScaler<TValue>(StringBuilder query)
         {
             var conn = _context.Database.GetDbConnection();
             if(conn.State==System.Data.ConnectionState.Closed)
@@ -108,8 +107,59 @@ namespace Fastdo.backendsys.Repositories
                 command.CommandText = query.ToString();
                 command.CommandType = System.Data.CommandType.Text;
                 var res = command.ExecuteScalar();
-                return (T)res;
+                return (TValue)res;
             }
+        }
+
+
+        public TModel GetById<T>(T id)
+        {
+           return _context.Set<TModel>().Find(id);
+        }
+
+        public async Task<TModel> GetByIdAsync<T>(T id)
+        {
+            return await _context.Set<TModel>().FindAsync(id);
+        }
+
+        public IQueryable<TModel> GetAll()
+        {
+            return Where(m => true);
+        }
+        public IQueryable<TModel> Where(Expression<Func<TModel, bool>> predicate)
+        {
+            return _context.Set<TModel>().Where(predicate);
+        }
+
+
+        public virtual void Add(TModel model)
+        {
+            _context.Set<TModel>().Add(model);
+        }
+
+        public virtual async Task AddAsync(TModel model)
+        {
+           await _context.Set<TModel>().AddAsync(model);
+        }
+
+        public virtual void AddRange(IEnumerable<TModel> models)
+        {
+            _context.Set<TModel>().AddRange(models);
+        }
+
+        public virtual async Task AddRangeAsync(IEnumerable<TModel> models)
+        {
+            await _context.Set<TModel>().AddRangeAsync(models);
+        }
+
+        public virtual void Remove(TModel model)
+        {
+            _context.Set<TModel>().Remove(model);
+        }
+
+        public virtual void RemoveRange(IEnumerable<TModel> models)
+        {
+            _context.Set<TModel>().RemoveRange(models);
         }
     }
 }

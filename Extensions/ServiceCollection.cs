@@ -68,6 +68,14 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IAreaRepository, AreaRepository>();
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<IStkDrugsRepository, StkDrugsRepository>();
+
+            services.AddScoped<IStkDrugsRepository, StkDrugsRepository>();
+            services.AddScoped<IStockWithClassRepository, StockWithClassRepository>();
+            services.AddScoped<IPharmacyInStkRepository, PharmacyInStkRepository>();
+            services.AddScoped<IPharmacyInStkClassRepository, PharmacyInStkClassRepository>();
+            services.AddScoped<IStkDrugPackgesReqsRepository, StkDrugPackagesReqsRepository>();
+            services.AddScoped<IStockInPackagesReqsRepository, StockInPackagesReqsRepository>();
+            services.AddScoped<IStkDrgInPackagesReqsRepository, StkDrgInPackagesReqs>();
             return services;
         }
         public static IServiceCollection _AddSwaggr(this IServiceCollection services)

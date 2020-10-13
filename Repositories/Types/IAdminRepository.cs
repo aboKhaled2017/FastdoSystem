@@ -7,14 +7,12 @@ using Fastdo.backendsys.Models;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface IAdminRepository: IRepository
+    public interface IAdminRepository: IRepository<Admin>
     {
-        Task<Admin> GetByIdAsync(string id);
         Task<StatisShowModel> GetGeneralStatisOfSystem();
         Task<ShowAdminModel> GetAdminsShownModelById(string id);
-        Task<bool> AddAsync(Admin admin);
+
         Task<PagedList<ShowAdminModel>> GET_PageOfAdminers_ShowModels_ADM(AdminersResourceParameters _params);
         void Update(Admin admin);
-        Task Delete(Admin admin);
     }
 }

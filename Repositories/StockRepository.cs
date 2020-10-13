@@ -16,18 +16,35 @@ using Fastdo.backendsys.Controllers.Pharmacies;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class StockRepository:Repository,IStockRepository
+    public class StockRepository:Repository<Stock>,IStockRepository
     {
-        public StockRepository(SysDbContext context) : base(context)
+        private IPharmacyInStkRepository _PharmacyInStkRepository { get; }
+        private IStkDrgInPackagesReqsRepository _stkDrgInPackagesReqsRepository { get; }
+        private IStockWithClassRepository _StockWithClassRepository { get; set; }
+        private IPharmacyInStkClassRepository _PharmacyInStkClassRepository { get; set; }
+        private IStkDrugsRepository _stkDrugsRepository { get; set; }
+        private IStockInPackagesReqsRepository _stockInPackagesReqsRepository { get; }
+        public StockRepository(SysDbContext context, 
+            IPharmacyInStkRepository pharmacyInStkRepository,
+            IStockWithClassRepository stockWithClassRepository,
+            IPharmacyInStkClassRepository pharmacyInStkClassRepository,
+            IStkDrgInPackagesReqsRepository stkDrgInPackagesReqsRepository,
+            IStockInPackagesReqsRepository stockInPackagesReqsRepository,
+            IStkDrugsRepository stkDrugsRepository) : base(context)
         {
+            _PharmacyInStkRepository = pharmacyInStkRepository;
+            _StockWithClassRepository = stockWithClassRepository;
+            _PharmacyInStkClassRepository = pharmacyInStkClassRepository;
+            _stkDrugsRepository = stkDrugsRepository;
+            _stockInPackagesReqsRepository = stockInPackagesReqsRepository;
+            _stkDrgInPackagesReqsRepository = stkDrgInPackagesReqsRepository;
         }
 
-        public async Task<bool> AddAsync(Stock stock)
+        public override async Task AddAsync(Stock model)
         {
-            
-            stock.PharmasClasses=new List<StockWithPharmaClass>(){ new StockWithPharmaClass { ClassName = "الافتراضى"}};
-            _context.Stocks.Add(stock);
-            return (await _context.SaveChangesAsync()) > 0;
+            model.PharmasClasses = new List<StockWithPharmaClass>() { new StockWithPharmaClass { ClassName = "الافتراضى" } };
+            await base.AddAsync(model);
+            await SaveAsync();
         }
         public IQueryable GetAllAsync()
         {
@@ -35,7 +52,7 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<PagedList<GetPageOfSearchedStocks>> GetPageOfSearchedStocks(StockSearchResourceParameters _params)
         {
-            var originalData = _context.Stocks
+            var originalData = GetAll()
             .OrderBy(d => d.Name)
             .Where(s => s.User.EmailConfirmed && !s.GoinedPharmacies.Any(g=>g.PharmacyId==UserId));
             
@@ -75,11 +92,11 @@ namespace Fastdo.backendsys.Repositories
         public async Task<bool> UpdateAsync(Stock stock)
         {
             _context.Entry(stock).State = EntityState.Modified;
-            return (await _context.SaveChangesAsync()) > 0;
+            return await SaveAsync();
         }
         public async Task<PagedList<Get_PageOf_Stocks_ADMModel>> Get_PageOf_StockModels_ADM(StockResourceParameters _params)
         {
-            var sourceData = _context.Stocks
+            var sourceData =GetAll()
             .OrderBy(d => d.Name)
             .Select(p => new Get_PageOf_Stocks_ADMModel
             {
@@ -114,7 +131,7 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<Get_PageOf_Stocks_ADMModel> Get_StockModel_ADM(string id)
         {
-            return await _context.Stocks
+            return await GetAll()
                 .Where(p => p.Id == id)
                 .Select(p => new Get_PageOf_Stocks_ADMModel
                 {
@@ -133,42 +150,40 @@ namespace Fastdo.backendsys.Repositories
                 })
                .SingleOrDefaultAsync();
         }
-        public async Task<Stock> GetByIdAsync(string id)
-        {
-            return await _context.Stocks.FindAsync(id);
-        }
+
         public async Task Delete(Stock stk)
         {
-            _context.PharmaciesInStocks.RemoveRange(_context.PharmaciesInStocks.Where(ps => ps.StockId == stk.Id));
-             await _context.SaveChangesAsync();
+            _context.PharmaciesInStocks.RemoveRange(
+                _PharmacyInStkRepository
+                .GetAll()
+                .Where(ps => ps.StockId == stk.Id));
+            await SaveAsync();
             _context.Users.Remove(_context.Users.Find(stk.Id));
         }
         public void UpdatePhone(Stock stock)
         {
-            UpdateFields<Stock>(stock, prop => prop.PersPhone);
+            UpdateFields(stock, prop => prop.PersPhone);
         }
         public void UpdateName(Stock stock)
         {
-            UpdateFields<Stock>(stock, prop => prop.Name);
+            UpdateFields(stock, prop => prop.Name);
         }
         public void UpdateContacts(Stock stock)
         {
-            UpdateFields<Stock>(stock,
+            UpdateFields(stock,
                 prop => prop.LandlinePhone,
                 prop => prop.Address);
         }
         public async Task<bool> Patch_Apdate_ByAdmin(Stock stk)
         {
-            return await UpdateFieldsAsync_And_Save<Stock>(stk, prop => prop.Status);
+            return await UpdateFieldsAsync_And_Save(stk, prop => prop.Status);
         }
-        public async Task<Stock> Get_IfExists(string id)
-        {
-            return await _context.Stocks.FindAsync(id);
-        }
+
 
         public async Task<PagedList<ShowJoinRequestToStkModel>> GetJoinRequestsPharmas(PharmaReqsResourceParameters _params)
         {
-            var originalData = _context.PharmaciesInStocks
+            var originalData = _PharmacyInStkRepository
+                .GetAll()
                  .Where(r => 
                  r.StockId == UserId &&
                  r.PharmacyReqStatus!=PharmacyRequestStatus.Accepted&&
@@ -198,14 +213,15 @@ namespace Fastdo.backendsys.Repositories
                     },
                     Seen = r.Seen,
                     Status = r.PharmacyReqStatus,
-                    PharmaClass = r.Pharmacy.StocksClasses.SingleOrDefault(s => s.StockClass.StockId == r.StockId).StockClass.ClassName,
+                    PharmaClass = r.Pharmacy.StocksClasses
+                    .SingleOrDefault(s => s.StockClass.StockId == r.StockId).StockClass.ClassName,
 
                 });
             return await PagedList<ShowJoinRequestToStkModel>.CreateAsync(data, _params);
         }
         public async Task<PagedList<ShowJoinedPharmaToStkModel>> GetJoinedPharmas(PharmaReqsResourceParameters _params)
         {
-            var originalData = _context.PharmaciesInStocks
+            var originalData = _PharmacyInStkRepository.GetAll()
                  .Where(r =>
                  r.StockId == UserId &&
                  (r.PharmacyReqStatus==PharmacyRequestStatus.Accepted||r.PharmacyReqStatus==PharmacyRequestStatus.Disabled));
@@ -245,10 +261,12 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<bool> DeletePharmacyRequest(string PharmaId)
         {
-            if (!await _context.PharmaciesInStocks.AnyAsync(s => s.StockId == UserId && s.PharmacyId == PharmaId))
+            if (!await _PharmacyInStkRepository.GetAll()
+                .AnyAsync(s => s.StockId == UserId && s.PharmacyId == PharmaId))
                 return false;
-            _context.PharmaciesInStocks.Remove(
-                await _context.PharmaciesInStocks
+           _PharmacyInStkRepository
+                .Remove(
+                await _PharmacyInStkRepository.GetAll()
                 .SingleOrDefaultAsync(r => r.PharmacyId == PharmaId && r.StockId == UserId));
             return await SaveAsync();
         }
@@ -257,14 +275,16 @@ namespace Fastdo.backendsys.Repositories
             var request =await _context.PharmaciesInStocks.SingleOrDefaultAsync(r=>r.StockId==UserId&&r.PharmacyId==pharmaId);
             if (request == null) return false;
             OnRequestFounded(request);
-            return await UpdateFieldsAsync_And_Save<PharmacyInStock>(request, prop => prop.Seen, prop => prop.PharmacyReqStatus);
+            return await _PharmacyInStkRepository
+                .UpdateFieldsAsync_And_Save(request, prop => prop.Seen, prop => prop.PharmacyReqStatus);
         }
 
         public async Task AddNewPharmaClass(string newClass)
         {
-            if(_context.StocksWithPharmaClasses.Any(s=>s.StockId==UserId && s.ClassName==newClass))
+            if(_StockWithClassRepository.GetAll()
+                .Any(s=>s.StockId==UserId && s.ClassName==newClass))
                 throw new Exception("هذا التصنيف موجود بالفعل");
-            _context.StocksWithPharmaClasses.Add(new StockWithPharmaClass
+            _StockWithClassRepository.Add(new StockWithPharmaClass
             {
                 StockId = UserId,
                 ClassName = newClass
@@ -275,34 +295,32 @@ namespace Fastdo.backendsys.Repositories
         public async Task RemovePharmaClass(DeleteStockClassForPharmaModel model,Action<object>SendError=null)
         {
 
-            if (!await _context.StocksWithPharmaClasses
+            if (!await _StockWithClassRepository.GetAll()
             .AnyAsync(s=>s.Id==model.getDeletedClassId))
             {
                 SendError?.Invoke(Functions.MakeError(nameof(model.DeletedClassId), "هذا التصنيف غير موجود"));
                 return;
             }
 
-            var deletedEntityClass = await _context.StocksWithPharmaClasses
+            var deletedEntityClass = await _StockWithClassRepository.GetAll()
                 .SingleOrDefaultAsync(s =>s.Id == model.getDeletedClassId);
 
             var stkDrugs = new List<StkDrug>();
 
 
             //this class has subscribed pharmacies ,so they will be assigned another existed class
-            if (await _context.StocksWithPharmaClasses
+            if (await _StockWithClassRepository.GetAll()
                 .AnyAsync(s=>
                 s.Id==model.getDeletedClassId
                 && s.PharmaciesOfThatClass.Count > 0))
             
             {
                 //get subscibed pharmacies list
-                var joinedPharmasToClass = _context
-                    .PharmaciesInStockClasses
+                var joinedPharmasToClass =_PharmacyInStkClassRepository
                     .Where(s => s.StockClassId == deletedEntityClass.Id)
                     .ToList();
                 //get the replaced existed class
-                var replacedEntityClass = await _context
-                    .StocksWithPharmaClasses
+                var replacedEntityClass = await _StockWithClassRepository.GetAll()
                     .SingleOrDefaultAsync(s => s.StockId == UserId && s.Id == model.getReplaceClassId);
                 
 
@@ -322,7 +340,7 @@ namespace Fastdo.backendsys.Repositories
                     new BulkConfig { UpdateByProperties = new List<string> { nameof(PharmacyInStockClass.StockClassId) } }
                     );
                 //get all drugs for this stock
-                stkDrugs = _context.StkDrugs.Where(s => s.StockId == UserId).ToList();
+                stkDrugs = _stkDrugsRepository.Where(s => s.StockId == UserId).ToList();
 
                 //performe edit for discount of class
                 stkDrugs.ForEach(drug =>
@@ -335,7 +353,8 @@ namespace Fastdo.backendsys.Repositories
             else
             {
                 //get all drugs for this stock
-                stkDrugs = _context.StkDrugs.Where(s => s.StockId == UserId).ToList();
+                stkDrugs = _stkDrugsRepository
+                    .Where(s => s.StockId == UserId).ToList();
 
                 //performe edit for discount of class
                 stkDrugs.ForEach(drug =>
@@ -349,7 +368,7 @@ namespace Fastdo.backendsys.Repositories
             var updatedStkDrugs= stkDrugs.Where(s => s.Discount != null).ToList();
             if (removedStkDrugs.Count > 0)
             {
-                _context.StkDrugs.RemoveRange(removedStkDrugs);
+                _stkDrugsRepository.RemoveRange(removedStkDrugs);
                 await SaveAsync();
             }
             if (updatedStkDrugs.Count > 0)
@@ -358,16 +377,19 @@ namespace Fastdo.backendsys.Repositories
                     UpdateByProperties = new List<string> { nameof(StkDrug.Discount) }
                 });
                 //alwys remove this class
-            _context.StocksWithPharmaClasses.Remove(deletedEntityClass);
+            _StockWithClassRepository.Remove(deletedEntityClass);
             await SaveAsync();
         }
 
         public async Task RenamePharmaClass(UpdateStockClassForPharmaModel model)
         {
-            var entity =await _context.StocksWithPharmaClasses.SingleOrDefaultAsync(s => s.StockId == UserId && s.ClassName == model.OldClass);
+            var stocksWithPhClasses = _StockWithClassRepository.GetAll();
+            var entity =await stocksWithPhClasses
+                 .SingleOrDefaultAsync(s => s.StockId == UserId && s.ClassName == model.OldClass);
             if(entity==null)
                 throw new Exception("هذا التصنيف غير موجود");
-            if (_context.StocksWithPharmaClasses.Any(s => s.StockId == UserId && s.ClassName == model.NewClass))
+            if (stocksWithPhClasses
+                .Any(s => s.StockId == UserId && s.ClassName == model.NewClass))
                 throw new Exception("هذا التصنيف موجود بالفعل");
 
             entity.ClassName = model.NewClass;
@@ -376,7 +398,7 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<List<StockClassWithPharmaCountsModel>> GetStockClassesOfJoinedPharmas(string stockId)
         {
-            return await _context.StocksWithPharmaClasses
+            return await _StockWithClassRepository
                 .Where(s => s.StockId == stockId)
                 .Select(s => new StockClassWithPharmaCountsModel
                 {
@@ -400,17 +422,17 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<bool> MakeRequestToStock(string stockId)
         {
-            if (!_context.Stocks.Any(s => s.Id == stockId && !s.GoinedPharmacies.Any(p => p.PharmacyId == UserId)))
+            if (!GetAll().Any(s => s.Id == stockId && !s.GoinedPharmacies.Any(p => p.PharmacyId == UserId)))
                 return false;
-            _context.PharmaciesInStocks.Add(new PharmacyInStock
+            _PharmacyInStkRepository.Add(new PharmacyInStock
             {
                 PharmacyId = UserId,
                 StockId = stockId
             });
-            var pharmaClassId = await _context.StocksWithPharmaClasses
+            var pharmaClassId = await _StockWithClassRepository
                 .Where(s => s.StockId == stockId)
                 .Select(s => s.Id).FirstOrDefaultAsync();
-            _context.PharmaciesInStockClasses.Add(new PharmacyInStockClass
+            _PharmacyInStkClassRepository.Add(new PharmacyInStockClass
             {
                 PharmacyId = UserId,
                 StockClassId = pharmaClassId
@@ -419,26 +441,33 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<bool> CancelRequestToStock(string stockId)
         {
-            var request =await _context.PharmaciesInStocks.SingleOrDefaultAsync(s => s.PharmacyId == UserId && s.StockId == stockId);
+            var request =await _PharmacyInStkRepository
+                .GetAll()
+                .SingleOrDefaultAsync(s => s.PharmacyId == UserId && s.StockId == stockId);
             if (request == null) return false;
-            _context.PharmaciesInStockClasses.Where(p => p.PharmacyId == UserId && p.StockClass.StockId == stockId).BatchDelete();
-            _context.PharmaciesInStocks.Remove(request);
+            _PharmacyInStkClassRepository
+                .Where(p => p.PharmacyId == UserId && p.StockClass.StockId == stockId).BatchDelete();
+            _PharmacyInStkRepository.Remove(request);
 
             return await SaveAsync();
         }
 
         public async Task AssignAnotherClassForPharmacy(AssignAnotherClassForPharmacyModel model,Action<dynamic>onError)
         {
-            var res =await _context.PharmaciesInStockClasses.AnyAsync(s =>
+            var pharmaInStkClasses = _PharmacyInStkClassRepository.GetAll();
+            var res =await pharmaInStkClasses
+                .AnyAsync(s =>
               s.PharmacyId == model.PharmaId &&
               s.StockClassId == model.getOldClassId);
-            var res2 = await _context.StocksWithPharmaClasses.AnyAsync(s => s.Id == model.getNewClassId && s.StockId == UserId);
+            var res2 = await _StockWithClassRepository
+                .GetAll()
+                .AnyAsync(s => s.Id == model.getNewClassId && s.StockId == UserId);
             if(!res || !res2)
             {
                 onError(Functions.MakeError("انت تحاول ادخال بيانات غير صحيحة"));
                 return;
             }
-            var pharmaInStockClass =await _context.PharmaciesInStockClasses
+            var pharmaInStockClass =await pharmaInStkClasses
                 .SingleAsync(p => p.StockClassId == model.getOldClassId && p.PharmacyId == model.PharmaId);
             pharmaInStockClass.StockClassId = model.getNewClassId;
             _context.Entry(pharmaInStockClass).State = EntityState.Modified;
@@ -447,7 +476,7 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task HandleStkDrugsPackageRequest_ForStock(Guid packageId, Action<dynamic> onProcess, Action<dynamic> onError)
         {
-            var request =await _context.StockInStkDrgPackageReqs
+            var request =await _stockInPackagesReqsRepository.GetAll()
                 .FirstOrDefaultAsync(e=>e.PackageId.Equals(packageId) && e.StockId==UserId);
             if (request == null)
             {
@@ -461,7 +490,7 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<PagedList<StkDrugsPackageReqModel>> GetStkDrugsPackageRequests(StkDrugsPackageReqResourceParmaters _params)
         {
-            var originalData = _context.StockInStkDrgPackageReqs
+            var originalData = _stockInPackagesReqsRepository
                  .Where(r =>
                  r.StockId==UserId &&
                  r.Status!=StkDrugPackageRequestStatus.Completed);
@@ -503,7 +532,8 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<IList<StockNameWithIdModel>> GetAllStocksNames()
         {
-            return await _context.Stocks.Select(s => new StockNameWithIdModel
+            return await GetAll()
+                .Select(s => new StockNameWithIdModel
             {
                 Id = s.Id,
                 Name = s.Name

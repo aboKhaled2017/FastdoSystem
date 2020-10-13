@@ -8,14 +8,16 @@ using Fastdo.backendsys.Models;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class LzDrgRequestsRepository : Repository,ILzDrgRequestsRepository
+    public class LzDrgRequestsRepository : Repository<LzDrugRequest>,ILzDrgRequestsRepository
     {
-        public LzDrgRequestsRepository(SysDbContext context) : base(context)
+        public ILzDrugRepository _LzDrugRepository { get; }
+        public LzDrgRequestsRepository(SysDbContext context,ILzDrugRepository lzDrugRepository) : base(context)
         {
+            _LzDrugRepository = lzDrugRepository;
         }
         public async Task<PagedList<Made_LzDrgRequest_MB>> Get_AllRequests_I_Made(LzDrgReqResourceParameters _params)
         {
-            var items = _context.LzDrugRequests
+            var items = GetAll()
                 .Where(d => d.PharmacyId == UserId)
                 .Select(r => new Made_LzDrgRequest_MB
                 {
@@ -30,7 +32,7 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<PagedList<Sent_LzDrgRequest_MB>> Get_AllRequests_I_Received(LzDrgReqResourceParameters _params)
         {
-            var items = _context.LzDrugRequests
+            var items = GetAll()
                 .Where(d => d.LzDrug.PharmacyId == UserId)
                 .Select(r => new Sent_LzDrgRequest_MB
                 {
@@ -45,7 +47,7 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<PagedList<NotSeen_PhDrgRequest_MB>> Get_AllRequests_I_Received_INS(LzDrgReqResourceParameters _params)
         {
-            var items = _context.LzDrugRequests
+            var items = GetAll()
                 .Where(r => r.LzDrug.PharmacyId == UserId&&!r.Seen)
                 .Select(r => new NotSeen_PhDrgRequest_MB
                 {
@@ -60,12 +62,12 @@ namespace Fastdo.backendsys.Repositories
         }
         public async Task<IEnumerable<LzDrugRequest>> Get_Group_Of_Requests_I_Received(IEnumerable<Guid> reqIds)
         {
-            return await _context.LzDrugRequests
+            return await GetAll()
                 .Where(r => r.LzDrug.PharmacyId == UserId && reqIds.Contains(r.Id)).ToListAsync();
         }
         public async Task<object> GetByIdAsync(Guid id)
         {
-            return await _context.LzDrugRequests.Select(r=>new { 
+            return await GetAll().Select(r=>new { 
               r.Id,
               r.LzDrugId,
               r.PharmacyId,
@@ -73,82 +75,77 @@ namespace Fastdo.backendsys.Repositories
               r.Status
             }).FirstOrDefaultAsync(r=>r.Id==id);
         }
-        public void Add(LzDrugRequest lzDrugRequest)
-        {
-            _context.LzDrugRequests.Add(lzDrugRequest);
-        }
+
         public async Task<LzDrugRequest> AddForUserAsync(Guid drugId)
         {
-            if (await _context.LzDrugs.AnyAsync(d => d.Id == drugId&&d.PharmacyId== UserId))
+            if (await _LzDrugRepository.GetAll()
+                .AnyAsync(d => d.Id == drugId&&d.PharmacyId== UserId))
                 return null;
-            if (await _context.LzDrugRequests.AnyAsync(r => r.PharmacyId == UserId && r.LzDrugId == drugId))
+            if (await GetAll()
+                .AnyAsync(r => r.PharmacyId == UserId && r.LzDrugId == drugId))
                 return null;
             var req = new LzDrugRequest
             {
                 PharmacyId = UserId,
                 LzDrugId = drugId
             };
-            _context.LzDrugRequests.Add(req);
+            await AddAsync(req);
             return req;
         }
         public async Task<bool> Patch_Update_Request_Sync(LzDrugRequest lzDrugRequest)
         {
-            return await UpdateFieldsAsync_And_Save<LzDrugRequest>(lzDrugRequest, prop => prop.Seen, prop => prop.Status);
+            return await UpdateFieldsAsync_And_Save(lzDrugRequest, prop => prop.Seen, prop => prop.Status);
         }
         public void Patch_Update_Group_Of_Requests_Sync(IEnumerable<LzDrugRequest> lzDrugRequests)
         {
             lzDrugRequests.ToList().ForEach(req =>
             {
-                UpdateFields<LzDrugRequest>(req, prop => prop.Seen, prop => prop.Status);
+                UpdateFields(req, prop => prop.Seen, prop => prop.Status);
             });
         }
         public async Task<bool> Make_RequestSeen(LzDrugRequest lzDrugRequest)
         {
             lzDrugRequest.Seen = true;
-            return await UpdateFieldsAsync_And_Save<LzDrugRequest>(lzDrugRequest, prop => prop.Seen);
+            return await UpdateFieldsAsync_And_Save(lzDrugRequest, prop => prop.Seen);
         }
 
         public void Delete(LzDrugRequest lzDrugRequest)
         {
-            _context.LzDrugRequests.Remove(lzDrugRequest);
+            Remove(lzDrugRequest);
         }
         public void Delete_AllRequests_I_Made()
         {
-            var reqs = _context.LzDrugRequests.Where(r => r.PharmacyId == UserId);
-            _context.LzDrugRequests.RemoveRange(reqs);
+            var reqs = GetAll().Where(r => r.PharmacyId == UserId);
+            RemoveRange(reqs);
         }
         public void Delete_SomeRequests_I_Made(IEnumerable<Guid> Ids)
         {
-            var reqs = _context.LzDrugRequests.Where(r =>Ids.Contains(r.Id));
-            _context.LzDrugRequests.RemoveRange(reqs);
+            var reqs = GetAll().Where(r =>Ids.Contains(r.Id));
+            RemoveRange(reqs);
         }
         public async Task<bool> User_Made_These_Requests(IEnumerable<Guid> Ids)
         {
-            return (await _context.LzDrugRequests
+            return (await GetAll()
                 .CountAsync(r =>r.PharmacyId==UserId && Ids.Contains(r.Id))) == Ids.Count();
         }
         public async Task<bool> User_Received_These_Requests(IEnumerable<Guid> Ids)
         {
-            return (await _context.LzDrugRequests
+            return (await GetAll()
                 .CountAsync(r => r.LzDrug.PharmacyId == UserId && Ids.Contains(r.Id))) == Ids.Count();
         }
 
-        public async Task<LzDrugRequest> Get_IfExists(Guid reqId)
-        {
-            return await _context.LzDrugRequests.FindAsync(reqId);
-        }
         public async Task<LzDrugRequest> Get_Request_I_Made_IfExistsForUser(Guid reqId)
         {
-            return await _context.LzDrugRequests.FirstOrDefaultAsync(r=>r.Id== reqId && r.PharmacyId== UserId);
+            return await GetAll().FirstOrDefaultAsync(r=>r.Id== reqId && r.PharmacyId== UserId);
         }
         public async Task<LzDrugRequest> Get_Request_I_Received_IfExistsForUser(Guid reqId)
         {
-            return await _context.LzDrugRequests.FirstOrDefaultAsync(r => r.Id == reqId && r.LzDrug.PharmacyId == UserId);
+            return await GetAll().FirstOrDefaultAsync(r => r.Id == reqId && r.LzDrug.PharmacyId == UserId);
         }
 
         public async Task<PagedList<Show_LzDrgsReq_ADM_Model>> GET_PageOf_LzDrgsRequests(LzDrgReqResourceParameters _params)
         {
-            var items = _context.LzDrugRequests.AsQueryable();
+            var items = GetAll();
                
             if (_params.Seen != null)
             {

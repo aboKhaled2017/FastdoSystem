@@ -132,7 +132,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
             var adminToDelete = await _adminRepository.GetByIdAsync(id);
             if (adminToDelete.SuperAdminId == null)
                 return BadRequest(Functions.MakeError("لايمكن حذف المسؤل الاساسى بشكل مباشر"));
-            await _adminRepository.Delete(adminToDelete);
+             _adminRepository.Remove(adminToDelete);
             if (!await _adminRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
             return NoContent();

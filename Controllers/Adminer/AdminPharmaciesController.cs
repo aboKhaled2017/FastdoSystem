@@ -101,10 +101,10 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePharmacyForAdmin([FromRoute]string id)
         {
-            var pharm =await _pharmacyRepository.Get_IfExists(id);
+            var pharm =await _pharmacyRepository.GetByIdAsync(id);
             if (pharm == null)
                 return NotFound();
-             await _pharmacyRepository.Delete(pharm);
+              _pharmacyRepository.Remove(pharm);
             if (!await _pharmacyRepository.SaveAsync())
                 return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
             return NoContent();
@@ -117,7 +117,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         {
             if (patchDoc == null)
                 return BadRequest();
-            var pharm = await _pharmacyRepository.Get_IfExists(id);
+            var pharm = await _pharmacyRepository.GetByIdAsync(id);
             if (pharm == null)
                 return NotFound();
             var requestToPatch = _mapper.Map<Pharmacy_Update_ADM_Model>(pharm);

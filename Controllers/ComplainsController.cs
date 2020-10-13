@@ -40,7 +40,7 @@ namespace Fastdo.backendsys.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetComplain(Guid id)
         {
-            var complain = await _complainsRepository.GetById(id);
+            var complain = await _complainsRepository.GetByIdAsync(id);
 
             if (complain == null)
             {
@@ -89,7 +89,7 @@ namespace Fastdo.backendsys.Controllers
         public async Task<IActionResult> PostComplain(ComplainToAddModel model)
         {
             var complain = _mapper.Map<Complain>(model);
-            await _complainsRepository.Add(complain);
+             _complainsRepository.Add(complain);
 
             return CreatedAtAction("GetComplain", new { id = complain.Id }, complain);
         }

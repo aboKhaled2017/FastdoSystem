@@ -72,12 +72,8 @@ namespace Fastdo.backendsys.Controllers.Auth
                 }
                 pharmacyModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                 pharmacyModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
-                var res = await _pharmacyRepository.AddAsync(pharmacyModel);
-                if (!res)
-                {
-                    _transactionService.RollBackChanges().End();
-                    return BadRequest(Functions.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
-                }
+                await _pharmacyRepository.AddAsync(pharmacyModel);
+                
                 _executerDelayer.Execute();
                 _transactionService.CommitChanges().End();
 
