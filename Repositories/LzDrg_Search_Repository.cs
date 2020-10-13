@@ -8,7 +8,7 @@ using Fastdo.backendsys.Services;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class LzDrg_Search_Repository : MainRepository, ILzDrg_Search_Repository
+    public class LzDrg_Search_Repository : Repository, ILzDrg_Search_Repository
     {
         private IpropertyMappingService _propertyMappingService;
         public LzDrg_Search_Repository(SysDbContext context,IpropertyMappingService propertyMappingService) 

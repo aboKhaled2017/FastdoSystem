@@ -6,7 +6,7 @@ using Fastdo.backendsys.Models;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface ILzDrg_Search_Repository:IMainRepository
+    public interface ILzDrg_Search_Repository:IRepository
     {
         Task<PagedList<LzDrugCard_Info_BM>> Get_All_LzDrug_Cards_BMs(LzDrg_Card_Info_BM_ResourceParameters _params);
     }

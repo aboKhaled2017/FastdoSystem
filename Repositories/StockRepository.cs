@@ -16,7 +16,7 @@ using Fastdo.backendsys.Controllers.Pharmacies;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class StockRepository:MainRepository,IStockRepository
+    public class StockRepository:Repository,IStockRepository
     {
         public StockRepository(SysDbContext context) : base(context)
         {
@@ -225,6 +225,7 @@ namespace Fastdo.backendsys.Repositories
                 originalData = originalData
                      .Where(p => p.PharmacyReqStatus==_params.Status);
             }
+            var b = await originalData.ToListAsync();
             var data = originalData
                 .Select(r => new ShowJoinedPharmaToStkModel
                 {
@@ -236,10 +237,10 @@ namespace Fastdo.backendsys.Repositories
                         PhoneNumber = r.Pharmacy.PersPhone,
                         LandlinePhone = r.Pharmacy.LandlinePhone
                     },
-                    PharmaClassId = r.Pharmacy.StocksClasses.SingleOrDefault(s => s.StockClass.StockId == r.StockId).StockClassId,
+                    PharmaClassId = r.Pharmacy.StocksClasses
+                    .SingleOrDefault(s => s.StockClass.StockId == r.StockId).StockClassId,
                     Status=r.PharmacyReqStatus
-
-                });
+                });       
             return await PagedList<ShowJoinedPharmaToStkModel>.CreateAsync(data, _params);
         }
         public async Task<bool> DeletePharmacyRequest(string PharmaId)
@@ -491,13 +492,22 @@ namespace Fastdo.backendsys.Repositories
             var returnedData= await PagedList<StkDrugsPackageReqModel>.CreateAsync(data, _params);
             returnedData.ForEach(el =>
             {
-                var drugDetails =JsonConvert.DeserializeObject<IEnumerable<StkDrugsReqOfPharmaModel>>(el.DrugDetails);
+                var drugDetails =JsonConvert.DeserializeObject<IEnumerable<ShowStkDrugsPackageReqPh_fromStockModel>>(el.DrugDetails);
                 el.DrugDetails = JsonConvert.SerializeObject(
                     drugDetails.FirstOrDefault(e => e.StockId == UserId)
                     .DrugsList
                     );
             });
             return returnedData;
+        }
+
+        public async Task<IList<StockNameWithIdModel>> GetAllStocksNames()
+        {
+            return await _context.Stocks.Select(s => new StockNameWithIdModel
+            {
+                Id = s.Id,
+                Name = s.Name
+            }).ToListAsync();
         }
     }
 }

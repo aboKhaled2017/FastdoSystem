@@ -8,7 +8,7 @@ using Fastdo.backendsys.Models;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface ILzDrugRepository:IMainRepository
+    public interface ILzDrugRepository:IRepository
     {
          void Add(LzDrug drug);
 

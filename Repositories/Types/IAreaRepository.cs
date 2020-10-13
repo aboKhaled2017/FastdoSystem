@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Repositories
 {
-   public interface IAreaRepository:IMainRepository
+   public interface IAreaRepository:IRepository
     {
         IQueryable<Area> GetAll();
         Task<Area> GetById(byte id);

@@ -12,10 +12,10 @@ using System.Data.Common;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class MainRepository
+    public class Repository
     {
         protected SysDbContext _context { get; }
-        public MainRepository(SysDbContext context)
+        public Repository(SysDbContext context)
         {
             _context = context;
         }

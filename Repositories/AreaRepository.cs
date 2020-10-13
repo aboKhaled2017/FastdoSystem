@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class AreaRepository : MainRepository,IAreaRepository
+    public class AreaRepository : Repository,IAreaRepository
     {
         public AreaRepository(SysDbContext context) : base(context)
         {

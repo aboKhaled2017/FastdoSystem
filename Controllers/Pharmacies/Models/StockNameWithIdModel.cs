@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Controllers.Pharmacies
 {
-    public class StkDrugsReqOfPharmaModel
+    public class StockNameWithIdModel
     {
-        public string StockId { get; set; }
-        public IEnumerable<IEnumerable<dynamic>> DrugsList { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
     }
 }

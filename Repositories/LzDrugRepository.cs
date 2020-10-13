@@ -11,7 +11,7 @@ using Fastdo.backendsys.Services;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class LzDrugRepository:MainRepository,ILzDrugRepository
+    public class LzDrugRepository:Repository,ILzDrugRepository
     {
         public LzDrugRepository(SysDbContext context) : base(context)
         {

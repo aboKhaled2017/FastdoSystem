@@ -22,6 +22,6 @@ namespace Fastdo.backendsys
             }
         }
         public string S { get; set; }
-
+        public string StockId { get; set; }
     }
 }

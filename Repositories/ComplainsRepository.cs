@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class ComplainsRepository : MainRepository, IComplainsRepository
+    public class ComplainsRepository : Repository, IComplainsRepository
     {
         public ComplainsRepository(SysDbContext context) : base(context)
         {

@@ -8,7 +8,7 @@ using Fastdo.backendsys.Models;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class LzDrgRequestsRepository : MainRepository,ILzDrgRequestsRepository
+    public class LzDrgRequestsRepository : Repository,ILzDrgRequestsRepository
     {
         public LzDrgRequestsRepository(SysDbContext context) : base(context)
         {

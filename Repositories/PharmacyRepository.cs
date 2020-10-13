@@ -11,7 +11,7 @@ using System.Collections;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class PharmacyRepository:MainRepository,IPharmacyRepository
+    public class PharmacyRepository:Repository,IPharmacyRepository
     {
         public PharmacyRepository(SysDbContext context) : base(context)
         {

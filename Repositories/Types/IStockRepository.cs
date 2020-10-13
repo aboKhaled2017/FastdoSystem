@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using Fastdo.backendsys.Models;
 using Fastdo.backendsys.Controllers.Stocks.Models;
 using Fastdo.backendsys.Controllers.Stocks;
+using Fastdo.backendsys.Controllers.Pharmacies;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface IStockRepository:IMainRepository
+    public interface IStockRepository:IRepository
     {
         Task<List<StockClassWithPharmaCountsModel>> GetStockClassesOfJoinedPharmas(string stockId);
         List<StockClassWithPharmaCountsModel> GetStockClassesOfJoinedPharmas(Stock stock);
@@ -38,5 +39,6 @@ namespace Fastdo.backendsys.Repositories
         Task AssignAnotherClassForPharmacy(AssignAnotherClassForPharmacyModel model, Action<dynamic>onError);
         Task HandleStkDrugsPackageRequest_ForStock(Guid packageId, Action<dynamic> onProcess, Action<dynamic> onError);
         Task<PagedList<StkDrugsPackageReqModel>> GetStkDrugsPackageRequests(StkDrugsPackageReqResourceParmaters _params);
+        Task<IList<StockNameWithIdModel>> GetAllStocksNames();
     }
 }

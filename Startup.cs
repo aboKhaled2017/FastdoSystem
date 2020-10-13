@@ -41,7 +41,7 @@ namespace Fastdo.backendsys
                     builder=> {
                     builder.MigrationsAssembly("System_Back_End");
                     });*/
-                    options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"), builder => {
+                    options.UseSqlServer(Configuration.GetConnectionString("Aws_Ec2_FastdoBd"), builder => {
                         builder.MigrationsAssembly("Fastdo.backendsys");
                     });
                 }
@@ -50,7 +50,7 @@ namespace Fastdo.backendsys
                     /*options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
                         builder.MigrationsAssembly("System_Back_End");
                     });*/
-                    options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"), builder => {
+                    options.UseSqlServer(Configuration.GetConnectionString("Aws_Ec2_FastdoBd"), builder => {
                         builder.MigrationsAssembly("Fastdo.backendsys");
                     });
                 }

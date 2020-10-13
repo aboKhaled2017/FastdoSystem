@@ -7,7 +7,7 @@ using Fastdo.backendsys.Models;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface IAdminRepository: IMainRepository
+    public interface IAdminRepository: IRepository
     {
         Task<Admin> GetByIdAsync(string id);
         Task<StatisShowModel> GetGeneralStatisOfSystem();

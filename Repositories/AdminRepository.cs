@@ -9,7 +9,7 @@ using Fastdo.backendsys.Models;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public class AdminRepository : MainRepository, IAdminRepository
+    public class AdminRepository : Repository, IAdminRepository
     {
         public AdminRepository(SysDbContext context) : base(context)
         {

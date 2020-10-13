@@ -8,7 +8,7 @@ using Fastdo.backendsys.Controllers.Pharmacies;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface IPharmacyRepository:IMainRepository
+    public interface IPharmacyRepository:IRepository
     {
         Task<List<List<string>>> GetPharmaClassesOfJoinedStocks(string pharmaId);
         Task<IEnumerable<ShowJoinedStocksOfPharmaModel>> GetUserJoinedStocks();

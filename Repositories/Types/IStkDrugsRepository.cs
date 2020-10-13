@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface IStkDrugsRepository:IMainRepository
+    public interface IStkDrugsRepository:IRepository
     {
         Task AddListOfDrugs(List<StkDrug> drugs, List<DiscountPerStkDrug> currentDrugs,string stkId);
         Task<List<DiscountPerStkDrug>> GetDiscountsForEachStockDrug(string id);
@@ -22,11 +22,12 @@ namespace Fastdo.backendsys.Repositories
         Task<StkDrug> GetIfExists(Guid id);
 
         Task<bool> LzDrugExists(Guid id);
-        Task<PagedList<SearchStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(string v, LzDrgResourceParameters _params);
-        Task<PagedList<SearchGenralStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(LzDrgResourceParameters _params);
+        Task<PagedList<SearchStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(string v, StkDrugResourceParameters _params);
+        Task<PagedList<SearchGenralStkDrugModel_TargetPharma>> GetSearchedPageOfStockDrugsFPH(StkDrugResourceParameters _params);
         Task<List<StockOfStkDrugModel_TragetPharma>> GetStocksOfSpecifiedStkDrug(string stkDrgName);
-        Task MakeRequestForStkDrugsPackage(IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList,Action<dynamic>OnComplete, Action<dynamic>onError);
+        Task MakeRequestForStkDrugsPackage(ShowStkDrugsPackageReqPhModel model,Action<dynamic>OnComplete, Action<dynamic>onError);
         Task DeleteRequestForStkDrugsPackage_FromStk(Guid packageId, Action<dynamic> onError);
-        Task UpdateRequestForStkDrugsPackage(Guid packageId,IEnumerable<StkDrugsReqOfPharmaModel> stkDrugsList, Action<dynamic> onError);
+        Task UpdateRequestForStkDrugsPackage(Guid packageId, ShowStkDrugsPackageReqPhModel model, Action<dynamic> onError);
+        Task<PagedList<ShowStkDrugsPackagePhModel>> GetPageOfStkDrugsPackagesPh(StkDrugPackagePhResourceParameters _params);
     }
 }

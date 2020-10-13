@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fastdo.backendsys.Repositories
 {
-    public interface IComplainsRepository:IMainRepository
+    public interface IComplainsRepository:IRepository
     {
         IQueryable<Complain> GetAll();
         Task<Complain> GetById(Guid id);
