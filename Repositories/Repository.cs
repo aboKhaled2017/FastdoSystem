@@ -4,11 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Services;
 using System.Text;
 using System.Data.Common;
+using Fastdo.Core;
 
 namespace Fastdo.backendsys.Repositories
 {

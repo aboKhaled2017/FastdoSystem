@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using Fastdo.Repositories.Enums;
+using Fastdo.Core.Enums;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +22,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using NSwag.Generation.Processors.Security;
 using NSwag;
+using Fastdo.backendsys.Graphql;
+using GraphQL.Types;
+using GraphQL;
+using GraphQL.Server;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -76,6 +81,25 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IStkDrugPackgesReqsRepository, StkDrugPackagesReqsRepository>();
             services.AddScoped<IStockInPackagesReqsRepository, StockInPackagesReqsRepository>();
             services.AddScoped<IStkDrgInPackagesReqsRepository, StkDrgInPackagesReqs>();
+            return services;
+        }
+        public static IServiceCollection _AddGraphQlServices(this IServiceCollection services)
+        {
+            /*services.AddScoped<FastdoQuery>();
+            services.AddTransient<StockType>();
+            services.AddTransient<StkDrugType>();*/
+            services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
+            services.AddScoped<FastdoSchema>();
+            services.AddGraphQL(o =>
+            {
+                o.ExposeExceptions = false;
+            })
+                .AddGraphTypes(ServiceLifetime.Scoped)
+                .AddDataLoader();
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
             return services;
         }
         public static IServiceCollection _AddSwaggr(this IServiceCollection services)

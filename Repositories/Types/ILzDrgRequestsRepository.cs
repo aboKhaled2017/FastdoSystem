@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Models;
+using Fastdo.Core;
 
 namespace Fastdo.backendsys.Repositories
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;

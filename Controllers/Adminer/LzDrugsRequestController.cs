@@ -7,7 +7,7 @@ using AutoMapper;
 using Fastdo.backendsys.Models;
 using Fastdo.backendsys.Repositories;
 using Fastdo.backendsys.Services.Auth;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

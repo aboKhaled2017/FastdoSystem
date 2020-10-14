@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;

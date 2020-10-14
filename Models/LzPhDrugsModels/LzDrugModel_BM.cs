@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fastdo.Repositories.Enums;
+using Fastdo.Core.Enums;
 using System.Linq;
 using System.Threading.Tasks;
 

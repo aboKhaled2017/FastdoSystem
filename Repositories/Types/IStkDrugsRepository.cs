@@ -1,11 +1,12 @@
 ﻿using Fastdo.backendsys.Controllers.Pharmacies;
 using Fastdo.backendsys.Controllers.Stocks.Models;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Fastdo.Core;
 
 namespace Fastdo.backendsys.Repositories
 {

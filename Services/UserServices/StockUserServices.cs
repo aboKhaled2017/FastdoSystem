@@ -1,5 +1,5 @@
 ﻿using Fastdo.backendsys.Models;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System;

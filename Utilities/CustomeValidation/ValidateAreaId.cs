@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Services;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 namespace Fastdo.backendsys.Utilities
 {
     [AttributeUsage(AttributeTargets.Property)]

@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using Fastdo.Repositories.Enums;
+using Fastdo.Core.Enums;
 using System.Linq;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys;
 using Fastdo.backendsys.Global;

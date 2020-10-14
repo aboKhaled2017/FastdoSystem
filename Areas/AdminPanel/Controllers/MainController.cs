@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
 using Fastdo.backendsys.Repositories;
 using Fastdo.backendsys.Areas.AdminPanel.Models;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Fastdo.backendsys.Areas.AdminPanel.Controllers

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Fastdo.backendsys.Repositories;
 using Fastdo.backendsys.Models;
 using AutoMapper;
@@ -86,7 +86,7 @@ namespace Fastdo.backendsys.Controllers
         #region post
         // POST: api/Complains
         [HttpPost]
-        public async Task<IActionResult> PostComplain(ComplainToAddModel model)
+        public IActionResult PostComplain(ComplainToAddModel model)
         {
             var complain = _mapper.Map<Complain>(model);
              _complainsRepository.Add(complain);

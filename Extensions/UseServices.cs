@@ -8,6 +8,9 @@ using Fastdo.backendsys;
 using Fastdo.backendsys.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Diagnostics;
+using GraphQL.Server;
+using Fastdo.backendsys.Graphql;
+using GraphQL.Server.Ui.Playground;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -16,6 +19,13 @@ namespace Microsoft.AspNetCore.Builder
         public static IApplicationBuilder _UseServicesStarter(this IApplicationBuilder app,IServiceProvider serviceProvider)
         {
             RequestStaticServices.Init(serviceProvider);
+            return app;
+        }
+
+        public static IApplicationBuilder _UseQraphQl(this IApplicationBuilder app)
+        {
+            app.UseGraphQL<FastdoSchema>();
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions { Path="/graphql/ui"});
             return app;
         }
         private static async Task<IApplicationBuilder> _UseInitalSeeds_In_Developement(this IApplicationBuilder app)

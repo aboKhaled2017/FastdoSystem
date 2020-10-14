@@ -1,7 +1,7 @@
 ﻿using ExcelDataReader;
 using Fastdo.backendsys.Controllers.Stocks;
 using Fastdo.backendsys.Controllers.Stocks.Models;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -57,19 +57,19 @@ namespace Fastdo.backendsys.Services
                     return _ServiceResponse;
                 }               
             }
-            catch(FormatException e)
+            catch(FormatException)
             {
                 if (!reader.IsClosed) reader.Close();
                 _ServiceResponse.ErrorMess = "تأكد بانك ادخلت ترتيب الاعمدة بشكل صحيح الاسم رقم1 والسعر رقم2 والخصم رقم3";
                 return _ServiceResponse;
             }
-            catch (IndexOutOfRangeException e)
+            catch (IndexOutOfRangeException)
             {
                 if (!reader.IsClosed) reader.Close();
                 _ServiceResponse.ErrorMess = "يبدو انك ادخلت رقم عمود غير موجود,تأكد من ترتيب ارقام الاعمدة";
                 return _ServiceResponse;
             }
-            catch(NullReferenceException e)
+            catch(NullReferenceException)
             {
                 if (!reader.IsClosed) reader.Close();
                 _ServiceResponse.ErrorMess ="من فضلك تأكد انه لايوجد اى حقل فارغ داخل الملف";

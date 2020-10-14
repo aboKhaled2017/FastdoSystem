@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fastdo.Repositories.Enums;
+using Fastdo.Core.Enums;
 
 namespace Fastdo.backendsys.Models
 {

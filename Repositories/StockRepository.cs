@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Models;
 using Fastdo.backendsys.Controllers.Stocks.Models;
 using Fastdo.backendsys.Controllers.Stocks;
 using Fastdo.backendsys.Services;
 using EFCore.BulkExtensions;
-using Fastdo.Repositories.Enums;
+using Fastdo.Core.Enums;
 using Namotion.Reflection;
 using Newtonsoft.Json;
 using Fastdo.backendsys.Controllers.Pharmacies;

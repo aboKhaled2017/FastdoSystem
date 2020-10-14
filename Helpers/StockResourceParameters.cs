@@ -1,4 +1,4 @@
-﻿using Fastdo.Repositories.Enums;
+﻿using Fastdo.Core.Enums;
 
 namespace Fastdo.backendsys
 {

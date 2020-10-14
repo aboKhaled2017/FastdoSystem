@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data.Common;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Fastdo.backendsys.Services

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fastdo.backendsys.Areas.AdminPanel.Models;
 using Fastdo.backendsys.Repositories;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;

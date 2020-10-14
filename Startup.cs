@@ -10,12 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Fastdo.backendsys.Utilities;
 using System.Net;
 using NLog;
 using System.IO;
+using NHibernate.Util;
 
 namespace Fastdo.backendsys
 {
@@ -41,7 +42,7 @@ namespace Fastdo.backendsys
                     builder=> {
                     builder.MigrationsAssembly("System_Back_End");
                     });*/
-                    options.UseSqlServer(Configuration.GetConnectionString("Aws_Ec2_FastdoBd"), builder => {
+                    options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"), builder => {
                         builder.MigrationsAssembly("Fastdo.backendsys");
                     });
                 }
@@ -50,7 +51,7 @@ namespace Fastdo.backendsys
                     /*options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
                         builder.MigrationsAssembly("System_Back_End");
                     });*/
-                    options.UseSqlServer(Configuration.GetConnectionString("Aws_Ec2_FastdoBd"), builder => {
+                    options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"), builder => {
                         builder.MigrationsAssembly("Fastdo.backendsys");
                     });
                 }
@@ -93,12 +94,17 @@ namespace Fastdo.backendsys
                 op.TokenLifespan = TimeSpan.FromDays(1);
             });
             services._AddSwaggr();
-
+            services._AddGraphQlServices();
         }
-
+        public class F
+        {
+            public int a { get; set; }
+            public int b { get; set; }
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,IServiceProvider serviceProvider)
         {
+
             app._UserSwagger();
             app._UseExceptions(env);
             if (env.IsProduction())
@@ -108,6 +114,7 @@ namespace Fastdo.backendsys
             app.UseHttpsRedirection();
             app._UseServicesStarter(serviceProvider);
             app._UseMyDbConfigStarter(env);
+            app._UseQraphQl();
             //app._useCustomFunctionToBeImplemented(env);/*disable it*/
             app.UseCors(Variables.corePolicy);
             app.UseStaticFiles();

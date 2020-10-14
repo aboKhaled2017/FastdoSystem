@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;

@@ -8,7 +8,7 @@ namespace Fastdo.backendsys.Utilities
     {
         private readonly string _propertyNameToBeChecked;
         private readonly UserPropertyType _userPropertyType;
-        private readonly Fastdo.Repositories.Models.SysDbContext _Context;
+        private readonly Fastdo.Core.Models.SysDbContext _Context;
         public CheckIfUserPropValueIsExixts(string propertyNameToBeChecked,UserPropertyType userPropertyType)
         {
             _propertyNameToBeChecked = propertyNameToBeChecked;

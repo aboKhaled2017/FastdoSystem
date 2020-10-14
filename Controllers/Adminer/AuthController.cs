@@ -1,5 +1,5 @@
 ﻿using System;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;

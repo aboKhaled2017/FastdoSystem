@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Fastdo.backendsys.Services;
 using Fastdo.backendsys.Services.Auth;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

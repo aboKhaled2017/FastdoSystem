@@ -71,6 +71,9 @@
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions" Version="2.6.4" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="GraphQL" Version="2.4.0" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.3.0" />
+    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="4.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
@@ -126,6 +129,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\Fastdo.Repositories\Fastdo.Repositories.csproj" />
+    <ProjectReference Include="..\Fastdo.Core\Fastdo.Core.csproj" />
   </ItemGroup>
 </Project>

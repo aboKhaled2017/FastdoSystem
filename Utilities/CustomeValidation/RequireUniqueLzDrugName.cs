@@ -8,7 +8,7 @@ namespace Fastdo.backendsys.Utilities
 {
     public class RequireUniqueLzDrugName : ValidationAttribute
     {
-        private readonly Fastdo.Repositories.Models.SysDbContext _Context;
+        private readonly Fastdo.Core.Models.SysDbContext _Context;
 
         public bool _isUpdate { get; }
 

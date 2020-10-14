@@ -1,5 +1,5 @@
 ﻿using Fastdo.backendsys.Controllers.Stocks.Models;
-using Fastdo.Repositories.Models;
+using Fastdo.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using Fastdo.backendsys.Controllers.Pharmacies;
 using Newtonsoft.Json;
 using System.Text;
 using System.Data.Common;
-using Fastdo.Repositories.Enums;
+using Fastdo.Core.Enums;
 using NHibernate.Util;
 using Microsoft.EntityFrameworkCore.Internal;
 using Namotion.Reflection;
