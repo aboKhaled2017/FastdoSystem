@@ -27,6 +27,7 @@ using GraphQL.Types;
 using GraphQL;
 using GraphQL.Server;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Fastdo.backendsys.Configurations;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -60,6 +61,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 return new UrlHelper(actionContext);
             });
             services.AddScoped<IExecuterDelayer, ExecuterDelayer>();
+            return services;
+        }
+        public static IServiceCollection ConfigureIdentityServerServices(IServiceCollection services)
+        {
+            var builder = services.AddIdentityServer()
+                .AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
+                .AddInMemoryApiResources(IdentityServerConfig.GetApis())
+                .AddInMemoryClients(IdentityServerConfig.GetClients());
             return services;
         }
         public static IServiceCollection _AddRepositories(this IServiceCollection services)

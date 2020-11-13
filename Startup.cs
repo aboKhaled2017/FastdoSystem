@@ -38,24 +38,23 @@ namespace Fastdo.backendsys
             {
                 if(Env.IsDevelopment())
                 {
-                    /*options.UseSqlServer(Configuration.GetConnectionString("localSql"),
+                    options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"),
                     builder=> {
-                    builder.MigrationsAssembly("System_Back_End");
-                    });*/
-                    options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"), builder => {
-                        builder.MigrationsAssembly("Fastdo.backendsys");
+                    builder.MigrationsAssembly("Fastdo.backendsys");
                     });
+                    /*options.UseSqlServer(Configuration.GetConnectionString("smarterFastdo"), builder => {
+                        builder.MigrationsAssembly("Fastdo.backendsys");
+                    });*/
                 }
                 else
                 {
-                    /*options.UseSqlite(Configuration.GetConnectionString("sysSqlite"), builder => {
-                        builder.MigrationsAssembly("System_Back_End");
+                    /*options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"), builder => {
+                        builder.MigrationsAssembly("Fastdo.backendsys");
                     });*/
-                    options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"), builder => {
+                    options.UseSqlServer(Configuration.GetConnectionString("smarterFastdo"), builder => {
                         builder.MigrationsAssembly("Fastdo.backendsys");
                     });
-                }
-                        
+                }                       
             });           
             services._AddRepositories();
             services
@@ -63,8 +62,6 @@ namespace Fastdo.backendsys
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<SysDbContext>();
-
-             
 
             services._AddAutoMapper();
             services._AddSystemServices();
@@ -94,29 +91,21 @@ namespace Fastdo.backendsys
                 op.TokenLifespan = TimeSpan.FromDays(1);
             });
             services._AddSwaggr();
-            services._AddGraphQlServices();
+            //services._AddGraphQlServices();
         }
-        public class F
-        {
-            public int a { get; set; }
-            public int b { get; set; }
-        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,IServiceProvider serviceProvider)
         {
-
+            app.UseCors(Variables.corePolicy);
             app._UserSwagger();
             app._UseExceptions(env);
-            if (env.IsProduction())
-            {
-                app.UseHsts();
-            }
+            app.UseHsts();
             app.UseHttpsRedirection();
             app._UseServicesStarter(serviceProvider);
             app._UseMyDbConfigStarter(env);
-            app._UseQraphQl();
+            //app._UseQraphQl();
             //app._useCustomFunctionToBeImplemented(env);/*disable it*/
-            app.UseCors(Variables.corePolicy);
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseStatusCodePages(context => {

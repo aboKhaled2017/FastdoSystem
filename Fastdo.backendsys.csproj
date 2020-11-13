@@ -61,9 +61,6 @@
     <None Remove="LocalMigrations.rar" />
     <None Remove="system.db" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AltMigrations\sqlServerMigrations\SysDbContextModelSnapshot.cs" />
-  </ItemGroup>
   
  
    

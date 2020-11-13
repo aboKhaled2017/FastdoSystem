@@ -503,31 +503,27 @@ namespace Fastdo.backendsys.Repositories
             var data = originalData
                 .Select(r => new StkDrugsPackageReqModel
                 {
-                    StkPackageId=r.Id,
-                    PackageId=r.PackageId,
-                    DrugDetails=r.Package.PackageDetails,
-                    Status=r.Status,
-                    CreatedAt=r.Package.CreateAt,
-                    Pharma=new StkDrugsPackageReqModel_PharmaData
+                    StkPackageId = r.Id,
+                    PackageId = r.PackageId,
+                    Status = r.Status,
+                    CreatedAt = r.Package.CreateAt,
+                    Pharma = new StkDrugsPackageReqModel_PharmaData
                     {
-                        Id=r.Package.PharmacyId,
-                        Name=r.Package.Pharmacy.Name,
-                        Address=$"{r.Package.Pharmacy.Area.Name} / {r.Package.Pharmacy.Area.SuperArea.Name}",
-                        AddressInDetails=r.Package.Pharmacy.Address,
-                        LandLinePhone=r.Package.Pharmacy.LandlinePhone,
-                        PhoneNumber=r.Package.Pharmacy.PersPhone
-                    }
+                        Id = r.Package.PharmacyId,
+                        Name = r.Package.Pharmacy.Name,
+                        Address = $"{r.Package.Pharmacy.Area.Name} / {r.Package.Pharmacy.Area.SuperArea.Name}",
+                        AddressInDetails = r.Package.Pharmacy.Address,
+                        LandLinePhone = r.Package.Pharmacy.LandlinePhone,
+                        PhoneNumber = r.Package.Pharmacy.PersPhone
+                    },
+                    Drugs = r.AssignedStkDrugs.Select(d => new StkDrugsPackageReqModel_DrugData
+                    {
+                        Id = d.StkDrugId,
+                        Name = d.StkDrug.Name,
+                        Quantity = d.Quantity
+                    })
                 });
-            var returnedData= await PagedList<StkDrugsPackageReqModel>.CreateAsync(data, _params);
-            returnedData.ForEach(el =>
-            {
-                var drugDetails =JsonConvert.DeserializeObject<IEnumerable<ShowStkDrugsPackageReqPh_fromStockModel>>(el.DrugDetails);
-                el.DrugDetails = JsonConvert.SerializeObject(
-                    drugDetails.FirstOrDefault(e => e.StockId == UserId)
-                    .DrugsList
-                    );
-            });
-            return returnedData;
+            return await PagedList<StkDrugsPackageReqModel>.CreateAsync(data, _params);
         }
 
         public async Task<IList<StockNameWithIdModel>> GetAllStocksNames()
