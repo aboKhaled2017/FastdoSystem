@@ -21,8 +21,7 @@ namespace Fastdo.backendsys.Repositories
         public async Task<PagedList<LzDrugCard_Info_BM>> Get_All_LzDrug_Cards_BMs(LzDrg_Card_Info_BM_ResourceParameters _params)
         {
             var generalQuerableData_BeforePaging = GetAll()
-                .ApplySort(_params.OrderBy,
-                  _propertyMappingService.GetPropertyMapping<LzDrugCard_Info_BM, LzDrug>())
+                
                 .Where(d => d.PharmacyId != UserId);
                 
             if (!string.IsNullOrEmpty(_params.S))
@@ -86,6 +85,9 @@ namespace Fastdo.backendsys.Repositories
                     ? d.RequestingPharms.FirstOrDefault(r => r.PharmacyId == UserId).Id
                     : Guid.Empty
                 });
+            PagedData = PagedData
+                .ApplySort(_params.OrderBy,
+                  _propertyMappingService.GetPropertyMapping<LzDrugCard_Info_BM, LzDrug>());
             return await PagedList<LzDrugCard_Info_BM>.CreateAsync(PagedData, _params);
         }
     }

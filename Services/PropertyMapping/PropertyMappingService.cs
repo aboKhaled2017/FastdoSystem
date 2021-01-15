@@ -17,6 +17,7 @@ namespace Fastdo.backendsys.Services
                 {"Price",new PropertyMappingValue(new List<string>{ "Price"})},
                 {"Discount",new PropertyMappingValue(new List<string>{ "Discount"})},
                 {"ValideDate",new PropertyMappingValue(new List<string>{ "ValideDate"})},
+                {"requestsCount",new PropertyMappingValue(new List<string>{"requestsCount"})}
             };
         private Dictionary<string, PropertyMappingValue> _pharmacyCard_Info_BM_PropertyMapping =
             new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
