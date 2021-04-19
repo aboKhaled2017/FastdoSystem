@@ -54,7 +54,7 @@ namespace Microsoft.AspNetCore.Builder
             }
             else if(env.IsProduction())
             {
-               // app._UseInitalSeeds_In_Production().Wait();
+                app._UseInitalSeeds_In_Production().Wait();
             }
             return app;
         }

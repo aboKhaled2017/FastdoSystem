@@ -17,7 +17,7 @@ namespace Fastdo.backendsys.Repositories
          Task<PagedList<NotSeen_PhDrgRequest_MB>> Get_AllRequests_I_Received_INS(LzDrgReqResourceParameters _params);
          Task<IEnumerable<LzDrugRequest>> Get_Group_Of_Requests_I_Received(IEnumerable<Guid> reqIds);
          
-         Task<LzDrugRequest> AddForUserAsync(Guid drugId);
+         LzDrugRequest AddForUser(Guid drugId);
          Task<bool> Patch_Update_Request_Sync(LzDrugRequest lzDrugRequest);
          void Patch_Update_Group_Of_Requests_Sync(IEnumerable<LzDrugRequest> lzDrugRequests);
          Task<bool> Make_RequestSeen(LzDrugRequest lzDrugRequest);

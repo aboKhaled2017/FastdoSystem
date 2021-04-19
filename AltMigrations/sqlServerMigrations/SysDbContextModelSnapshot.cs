@@ -192,6 +192,8 @@ namespace Fastdo.backendsys.Migrations
                     b.Property<string>("PharmacyId")
                         .IsRequired();
 
+                    b.Property<int>("Quantity");
+
                     b.Property<bool>("Seen");
 
                     b.Property<int>("Status");

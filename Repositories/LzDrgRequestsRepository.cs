@@ -76,20 +76,20 @@ namespace Fastdo.backendsys.Repositories
             }).FirstOrDefaultAsync(r=>r.Id==id);
         }
 
-        public async Task<LzDrugRequest> AddForUserAsync(Guid drugId)
+        public LzDrugRequest AddForUser(Guid drugId)
         {
-            if (await _LzDrugRepository.GetAll()
-                .AnyAsync(d => d.Id == drugId&&d.PharmacyId== UserId))
+            if (_LzDrugRepository.GetAll()
+                .Any(d => d.Id == drugId&&d.PharmacyId== UserId))
                 return null;
-            if (await GetAll()
-                .AnyAsync(r => r.PharmacyId == UserId && r.LzDrugId == drugId))
+            if (GetAll()
+                .Any(r => r.PharmacyId == UserId && r.LzDrugId == drugId))
                 return null;
             var req = new LzDrugRequest
             {
                 PharmacyId = UserId,
                 LzDrugId = drugId
             };
-            await AddAsync(req);
+            Add(req);
             return req;
         }
         public async Task<bool> Patch_Update_Request_Sync(LzDrugRequest lzDrugRequest)

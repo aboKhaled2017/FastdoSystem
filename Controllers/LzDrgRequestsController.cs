@@ -82,22 +82,30 @@ namespace Fastdo.backendsys.Controllers
 
         #region (Add/handle/cancel) Single LzDrug Request
         [HttpPost("{drugId}",Name ="Add_LzDrug_Request_For_User")]
-        public async Task<IActionResult> PostNewRequestForUser(Guid drugId)
+        public IActionResult PostNewRequestForUser(Guid drugId)
         {
-            var req = await _lzDrgRequestsRepository.AddForUserAsync(drugId);
-            if (req == null)
-                return BadRequest();
-            if (!await _lzDrgRequestsRepository.SaveAsync())
-                return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
-            var reqObj = new
+            try
             {
-                req.Id,
-                req.LzDrugId,
-                req.PharmacyId,
-                req.Seen,
-                req.Status
-            };
-            return CreatedAtRoute(routeName: "GetRequestById", routeValues: new { id = req.Id }, reqObj);
+                var req = _lzDrgRequestsRepository.AddForUser(drugId);
+                if (req == null)
+                    return BadRequest();
+                var res = _lzDrgRequestsRepository.Save();
+                if (!res)
+                    return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
+                var reqObj = new
+                {
+                    req.Id,
+                    req.LzDrugId,
+                    req.PharmacyId,
+                    req.Seen,
+                    req.Status
+                };
+                return CreatedAtRoute(routeName: "GetRequestById", routeValues: new { id = req.Id }, reqObj);
+            }
+            catch(Exception e)
+            {
+                return BadRequest();
+            }
         }
         [HttpPatch("received/{reqId}")]
         public async Task<IActionResult> PatchHandleRequestIReceivedForUser(Guid reqId,[FromBody] JsonPatchDocument<LzDrgRequest_ForUpdate_BM> patchDoc)
