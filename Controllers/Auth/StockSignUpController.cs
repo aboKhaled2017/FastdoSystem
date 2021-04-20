@@ -74,6 +74,7 @@ namespace Fastdo.backendsys.Controllers.Auth
                          stockModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                          stockModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
                          _stockRepository.AddAsync(stockModel).Wait();
+                         _stockRepository.Save();
                          OnFinishAdding.Invoke();
                      },
                      () => {

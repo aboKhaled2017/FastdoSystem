@@ -43,9 +43,9 @@ namespace Fastdo.backendsys.Services.Auth
             };
             onAddedSuccess(user,admin);
             await _adminRepository.AddAsync(admin);
-            
-            _transactionService.RollBackChanges().End();
-            return false;
+            _adminRepository.Save();
+            _transactionService.CommitChanges().End();
+            return true;
         }
         public async Task UpdateSubAdminPassword(AppUser user,UpdateSubAdminPasswordModel model)
         {

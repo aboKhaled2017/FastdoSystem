@@ -73,7 +73,7 @@ namespace Fastdo.backendsys.Controllers.Auth
                 pharmacyModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                 pharmacyModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
                 await _pharmacyRepository.AddAsync(pharmacyModel);
-                
+                _pharmacyRepository.Save();
                 _executerDelayer.Execute();
                 _transactionService.CommitChanges().End();
 

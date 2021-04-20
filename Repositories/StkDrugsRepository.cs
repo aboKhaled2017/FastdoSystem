@@ -157,7 +157,7 @@ namespace Fastdo.backendsys.Repositories
             {
                 data = data.Where(s => s.StockId == _params.StockId.Trim());
             }
-            var selectedData=data
+            var selectedData = data
                 .GroupBy(s => s.Name)
                .Select(g => new SearchGenralStkDrugModel
                {
@@ -175,29 +175,29 @@ namespace Fastdo.backendsys.Repositories
                });
             var dataList = await PagedList<SearchGenralStkDrugModel>
                 .CreateAsync<SearchGenralStkDrugModel_TargetPharma>(selectedData, _params, drg => {
-                List<Tuple<string, double>> entries = null;
-                var _stocks = new List<SearchedStkDrugModelOfAllStocks_TargetPharma>();
-                drg.Stocks.ToList().ForEach(d => {
-                    entries = JsonConvert.DeserializeObject<List<Tuple<string, double>>>(d.Discount);
-                    _stocks.Add(new SearchedStkDrugModelOfAllStocks_TargetPharma
-                    {
-                        Id = d.Id,
-                        Price = d.Price,
-                        StockId = d.StockId,
-                        StockName = d.StockName,
-                        IsJoinedTo=d.IsJoinedTo,
-                        Discount = entries.SingleOrDefault(e => e.Item1 == UserId)?.Item2
-                                  ??entries.Select(e => e.Item2).Min()                                 
+                    List<Tuple<string, double>> entries = null;
+                    var _stocks = new List<SearchedStkDrugModelOfAllStocks_TargetPharma>();
+                    drg.Stocks.ToList().ForEach(d => {
+                        entries = JsonConvert.DeserializeObject<List<Tuple<string, double>>>(d.Discount);
+                        _stocks.Add(new SearchedStkDrugModelOfAllStocks_TargetPharma
+                        {
+                            Id = d.Id,
+                            Price = d.Price,
+                            StockId = d.StockId,
+                            StockName = d.StockName,
+                            IsJoinedTo = d.IsJoinedTo,
+                            Discount = entries.SingleOrDefault(e => e.Item1 == UserId)?.Item2
+                                      ?? entries.Select(e => e.Item2).Min()
+                        });
                     });
+
+                    return new SearchGenralStkDrugModel_TargetPharma
+                    {
+                        Name = drg.Name,
+                        Stocks = _stocks,
+                        StockCount = drg.StockCount
+                    };
                 });
- 
-                return new SearchGenralStkDrugModel_TargetPharma
-                {
-                    Name = drg.Name,
-                    Stocks=_stocks,
-                    StockCount=drg.StockCount
-                };
-            });
 
             return dataList;
         }

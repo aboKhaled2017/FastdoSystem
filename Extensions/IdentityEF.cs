@@ -48,11 +48,12 @@ namespace Microsoft.AspNetCore.Identity
         }
         public async static Task<bool> UserIdentityExists(this UserManager<AppUser> userManager, AppUser user, string password,string adminType)
         {
-            return user != null &&
-                await userManager.IsInRoleAsync(user, Variables.adminer) &&
-                (await userManager.GetClaimsAsync(user))
-                .Any(c=>c.Type==Variables.AdminClaimsTypes.AdminType && c.Value==adminType) &&
-                await userManager.CheckPasswordAsync(user, password);
+          
+              var r1 = await userManager.IsInRoleAsync(user, Variables.adminer);
+            var claims = (await userManager.GetClaimsAsync(user));
+            var r2 = claims.Any(c => c.Type == Variables.AdminClaimsTypes.AdminType && c.Value == adminType); 
+              var r3=  await userManager.CheckPasswordAsync(user, password);
+            return r1 && r2 && r3;
         }
     }
 }

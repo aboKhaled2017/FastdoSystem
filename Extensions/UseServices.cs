@@ -40,6 +40,7 @@ namespace Microsoft.AspNetCore.Builder
         {
             //add areas and adminerUser
             await DataSeeder.SeedBasicData();
+            //await DataSeeder.SeedDefaultData();
             return app;
         }
         public static IApplicationBuilder _UseMyDbConfigStarter(this IApplicationBuilder app, IHostingEnvironment env)
@@ -50,7 +51,7 @@ namespace Microsoft.AspNetCore.Builder
             _roleManager._addRoles(new List<string> { Variables.adminer, Variables.pharmacier, Variables.stocker }).Wait();
             if (env.IsDevelopment())
             {
-               // app._UseInitalSeeds_In_Developement().Wait();
+                app._UseInitalSeeds_In_Developement().Wait();
             }
             else if(env.IsProduction())
             {

@@ -23,18 +23,22 @@
     <Compile Remove="Fastdo.Core\**" />
     <Compile Remove="LocalMigrations\**" />
     <Compile Remove="Logs\**" />
+    <Compile Remove="wwwroot\Images\Pharmacies\**" />
     <Content Remove="AltMigrations\**" />
     <Content Remove="Fastdo.Core\**" />
     <Content Remove="LocalMigrations\**" />
     <Content Remove="Logs\**" />
+    <Content Remove="wwwroot\Images\Pharmacies\**" />
     <EmbeddedResource Remove="AltMigrations\**" />
     <EmbeddedResource Remove="Fastdo.Core\**" />
     <EmbeddedResource Remove="LocalMigrations\**" />
     <EmbeddedResource Remove="Logs\**" />
+    <EmbeddedResource Remove="wwwroot\Images\Pharmacies\**" />
     <None Remove="AltMigrations\**" />
     <None Remove="Fastdo.Core\**" />
     <None Remove="LocalMigrations\**" />
     <None Remove="Logs\**" />
+    <None Remove="wwwroot\Images\Pharmacies\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="nlog.config" />
@@ -43,6 +47,7 @@
   <ItemGroup>
     <None Remove="LocalMigrations.rar" />
     <None Remove="system.db" />
+    <None Remove="wwwroot.rar" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AltMigrations\sqlServerMigrations\SysDbContextModelSnapshot.cs" />
@@ -460,9 +465,7 @@
 
 
   <ItemGroup>
-    <Reference Include="Fastdo.Core">
-      <HintPath>Fastdo.Core\bin\Debug\netcoreapp2.2\Fastdo.Core.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="Fastdo.Core\Fastdo.Core.csproj" />
   </ItemGroup>
 
 

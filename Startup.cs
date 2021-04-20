@@ -38,13 +38,14 @@ namespace Fastdo.backendsys
             {
                 if(Env.IsDevelopment())
                 {
-                    options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"),
-                        builder=> {
-                        builder.MigrationsAssembly("Fastdo.backendsys");
-                    });
-                    //options.UseSqlServer(Configuration.GetConnectionString("smarterFastdo"), builder => {
+                    //options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"),
+                    //    builder=> {
                     //    builder.MigrationsAssembly("Fastdo.backendsys");
                     //});
+                    options.UseSqlServer(Configuration.GetConnectionString("smarterFastdo"), builder =>
+                    {
+                        builder.MigrationsAssembly("Fastdo.backendsys");
+                    });
                 }
                 else
                 {
