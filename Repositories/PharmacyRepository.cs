@@ -133,7 +133,9 @@ namespace Fastdo.backendsys.Repositories
         public async Task<IEnumerable<ShowJoinedStocksOfPharmaModel>> GetUserJoinedStocks()
         {
             return await _context.PharmaciesInStocks
-                .Where(s => s.PharmacyId == UserId && s.PharmacyReqStatus == PharmacyRequestStatus.Accepted)
+                .Where(s => 
+                   s.PharmacyId == UserId &&
+                   (s.PharmacyReqStatus == PharmacyRequestStatus.Accepted || s.PharmacyReqStatus==PharmacyRequestStatus.Disabled))
                 .Select(s => new ShowJoinedStocksOfPharmaModel{ 
                  StockId=s.StockId,
                  Address = $"{s.Stock.Area.SuperArea.Name} / {s.Stock.Area.Name}",

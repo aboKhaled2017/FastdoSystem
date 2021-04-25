@@ -18,7 +18,7 @@ namespace Fastdo.backendsys.Controllers.Stocks
 
         [Required(ErrorMessage ="من فضلك ادخل  ملف الاكسل الخاص بالبيانات")]
         [DataType(DataType.Upload,ErrorMessage ="هذه البيانات لا تمثل ملف")]
-        [AllowedExtensions(new string[] { "xlsm", "xlsx", "xlsb", "xls" })]
+        [AllowedExtensions(new string[] { "xlsm", "xlsx", "xlsb", "xls","csv" })]
         public IFormFile Sheet { get; set; }
     }
 }

@@ -169,7 +169,7 @@ namespace Fastdo.backendsys.Repositories
                        Price = d.Price,
                        StockId = d.StockId,
                        StockName = d.Stock.Name,
-                       IsJoinedTo = d.Stock.GoinedPharmacies.Any(p => p.PharmacyId == UserId)
+                       IsJoinedTo = d.Stock.GoinedPharmacies.Any(p => p.PharmacyId == UserId && (p.PharmacyReqStatus==PharmacyRequestStatus.Accepted || p.PharmacyReqStatus==PharmacyRequestStatus.Disabled))
                    }).Take(3),
                    StockCount = g.Count()
                });

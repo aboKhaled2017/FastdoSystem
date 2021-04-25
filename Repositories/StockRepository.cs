@@ -429,9 +429,18 @@ namespace Fastdo.backendsys.Repositories
                 PharmacyId = UserId,
                 StockId = stockId
             });
+
             var pharmaClassId = await _StockWithClassRepository
                 .Where(s => s.StockId == stockId)
                 .Select(s => s.Id).FirstOrDefaultAsync();
+            await SaveAsync();
+            if (pharmaClassId == Guid.Empty)
+            {
+                pharmaClassId = Guid.NewGuid();
+                var stkWithClass = new StockWithPharmaClass { ClassName = "default", Id = pharmaClassId, StockId = stockId };
+                _StockWithClassRepository.Add(stkWithClass);
+                await SaveAsync();
+            }
             _PharmacyInStkClassRepository.Add(new PharmacyInStockClass
             {
                 PharmacyId = UserId,

@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="nlog.config" />
-    <Content Remove="web.config" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="LocalMigrations.rar" />
@@ -487,5 +486,12 @@
     <TypeScriptCompile Include="wwwroot\AdminRtl\js\Scripts\Utiles.ts" />
     <TypeScriptCompile Include="wwwroot\AdminRtl\js\Scripts\VStockPageScripts.d.ts" />
     <TypeScriptCompile Include="wwwroot\AdminRtl\js\Scripts\VStockPageScripts.ts" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

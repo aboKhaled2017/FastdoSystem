@@ -77,7 +77,7 @@ namespace Fastdo.backendsys.Services
             }
             catch (Exception ex)
             {
-                if (!reader.IsClosed) reader.Close();
+                if (reader!=null && !reader.IsClosed) reader.Close();
                 _ServiceResponse.ErrorMess = ex.Message;
                 return _ServiceResponse;
             }
@@ -98,8 +98,14 @@ namespace Fastdo.backendsys.Services
                         _ServiceResponse.ErrorMess = "عدد الحقول الرأسية لابد ان يكون عددها 3";
                         return;
                     }
-                        while (reader.Read())
+                    bool headerIsSkipped = false;
+                    while (reader.Read())
                     {
+                        if (!headerIsSkipped)
+                        {
+                            headerIsSkipped = true;
+                            continue;
+                        }
                         var price = Convert.ToDouble(reader.GetValue(model.ColPriceOrder));
                         var name = reader.GetValue(model.ColNameOrder).ToString().Trim().ToLower();
                         if (price < 1)
