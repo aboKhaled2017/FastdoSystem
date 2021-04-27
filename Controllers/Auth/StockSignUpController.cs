@@ -9,38 +9,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core.Utilities;
+using Fastdo.Core.Services.Auth;
 
-namespace Fastdo.backendsys.Controllers.Auth
+namespace Fastdo.API.Controllers.Auth
 {
     [Route("api/stk/signup")]
     [ApiController]
     [AllowAnonymous]
     public class StockSignUpController : SharedAPIController
     {
-        #region constructor and properties
-        private HandlingProofImgsServices _handlingProofImgsServices { get; }
-        private IStockRepository _stockRepository { get; }
-        public IExecuterDelayer _executerDelayer { get; }
-
-        public StockSignUpController(
-            UserManager<AppUser> userManager,
-            IEmailSender emailSender, 
-            AccountService accountService,
-            IMapper mapper,
-            HandlingProofImgsServices handlingProofImgsServices,
-            IStockRepository stockRepository,
-            IExecuterDelayer executerDelayer,
-            TransactionService transactionService)
-            : base(userManager, emailSender, accountService, mapper, transactionService)
+        public StockSignUpController(HandlingProofImgsServices proofImgsServices, IExecuterDelayer executerDelayer, UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, Core.IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _handlingProofImgsServices = handlingProofImgsServices;
-            _stockRepository = stockRepository;
+            _handlingProofImgsServices = proofImgsServices;
             _executerDelayer = executerDelayer;
         }
+        #region constructor and properties
+        private HandlingProofImgsServices _handlingProofImgsServices { get; }
+        public IExecuterDelayer _executerDelayer { get; }
+
+    
 
         #endregion
 
@@ -73,8 +66,8 @@ namespace Fastdo.backendsys.Controllers.Auth
                          }
                          stockModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                          stockModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
-                         _stockRepository.AddAsync(stockModel).Wait();
-                         _stockRepository.Save();
+                         _unitOfWork.StockRepository.AddAsync(stockModel).Wait();
+                         _unitOfWork.Save();
                          OnFinishAdding.Invoke();
                      },
                      () => {
@@ -82,7 +75,7 @@ namespace Fastdo.backendsys.Controllers.Auth
                      }) as SigningStockClientInResponseModel;
                 if (ErrorMessage != null || response== null)
                 {
-                    return BadRequest(Functions.MakeError(ErrorMessage ?? "لقد فشلت عملية التسجيل,حاول مرة اخرى"));
+                    return BadRequest(BasicUtility.MakeError(ErrorMessage ?? "لقد فشلت عملية التسجيل,حاول مرة اخرى"));
                 }
 
             }

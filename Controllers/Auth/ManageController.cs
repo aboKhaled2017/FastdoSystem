@@ -11,35 +11,25 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
-using Fastdo.backendsys.Utilities;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core.Utilities;
+using Fastdo.Core.ViewModels;
+using Fastdo.Core.Enums;
+using Fastdo.Core.Services;
+using Fastdo.Core.Services.Auth;
 
-namespace Fastdo.backendsys.Controllers.Auth
+namespace Fastdo.API.Controllers.Auth
 {
     [Route("api/manage")]
     [ApiController]
     [Authorize]
     public class ManageController : SharedAPIController
     {
-        #region constructor and properties
-        public IPharmacyRepository _pharmacyRepository { get; }
-        public IStockRepository _stockRepository { get; }
-
-        public ManageController(
-            UserManager<AppUser> userManager, 
-            IEmailSender emailSender, AccountService accountService, 
-            IMapper mapper, TransactionService transactionService,
-            IPharmacyRepository pharmacyRepository,IStockRepository stockRepository)
-            : base(userManager, emailSender, accountService, mapper, transactionService)
+        public ManageController(UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, Core.IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _pharmacyRepository = pharmacyRepository;
-            _stockRepository = stockRepository;
         }
 
-        #endregion
 
         #region change password
 
@@ -52,7 +42,7 @@ namespace Fastdo.backendsys.Controllers.Auth
             var user =await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             var res =await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if(!res.Succeeded)
-                return NotFound(Functions.MakeError("OldPassword", "كلمة السر القديمة غير صحيحة"));
+                return NotFound(BasicUtility.MakeError("OldPassword", "كلمة السر القديمة غير صحيحة"));
             return Ok();
         }
 
@@ -64,7 +54,7 @@ namespace Fastdo.backendsys.Controllers.Auth
         {
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
-            if (Functions.CurrentUserType() == UserType.pharmacier)
+            if (BasicUtility.CurrentUserType() == UserType.pharmacier)
                 return await ChangePhoneForPharmacy(model);
             else
                 return await ChangePhoneForStock(model);
@@ -79,20 +69,20 @@ namespace Fastdo.backendsys.Controllers.Auth
             if (!res.Succeeded)
             {
                 _transactionService.RollBackChanges().End();
-                return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
             } 
-            var pharmacy =await _pharmacyRepository.GetByIdAsync(user.Id);
+            var pharmacy =await _unitOfWork.PharmacyRepository.GetByIdAsync(user.Id);
             if (pharmacy == null)
             {
                 _transactionService.RollBackChanges().End();
-                return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
             }
             pharmacy.PersPhone = model.NewPhone;
-            _pharmacyRepository.UpdatePhone(pharmacy);
-            if (!await _pharmacyRepository.SaveAsync())
+            _unitOfWork.PharmacyRepository.UpdatePhone(pharmacy);
+            if (!await _unitOfWork.PharmacyRepository.SaveAsync())
             {
                 _transactionService.RollBackChanges().End();
-                return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
             }
             var response =await _accountService.GetSigningInResponseModelForCurrentUser(user);
             _transactionService.CommitChanges().End();
@@ -108,20 +98,20 @@ namespace Fastdo.backendsys.Controllers.Auth
             if (!res.Succeeded)
             {
                 _transactionService.RollBackChanges().End();
-                return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
             }
-            var stock = await _stockRepository.GetByIdAsync(user.Id);
+            var stock = await _unitOfWork.StockRepository.GetByIdAsync(user.Id);
             if (stock == null)
             {
                 _transactionService.RollBackChanges().End();
-                return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
             }
             stock.PersPhone = model.NewPhone;
-            _stockRepository.UpdatePhone(stock);
-            if (!await _stockRepository.SaveAsync())
+             _unitOfWork.StockRepository.UpdatePhone(stock);
+            if (!await  _unitOfWork.StockRepository.SaveAsync())
             {
                 _transactionService.RollBackChanges().End();
-                return BadRequest(Functions.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("لايمكن تغير رقم الهاتف الان ,حاول مرة اخرى"));
             }
             var response = await _accountService.GetSigningInResponseModelForCurrentUser(user);
             _transactionService.CommitChanges().End();
@@ -137,12 +127,12 @@ namespace Fastdo.backendsys.Controllers.Auth
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
             var user =await _userManager.FindByIdAsync(_userManager.GetUserId(User));
-            var code = Functions.GenerateConfirmationTokenCode();
+            var code = BasicUtility.GenerateConfirmationTokenCode();
             user.confirmCode = code;
             user.willBeNewEmail = model.NewEmail;
             var res=await _userManager.UpdateAsync(user);
             if (!res.Succeeded)
-                return BadRequest(Functions.MakeError("لايمكن تغير البريد الالكترونى الان ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("لايمكن تغير البريد الالكترونى الان ,حاول مرة اخرى"));
             await _emailSender.SendEmailAsync(model.NewEmail, " تغيير البريد الالكترونى الخاص بك", $"الكود الخاص بك هو {code}");
             return Ok();
         }
@@ -166,9 +156,9 @@ namespace Fastdo.backendsys.Controllers.Auth
                 return new UnprocessableEntityObjectResult(ModelState);
             var user = await _userManager.FindByIdAsync(_userManager.GetUserId(User));
             if (user.confirmCode == null)
-                return NotFound(Functions.MakeError("Code", "انتهت صلاحية هذا الكود"));
+                return NotFound(BasicUtility.MakeError("Code", "انتهت صلاحية هذا الكود"));
             if (user.confirmCode != model.Code)
-                return NotFound(Functions.MakeError("Code", "هذا الكود غير صحيح"));
+                return NotFound(BasicUtility.MakeError("Code", "هذا الكود غير صحيح"));
             if (user.willBeNewEmail != model.NewEmail)
                 return NotFound();
             user.UserName = model.NewEmail;
@@ -181,13 +171,13 @@ namespace Fastdo.backendsys.Controllers.Auth
                 var result1 = await _userManager.ChangeEmailAsync(user, model.NewEmail, token);
                 var result2 =await _userManager.UpdateAsync(user);
                 if (!result1.Succeeded||!result2.Succeeded)
-                    return NotFound(Functions.MakeError("لقد فشلت العملية ,حاول مرة اخرى" ));
+                    return NotFound(BasicUtility.MakeError("لقد فشلت العملية ,حاول مرة اخرى" ));
                 _transactionService.CommitChanges().End();
             }
             catch
             {
                 _transactionService.RollBackChanges().End();
-                return BadRequest(Functions.MakeError("لقد فشلت العملية ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("لقد فشلت العملية ,حاول مرة اخرى"));
             }
             
             return Ok(await _accountService.GetSigningInResponseModelForCurrentUser(user));

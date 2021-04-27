@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
+using Fastdo.Core.Services;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
     public static class DbServicesFuncs
     {

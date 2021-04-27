@@ -3,37 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
 using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Fastdo.Core.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core;
+using Fastdo.Core.Utilities;
 
-namespace Fastdo.backendsys.Controllers.Adminer
+namespace Fastdo.API.Controllers.Adminer
 {
     [Route("api/admins/stocks", Name = "AdminStocks")]
     [ApiController]
     [Authorize(Policy = "ControlOnStocksPagePolicy")]
     public class AdminStocksController : MainAdminController
     {
-        #region constructor and properties
-        private readonly IStockRepository _stockRepository;
-        public AdminStocksController(UserManager<AppUser> userManager, IEmailSender emailSender,
-            AccountService accountService, IMapper mapper, TransactionService transactionService,
-            IStockRepository stockRepository) : base(userManager, emailSender, accountService, mapper, transactionService)
+        public AdminStocksController(UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _stockRepository = stockRepository;
         }
-        #endregion
+
 
         #region override methods from parent class
         [ApiExplorerSettings(IgnoreApi = true)]
-        public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        public override string Create_BMs_ResourceUri(IResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
             var _cardParams = _params as StockResourceParameters;
             switch (resourceUriType)
@@ -80,7 +79,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
-            var stk =await _stockRepository.Get_StockModel_ADM(id);
+            var stk =await _unitOfWork.StockRepository.Get_StockModel_ADM(id);
             if (stk == null)
                 return NotFound();
             return Ok(stk);
@@ -88,7 +87,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [HttpGet(Name ="Get_PageOfStocks_ADM")]
         public async Task<IActionResult> GetPageOfStocksForAdmin([FromQuery]StockResourceParameters _params)
         {
-            var stocks = await _stockRepository.Get_PageOf_StockModels_ADM(_params);
+            var stocks = await _unitOfWork.StockRepository.Get_PageOf_StockModels_ADM(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<Get_PageOf_Stocks_ADMModel, StockResourceParameters>(
                 stocks, "Get_PageOfStocks_ADM", _params, Create_BMs_ResourceUri
                 ).Generate();
@@ -101,12 +100,12 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStockForAdmin([FromRoute]string id)
         {
-            var stk = await _stockRepository.GetByIdAsync(id);
+            var stk = await _unitOfWork.StockRepository.GetByIdAsync(id);
             if (stk == null)
                 return NotFound();
-             _stockRepository.Remove(stk);
-            if (!await _stockRepository.SaveAsync())
-                return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
+             _unitOfWork.StockRepository.Remove(stk);
+            if (!await _unitOfWork.StockRepository.SaveAsync())
+                return StatusCode(500, BasicUtility.MakeError("حدثت مشكلة اثناء معالجة طلبك ,من فضلك حاول مرة اخرى"));
             return NoContent();
         }
         #endregion
@@ -117,16 +116,16 @@ namespace Fastdo.backendsys.Controllers.Adminer
         {
             if (patchDoc == null)
                 return BadRequest();
-            var stk = await _stockRepository.GetByIdAsync(id);
+            var stk = await _unitOfWork.StockRepository.GetByIdAsync(id);
             if (stk == null)
                 return NotFound();
             var requestToPatch = _mapper.Map<Stock_Update_ADM_Model>(stk);
             patchDoc.ApplyTo(requestToPatch);
             //ad validation
             _mapper.Map(requestToPatch, stk);
-            var isSuccessfulluUpdated = await _stockRepository.Patch_Apdate_ByAdmin(stk);
+            var isSuccessfulluUpdated = await _unitOfWork.StockRepository.Patch_Apdate_ByAdmin(stk);
             if (!isSuccessfulluUpdated)
-                return StatusCode(500, Functions.MakeError("لقد حدثت مشكلة اثناء معالجة طلبك , من فضلك حاول مرة اخرى"));
+                return StatusCode(500, BasicUtility.MakeError("لقد حدثت مشكلة اثناء معالجة طلبك , من فضلك حاول مرة اخرى"));
             return NoContent();
         }
         #endregion

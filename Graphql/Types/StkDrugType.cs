@@ -1,12 +1,13 @@
-﻿using Fastdo.backendsys.Repositories;
+﻿using Fastdo.API.Repositories;
 using Fastdo.Core.Models;
+using Fastdo.Core.Repositories;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Graphql
+namespace Fastdo.API.Graphql
 {
     public class StkDrugType:ObjectGraphType<StkDrug>
     {

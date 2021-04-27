@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys
+namespace Fastdo.API
 {
     public static class PremitivesEx
     {

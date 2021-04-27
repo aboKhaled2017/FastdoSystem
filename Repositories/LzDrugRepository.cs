@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Services;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Services;
+using Fastdo.Core.Repositories;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     public class LzDrugRepository:Repository<LzDrug>,ILzDrugRepository
     {

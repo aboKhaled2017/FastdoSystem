@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Fastdo.Core;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using System;
 using System.ComponentModel;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
     public class EmailSender : IEmailSender
     {

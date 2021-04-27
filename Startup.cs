@@ -10,15 +10,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using Fastdo.backendsys.Utilities;
 using System.Net;
 using NLog;
 using System.IO;
 using NHibernate.Util;
+using Fastdo.API.Hubs;
+using Fastdo.Core.Utilities;
+using Fastdo.Core;
+using Fastdo.Core.Models;
 
-namespace Fastdo.backendsys
+namespace Fastdo.API
 {
     public class Startup
     {
@@ -41,22 +43,22 @@ namespace Fastdo.backendsys
                     options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"),
                         builder =>
                         {
-                            builder.MigrationsAssembly("Fastdo.backendsys");
+                            builder.MigrationsAssembly("Fastdo.API");
                         });
                     //options.UseSqlServer(Configuration.GetConnectionString("smarterFastdo"), builder =>
                     //{
-                    //    builder.MigrationsAssembly("Fastdo.backendsys");
+                    //    builder.MigrationsAssembly("Fastdo.API");
                     //});
                 }
                 else
                 {
                     options.UseSqlServer(Configuration.GetConnectionString("FastdoSQlServer"), builder =>
                     {
-                        builder.MigrationsAssembly("Fastdo.backendsys");
+                        builder.MigrationsAssembly("Fastdo.API");
                     });
                     //options.UseSqlServer(Configuration.GetConnectionString("smarterFastdo"), builder =>
                     //{
-                    //    builder.MigrationsAssembly("Fastdo.backendsys");
+                    //    builder.MigrationsAssembly("Fastdo.API");
                     //});
                 }                       
             });           
@@ -95,6 +97,7 @@ namespace Fastdo.backendsys
                 op.TokenLifespan = TimeSpan.FromDays(1);
             });
             services._AddSwaggr();
+            services.AddSignalR();
             //services._AddGraphQlServices();
         }
 
@@ -122,12 +125,17 @@ namespace Fastdo.backendsys
                         response.Redirect("/AdminPanel/Auth/Signin");
                 }
                 return Task.CompletedTask;
-            });            
+            });
+            app.UseSignalR(confg =>
+            {
+                confg.MapHub<TechnicalSupportChattingHub>("/hub/techsupport");
+            });
             app.UseMvc(routes =>
             {              
                 routes.MapAreaRoute("AdminAreaRoute", "AdminPanel", "AdminPanel/{controller=Home}/{action=Index}/{id?}");
                 routes.MapRoute("default", "AdminPanel/{controller=Home}/{action=Index}/{id?}", new { Area="AdminPanel"});
             });
+          
         }
     }
 }

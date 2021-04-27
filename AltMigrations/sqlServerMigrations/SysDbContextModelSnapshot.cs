@@ -127,6 +127,24 @@ namespace Fastdo.backendsys.Migrations
                     b.ToTable("Areas");
                 });
 
+            modelBuilder.Entity("Fastdo.Core.Models.BaseDrug", b =>
+                {
+                    b.Property<string>("Code")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Desc");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("Type")
+                        .IsRequired();
+
+                    b.HasKey("Code");
+
+                    b.ToTable("BaseDrugs");
+                });
+
             modelBuilder.Entity("Fastdo.Core.Models.Complain", b =>
                 {
                     b.Property<Guid>("Id")
@@ -314,18 +332,19 @@ namespace Fastdo.backendsys.Migrations
 
                     b.Property<int>("Quantity");
 
+                    b.Property<bool>("Seen");
+
+                    b.Property<int>("Status");
+
                     b.Property<Guid>("StkDrugId");
 
-                    b.Property<Guid>("StkPackageId");
-
-                    b.Property<string>("StockId")
-                        .IsRequired();
+                    b.Property<Guid>("StkDrugPackageId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StkPackageId");
+                    b.HasIndex("StkDrugPackageId");
 
-                    b.HasIndex("StkDrugId", "StkPackageId")
+                    b.HasIndex("StkDrugId", "StkDrugPackageId")
                         .IsUnique();
 
                     b.ToTable("StkDrugInStkDrgPackagesRequests");
@@ -339,9 +358,6 @@ namespace Fastdo.backendsys.Migrations
                     b.Property<DateTime>("CreateAt");
 
                     b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("PackageDetails")
                         .IsRequired();
 
                     b.Property<string>("PharmacyId")
@@ -392,30 +408,6 @@ namespace Fastdo.backendsys.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("Fastdo.Core.Models.StockInStkDrgPackageReq", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("PackageId");
-
-                    b.Property<bool>("Seen");
-
-                    b.Property<int>("Status");
-
-                    b.Property<string>("StockId")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PackageId");
-
-                    b.HasIndex("StockId", "PackageId")
-                        .IsUnique();
-
-                    b.ToTable("StockInStkDrgPackageReqs");
-                });
-
             modelBuilder.Entity("Fastdo.Core.Models.StockWithPharmaClass", b =>
                 {
                     b.Property<Guid>("Id")
@@ -433,6 +425,32 @@ namespace Fastdo.backendsys.Migrations
                         .HasFilter("[ClassName] IS NOT NULL");
 
                     b.ToTable("StocksWithPharmaClasses");
+                });
+
+            modelBuilder.Entity("Fastdo.Core.Models.TechnicalSupportQuestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("Question")
+                        .IsRequired();
+
+                    b.Property<string>("Response");
+
+                    b.Property<DateTime?>("SeenAt");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired();
+
+                    b.Property<int>("UserType");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("TechnicalSupportQuestions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -639,9 +657,9 @@ namespace Fastdo.backendsys.Migrations
                         .HasForeignKey("StkDrugId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Fastdo.Core.Models.StockInStkDrgPackageReq", "StockPackage")
-                        .WithMany("AssignedStkDrugs")
-                        .HasForeignKey("StkPackageId")
+                    b.HasOne("Fastdo.Core.Models.StkDrugPackageRequest", "Package")
+                        .WithMany("PackageDrugs")
+                        .HasForeignKey("StkDrugPackageId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -666,24 +684,19 @@ namespace Fastdo.backendsys.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Fastdo.Core.Models.StockInStkDrgPackageReq", b =>
-                {
-                    b.HasOne("Fastdo.Core.Models.StkDrugPackageRequest", "Package")
-                        .WithMany("AssignedStocks")
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Fastdo.Core.Models.Stock", "Stock")
-                        .WithMany("RequestedPackages")
-                        .HasForeignKey("StockId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Fastdo.Core.Models.StockWithPharmaClass", b =>
                 {
                     b.HasOne("Fastdo.Core.Models.Stock", "Stock")
                         .WithMany("PharmasClasses")
                         .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Fastdo.Core.Models.TechnicalSupportQuestion", b =>
+                {
+                    b.HasOne("Fastdo.Core.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Configurations
+namespace Fastdo.API.Configurations
 {
     public static class IdentityServerConfig
     {

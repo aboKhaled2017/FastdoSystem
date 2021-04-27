@@ -6,12 +6,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Services;
+using Fastdo.API.Services;
 using System.Text;
 using System.Data.Common;
 using Fastdo.Core;
+using Fastdo.Core.Services;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     public class Repository<TModel>:IRepository<TModel> where TModel:class
     {
@@ -19,6 +20,7 @@ namespace Fastdo.backendsys.Repositories
         public Repository(SysDbContext context)
         {
             _context = context;
+            Entities=_context.Set<TModel>() ;
         }
         protected string UserId
         {
@@ -34,6 +36,9 @@ namespace Fastdo.backendsys.Repositories
                 return RequestStaticServices.GetUserManager().GetUserName(RequestStaticServices.GetCurrentHttpContext().User);
             }
         }
+
+        public DbSet<TModel> Entities{ get; set; }
+
         public bool Save()
         {
             return _context.SaveChanges()>0;
@@ -115,12 +120,12 @@ namespace Fastdo.backendsys.Repositories
 
         public TModel GetById<T>(T id)
         {
-           return _context.Set<TModel>().Find(id);
+           return Entities.Find(id);
         }
 
         public async Task<TModel> GetByIdAsync<T>(T id)
         {
-            return await _context.Set<TModel>().FindAsync(id);
+            return await Entities.FindAsync(id);
         }
 
         public IQueryable<TModel> GetAll()
@@ -129,38 +134,38 @@ namespace Fastdo.backendsys.Repositories
         }
         public IQueryable<TModel> Where(Expression<Func<TModel, bool>> predicate)
         {
-            return _context.Set<TModel>().Where(predicate);
+            return Entities.Where(predicate);
         }
 
 
         public virtual void Add(TModel model)
         {
-            _context.Set<TModel>().Add(model);
+            Entities.Add(model);
         }
 
         public virtual async Task AddAsync(TModel model)
         {
-           await _context.Set<TModel>().AddAsync(model);
+           await Entities.AddAsync(model);
         }
 
         public virtual void AddRange(IEnumerable<TModel> models)
         {
-            _context.Set<TModel>().AddRange(models);
+            Entities.AddRange(models);
         }
 
         public virtual async Task AddRangeAsync(IEnumerable<TModel> models)
         {
-            await _context.Set<TModel>().AddRangeAsync(models);
+            await Entities.AddRangeAsync(models);
         }
 
         public virtual void Remove(TModel model)
         {
-            _context.Set<TModel>().Remove(model);
+            Entities.Remove(model);
         }
 
         public virtual void RemoveRange(IEnumerable<TModel> models)
         {
-            _context.Set<TModel>().RemoveRange(models);
+            Entities.RemoveRange(models);
         }
     }
 }

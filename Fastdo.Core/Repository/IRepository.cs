@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,6 +10,7 @@ namespace Fastdo.Core
 {
     public interface IRepository<TModel> where TModel: class
     {
+        DbSet<TModel> Entities { get; set; }
         Task<bool> SaveAsync();
         bool Save();
 

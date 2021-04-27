@@ -7,23 +7,24 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Areas.AdminPanel.Models;
+using Fastdo.API.Repositories;
+using Fastdo.API.Areas.AdminPanel.Models;
 using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Identity;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Areas.AdminPanel.Controllers
+namespace Fastdo.API.Areas.AdminPanel.Controllers
 {
     [Authorize(policy: "AdminPanelAuthPolicy")]
     [Area("AdminPanel")]
     public class MainController : Controller
     {
-        protected IAdminRepository _adminRepository { get; }
+        protected IUnitOfWork _unitOfWork { get; }
         protected UserManager<AppUser> _userManager { get; }
 
-        public MainController(IAdminRepository adminRepository,UserManager<AppUser> userManager)
+        public MainController(IUnitOfWork unitOfWork,UserManager<AppUser> userManager)
         {
-            _adminRepository = adminRepository;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
         #region helpers function to Auth

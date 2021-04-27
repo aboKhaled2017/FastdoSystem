@@ -8,18 +8,21 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using AutoMapper;
-using Fastdo.backendsys.InitSeeds.Helpers;
+using Fastdo.API.InitSeeds.Helpers;
 using System.Security.Claims;
-using Fastdo.backendsys.Global;
+using Fastdo.Core.Services;
+using Fastdo.Core;
+using Fastdo.CommonGlobal;
+using Fastdo.Core.Enums;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
     public static class DataSeeder
     {
         private static readonly SysDbContext context = RequestStaticServices.GetDbContext();
         private static readonly UserManager<AppUser> _userManager = RequestStaticServices.GetUserManager();
         private static readonly IHostingEnvironment _env = RequestStaticServices.GetHostingEnv();
-        private static readonly IMapper _mapper = RequestStaticServices.GetMapper();
+        //private static readonly IMapper _mapper = RequestStaticServices.GetMapper();
         public static async Task SeedBasicData()
         {
             if(!context.Areas.Any())

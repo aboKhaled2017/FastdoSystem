@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Fastdo.backendsys.Migrations
+namespace Fastdo.API.Migrations
 {
     [DbContext(typeof(SysDbContext))]
     [Migration("20210419143051_init")]

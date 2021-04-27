@@ -3,26 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core;
 using Fastdo.Core.Models;
+using Fastdo.Core.Services;
+using Fastdo.Core.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Fastdo.backendsys.Controllers.Adminer
+namespace Fastdo.API.Controllers.Adminer
 {
     [Route("api/admins/drgs", Name = "AdminLzDrugs")]
     [ApiController]
     public class AdminLzDrgsController : MainAdminController
     {
-        #region Constructors and properties
-        public ILzDrugRepository _lzDrugRepository { get; }
-        public AdminLzDrgsController(AccountService accountService, IMapper mapper, UserManager<AppUser> userManager,ILzDrugRepository lzDrugRepository) 
-            : base(accountService, mapper, userManager)
+        public AdminLzDrgsController(UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _lzDrugRepository = lzDrugRepository;
         }
+        #region Constructors and properties
 
         #endregion
 
@@ -30,7 +31,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [HttpGet("{id}/details")]
         public async Task<IActionResult> GetLzDrugDetailsForAdmin([FromRoute] Guid id)
         {
-            var drug =await _lzDrugRepository.GEt_LzDrugDetails_For_ADM(id);
+            var drug =await _unitOfWork.LzDrugRepository.GEt_LzDrugDetails_For_ADM(id);
             if (drug == null)
                 return NotFound();
             return Ok(drug);

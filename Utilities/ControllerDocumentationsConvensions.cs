@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Utilities
+namespace Fastdo.Core.Utilities
 {
     public class ControllerDocumentationsConvensions : IControllerModelConvention
     {

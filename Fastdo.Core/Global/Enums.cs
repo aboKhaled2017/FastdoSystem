@@ -10,6 +10,12 @@ namespace Fastdo.Core.Enums
         AsPharmacy,
         AsStock
     }
+    public enum EUserType
+    {
+        Pharmacy=1,
+        Stock=2,
+        Admin=3
+    }
     public enum PharmacyRequestStatus
     {
         Pending ,
@@ -60,5 +66,30 @@ namespace Fastdo.Core.Enums
         CanceledFromStk,
         CanceledFromPharma,
         AtNegotioation
+    }
+    public enum UserPropertyType
+    {
+        phone,
+        email,
+        userName
+    }
+    public enum UserType
+    {
+        pharmacier,
+        stocker
+    }
+    public enum ModelType
+    {
+        add,
+        update
+    }
+    public enum AdminerPreviligs
+    {
+        HaveFullControl,
+        HaveControlOnAdminersPage,
+        HaveControlOnPharmaciesPage,
+        HaveControlOnStocksPage,
+        HaveControlOnVStockPage,
+        HaveControlOnDrugsREquestsPage
     }
 }

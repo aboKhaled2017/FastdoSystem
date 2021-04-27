@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Fastdo.Core.Models
 {
-    public class StockInStkDrgPackageReq
+    public class StockInStkDrgPackageReq_test
     {
         [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }

@@ -11,22 +11,26 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
-using Fastdo.backendsys.Utilities;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core.Utilities;
+using Fastdo.Core.Enums;
+using Fastdo.Core;
+using UnprocessableEntityObjectResult = Fastdo.Core.UnprocessableEntityObjectResult;
+using Fastdo.Core.Services.Auth;
 
-namespace Fastdo.backendsys.Controllers.Auth
+namespace Fastdo.API.Controllers.Auth
 {
     [Route("api/auth/[action]")]
     [ApiController]
     public class AuthController : SharedAPIController
     {
-        #region constructor and properties
-        public AuthController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
+        public AuthController(UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
         }
-        #endregion
+
 
         #region ovveride methods
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -58,18 +62,18 @@ namespace Fastdo.backendsys.Controllers.Auth
                     //user can continue with confirming
                     /*if (!user.EmailConfirmed)
                     {
-                        return Unauthorized(Functions.MakeError("البريد الالكترونى غير مفعل ,من فضلك قم بتأكيد بريدك الالكترونى"));
+                        return Unauthorized(BasicUtility.MakeError("البريد الالكترونى غير مفعل ,من فضلك قم بتأكيد بريدك الالكترونى"));
                     }*/
                     var response = model.UserType == UserType.pharmacier
                         ?await _accountService.GetSigningInResponseModelForPharmacy(user)
                         :await _accountService.GetSigningInResponseModelForStock(user);
                     return Ok(response);
                 }
-                return NotFound(Functions.MakeError("البريد الالكترونى او كلمة السر غير صحيحة" ));
+                return NotFound(BasicUtility.MakeError("البريد الالكترونى او كلمة السر غير صحيحة" ));
             }
             catch (Exception ex)
             {
-                return BadRequest(Functions.MakeError(ex.Message));
+                return BadRequest(BasicUtility.MakeError(ex.Message));
             }
 
         }
@@ -87,7 +91,7 @@ namespace Fastdo.backendsys.Controllers.Auth
             if (user == null)
                 return NotFound();
             if (user.EmailConfirmed)
-                return BadRequest(Functions.MakeError("G", "هذا الايميل بالفعل مفعل!"));
+                return BadRequest(BasicUtility.MakeError("G", "هذا الايميل بالفعل مفعل!"));
 
             //var code =await _userManager.GenerateEmailConfirmationTokenAsync(user);
             //var callbackUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/auth/confirmemail?userId={user.Id}&code={code}";
@@ -95,7 +99,7 @@ namespace Fastdo.backendsys.Controllers.Auth
             /*user.confirmCode = Functions.GenerateConfirmationTokenCode();
             var res = await _userManager.UpdateAsync(user);
             if (!res.Succeeded)
-                return BadRequest(Functions.MakeError("Email","حدثت مشكلة فى السيرفر,حاول مرة اخرى"));*/
+                return BadRequest(BasicUtility.MakeError("Email","حدثت مشكلة فى السيرفر,حاول مرة اخرى"));*/
             await _emailSender.SendEmailAsync(user.Email, "كود تأكيد البريد الالكترونى", $"كود التأكيد الخاص بك هو: {user.confirmCode}");
             return Ok();
         }
@@ -109,17 +113,17 @@ namespace Fastdo.backendsys.Controllers.Auth
             if (user == null)
                 return NotFound();
             if (user.EmailConfirmed)
-                return BadRequest(Functions.MakeError("G", "هذا البريد الالكترونى بفعل بالفعل"));
+                return BadRequest(BasicUtility.MakeError("G", "هذا البريد الالكترونى بفعل بالفعل"));
             if (user.confirmCode==null || !user.confirmCode.Equals(model.Code))
-                return NotFound(Functions.MakeError("Code", "الكود الذى ادخلتة غير صحيح"));
+                return NotFound(BasicUtility.MakeError("Code", "الكود الذى ادخلتة غير صحيح"));
             user.confirmCode = null;
             var res =await _userManager.UpdateAsync(user);
             if (!res.Succeeded)
-                return BadRequest(Functions.MakeError("G", "فشلت العملية,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("G", "فشلت العملية,حاول مرة اخرى"));
             var token =await _userManager.GenerateEmailConfirmationTokenAsync(user);
             res = await _userManager.ConfirmEmailAsync(user, token);
             if(!res.Succeeded)
-                return BadRequest(Functions.MakeError("G", "فشلت العملية,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("G", "فشلت العملية,حاول مرة اخرى"));
             return Ok();
         }
         #endregion
@@ -147,7 +151,7 @@ namespace Fastdo.backendsys.Controllers.Auth
                 // Don't reveal that the user does not exist or is not confirmed
                 return new NotConfirmedEmailResult();
             }
-            user.confirmCode=Functions.GenerateConfirmationTokenCode();
+            user.confirmCode=BasicUtility.GenerateConfirmationTokenCode();
             var res = await _userManager.UpdateAsync(user);
             //var code =await _userManager.GeneratePasswordResetTokenAsync(user);
             //var callbackUrl = Url.ResetPasswordCallbackLink(user.Id.ToString(), code,model.NewPassword, Request.Scheme);
@@ -173,16 +177,16 @@ namespace Fastdo.backendsys.Controllers.Auth
             if (user.confirmCode == null)
                 return BadRequest();
             if (!user.confirmCode.Equals(model.Code))
-                return NotFound(Functions.MakeError("Code","الكود الذى ادخلته غير صحيح"));
+                return NotFound(BasicUtility.MakeError("Code","الكود الذى ادخلته غير صحيح"));
             user.confirmCode = null;
             var res = await _userManager.UpdateAsync(user);
             if (!res.Succeeded)
-                return BadRequest(Functions.MakeError("فشلت العملية ,حاول مرة اخرى" ));
+                return BadRequest(BasicUtility.MakeError("فشلت العملية ,حاول مرة اخرى" ));
             //var result = await _userManager.ResetPasswordAsync(user, model.Code, model.NewPassword);
             var token =await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user,token, model.NewPassword);
             if (!result.Succeeded)
-                return BadRequest(Functions.MakeError("فشلت العملية ,حاول مرة اخرى"));
+                return BadRequest(BasicUtility.MakeError("فشلت العملية ,حاول مرة اخرى"));
             return Ok();      
         }
         #endregion

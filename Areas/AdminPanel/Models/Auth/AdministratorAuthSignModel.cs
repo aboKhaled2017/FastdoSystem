@@ -1,11 +1,11 @@
-﻿using Fastdo.backendsys.Models;
+﻿using Fastdo.Core.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Areas.AdminPanel.Models
+namespace Fastdo.API.Areas.AdminPanel.Models
 {
     public class AdministratorAuthSignModel 
     {

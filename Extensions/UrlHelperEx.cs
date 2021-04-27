@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Controllers.Auth;
+using Fastdo.API.Controllers.Auth;
 
 namespace Microsoft.AspNetCore.Mvc
 {

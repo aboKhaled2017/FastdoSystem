@@ -8,37 +8,28 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Services.Auth;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Fastdo.Core.Services;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Controllers
+namespace Fastdo.API.Controllers
 {
     [Route("api/lzdrug/search")]
     [ApiController]
     [Authorize(Policy = "PharmacyPolicy")]
     public class LzDrugSearchController : SharedAPIController
     {
-        #region constructor and properties
-        public ILzDrg_Search_Repository _lzDrg_Search_Repository { get; }
         public IpropertyMappingService _propertyMappingService { get; }
-
-        public LzDrugSearchController(
-            AccountService accountService, IMapper mapper,
-            ILzDrg_Search_Repository lzDrg_Search_Repository,
-            IpropertyMappingService propertyMappingService,
-            UserManager<AppUser> userManager) 
-            : base(accountService, mapper, userManager)
+        public LzDrugSearchController(UserManager<AppUser> userManager, IpropertyMappingService mappingService, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _lzDrg_Search_Repository = lzDrg_Search_Repository;
-            _propertyMappingService = propertyMappingService;
+            _propertyMappingService = mappingService;
         }
-        #endregion
 
         #region override methods from parent class
         [ApiExplorerSettings(IgnoreApi = true)]
-        public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        public override string Create_BMs_ResourceUri(IResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
             var _cardParams = _params as LzDrg_Card_Info_BM_ResourceParameters;
             switch (resourceUriType)
@@ -94,7 +85,7 @@ namespace Fastdo.backendsys.Controllers
         {
             if (!_propertyMappingService.validMappingExistsFor<LzDrugCard_Info_BM, LzDrug>(_params.OrderBy))
                 return BadRequest();
-            var BM_Cards =await _lzDrg_Search_Repository.Get_All_LzDrug_Cards_BMs(_params);
+            var BM_Cards =await _unitOfWork.LzDrg_Search_Repository.Get_All_LzDrug_Cards_BMs(_params);
             BM_Cards.ForEach(BM_Card =>
             {
                 BM_Card.RequestUrl = Url.Link("Add_LzDrug_Request_For_User",new { drugId =BM_Card.Id});

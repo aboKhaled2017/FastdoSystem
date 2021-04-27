@@ -1,4 +1,5 @@
-﻿using Fastdo.backendsys.Repositories;
+﻿using Fastdo.API.Repositories;
+using Fastdo.Core;
 using Fastdo.Core.Models;
 using GraphQL;
 using GraphQL.DataLoader;
@@ -9,28 +10,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Graphql
+namespace Fastdo.API.Graphql
 {
 
     public class FastdoQuery : ObjectGraphType
     {
-        private IStockRepository stockRepository { get; }
-        private IStkDrugsRepository stkDrugsRepository { get; }
-        private IStkDrugPackgesReqsRepository stkDrugPackgesReqsRepository { get; }
-        public FastdoQuery(IStockRepository stockRepository,
-                           IStkDrugPackgesReqsRepository stkDrugPackgesReqsRepository,
-                           IStkDrugsRepository stkDrugsRepository)
-        {
-            
-            this.stockRepository = stockRepository;
-            this.stkDrugsRepository = stkDrugsRepository;
-            this.stkDrugPackgesReqsRepository = stkDrugPackgesReqsRepository;
+        private IUnitOfWork _unitOfWork { get; }
+        
+    
 
+        public FastdoQuery(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             Add_Stocks_Field();
             Add_StkDrugs_Field();
             Add_StkDrugPackageReq_Field();
-            
         }
+    
 
         private void Add_StkDrugPackageReq_Field()
         {
@@ -50,16 +46,16 @@ namespace Fastdo.backendsys.Graphql
                             ctx.Errors.Add(new ExecutionError("wrong value for package id"));
                             return null;
                         }
-                        return stkDrugPackgesReqsRepository.Where(r => r.Id == id);
+                        return _unitOfWork.StkDrugPackgesReqsRepository.Where(r => r.Id == id);
                     }
                     else if (ctx.HasArgument("pharmacyId"))
                     {
                         var id = ctx.GetArgument<string>("pharmacyId");
-                        return stkDrugPackgesReqsRepository.Where(r => r.PharmacyId == id);
+                        return _unitOfWork.StkDrugPackgesReqsRepository.Where(r => r.PharmacyId == id);
                     }
                     else
                     {
-                        return stkDrugPackgesReqsRepository.GetAll();
+                        return _unitOfWork.StkDrugPackgesReqsRepository.GetAll();
                     }
                 });
         }
@@ -77,11 +73,11 @@ namespace Fastdo.backendsys.Graphql
                     if (context.HasArgument("id"))
                     {
                         var id = context.GetArgument<string>("id");
-                        return stockRepository.Where(s => s.Id == id);
+                        return _unitOfWork.StockRepository.Where(s => s.Id == id);
                     }
                     else
                     {
-                        return stockRepository.GetAll();
+                        return _unitOfWork.StockRepository.GetAll();
                     }
                 }
             );
@@ -93,7 +89,7 @@ namespace Fastdo.backendsys.Graphql
                arguments: new QueryArguments(
                    new QueryArgument<NonNullGraphType<IdGraphType>> { Name = "id", Description = "StkDrug id" }
                ),
-               resolve: context => stkDrugsRepository.GetById(context.GetArgument<Guid>("id"))
+               resolve: context => _unitOfWork.StockRepository.GetById(context.GetArgument<Guid>("id"))
            );
         }
     }

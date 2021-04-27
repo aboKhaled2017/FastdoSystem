@@ -1,6 +1,7 @@
-﻿using Fastdo.backendsys.Repositories;
+﻿using Fastdo.API.Repositories;
 using Fastdo.Core.Enums;
 using Fastdo.Core.Models;
+using Fastdo.Core.Repositories;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -10,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Graphql
+namespace Fastdo.API.Graphql
 {
 
     public class StockType : ObjectGraphType<Stock>

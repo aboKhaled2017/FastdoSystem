@@ -4,17 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Controllers.Stocks.Models;
-using Fastdo.backendsys.Controllers.Stocks;
-using Fastdo.backendsys.Services;
+using Fastdo.Core.ViewModels;
+using Fastdo.Core.ViewModels.Stocks.Models;
+using Fastdo.Core.ViewModels.Stocks;
+using Fastdo.API.Services;
 using EFCore.BulkExtensions;
 using Fastdo.Core.Enums;
 using Namotion.Reflection;
 using Newtonsoft.Json;
-using Fastdo.backendsys.Controllers.Pharmacies;
+using astdo.Core.ViewModels.Pharmacies;
+using Fastdo.Core.Repositories;
+using Fastdo.Core;
+using Fastdo.Core.Utilities;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     public class StockRepository:Repository<Stock>,IStockRepository
     {
@@ -23,20 +26,17 @@ namespace Fastdo.backendsys.Repositories
         private IStockWithClassRepository _StockWithClassRepository { get; set; }
         private IPharmacyInStkClassRepository _PharmacyInStkClassRepository { get; set; }
         private IStkDrugsRepository _stkDrugsRepository { get; set; }
-        private IStockInPackagesReqsRepository _stockInPackagesReqsRepository { get; }
         public StockRepository(SysDbContext context, 
             IPharmacyInStkRepository pharmacyInStkRepository,
             IStockWithClassRepository stockWithClassRepository,
             IPharmacyInStkClassRepository pharmacyInStkClassRepository,
             IStkDrgInPackagesReqsRepository stkDrgInPackagesReqsRepository,
-            IStockInPackagesReqsRepository stockInPackagesReqsRepository,
             IStkDrugsRepository stkDrugsRepository) : base(context)
         {
             _PharmacyInStkRepository = pharmacyInStkRepository;
             _StockWithClassRepository = stockWithClassRepository;
             _PharmacyInStkClassRepository = pharmacyInStkClassRepository;
             _stkDrugsRepository = stkDrugsRepository;
-            _stockInPackagesReqsRepository = stockInPackagesReqsRepository;
             _stkDrgInPackagesReqsRepository = stkDrgInPackagesReqsRepository;
         }
 
@@ -50,7 +50,7 @@ namespace Fastdo.backendsys.Repositories
         {
             return _context.Stocks;
         }
-        public async Task<PagedList<GetPageOfSearchedStocks>> GetPageOfSearchedStocks(StockSearchResourceParameters _params)
+        public async Task<PagedList<GetPageOfSearchedStocks>> GetPageOfSearchedStocks(IStockSearchResourceParameters _params)
         {
             var originalData = GetAll()
             .OrderBy(d => d.Name)
@@ -298,7 +298,7 @@ namespace Fastdo.backendsys.Repositories
             if (!await _StockWithClassRepository.GetAll()
             .AnyAsync(s=>s.Id==model.getDeletedClassId))
             {
-                SendError?.Invoke(Functions.MakeError(nameof(model.DeletedClassId), "هذا التصنيف غير موجود"));
+                SendError?.Invoke(BasicUtility.MakeError(nameof(model.DeletedClassId), "هذا التصنيف غير موجود"));
                 return;
             }
 
@@ -326,7 +326,7 @@ namespace Fastdo.backendsys.Repositories
 
                 if (replacedEntityClass == null)
                 {
-                    SendError?.Invoke(Functions.MakeError(nameof(model.ReplaceClassId), "هذا التصنيف غير موجود"));
+                    SendError?.Invoke(BasicUtility.MakeError(nameof(model.ReplaceClassId), "هذا التصنيف غير موجود"));
                     return;
                 }
 
@@ -473,7 +473,7 @@ namespace Fastdo.backendsys.Repositories
                 .AnyAsync(s => s.Id == model.getNewClassId && s.StockId == UserId);
             if(!res || !res2)
             {
-                onError(Functions.MakeError("انت تحاول ادخال بيانات غير صحيحة"));
+                onError(BasicUtility.MakeError("انت تحاول ادخال بيانات غير صحيحة"));
                 return;
             }
             var pharmaInStockClass =await pharmaInStkClasses
@@ -485,11 +485,11 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task HandleStkDrugsPackageRequest_ForStock(Guid packageId, Action<dynamic> onProcess, Action<dynamic> onError)
         {
-            var request =await _stockInPackagesReqsRepository.GetAll()
-                .FirstOrDefaultAsync(e=>e.PackageId.Equals(packageId) && e.StockId==UserId);
+            var request =await _stkDrgInPackagesReqsRepository.GetAll()
+                .FirstOrDefaultAsync(e=>e.Package.Id==packageId && e.StkDrug.StockId==UserId);
             if (request == null)
             {
-                onError(Functions.MakeError("هذا الطلب غير موجود"));
+                onError(BasicUtility.MakeError("هذا الطلب غير موجود"));
                 return;
             }
             onProcess(request);
@@ -499,9 +499,9 @@ namespace Fastdo.backendsys.Repositories
 
         public async Task<PagedList<StkDrugsPackageReqModel>> GetStkDrugsPackageRequests(StkDrugsPackageReqResourceParmaters _params)
         {
-            var originalData = _stockInPackagesReqsRepository
+            var originalData = _stkDrgInPackagesReqsRepository
                  .Where(r =>
-                 r.StockId==UserId &&
+                 r.StkDrug.StockId==UserId &&
                  r.Status!=StkDrugPackageRequestStatus.Completed);
 
             if (_params.Status != null)
@@ -513,7 +513,7 @@ namespace Fastdo.backendsys.Repositories
                 .Select(r => new StkDrugsPackageReqModel
                 {
                     StkPackageId = r.Id,
-                    PackageId = r.PackageId,
+                    PackageId = r.Package.Id,
                     Status = r.Status,
                     CreatedAt = r.Package.CreateAt,
                     Pharma = new StkDrugsPackageReqModel_PharmaData
@@ -525,7 +525,7 @@ namespace Fastdo.backendsys.Repositories
                         LandLinePhone = r.Package.Pharmacy.LandlinePhone,
                         PhoneNumber = r.Package.Pharmacy.PersPhone
                     },
-                    Drugs = r.AssignedStkDrugs.Select(d => new StkDrugsPackageReqModel_DrugData
+                    Drugs = r.Package.PackageDrugs.Select(d => new StkDrugsPackageReqModel_DrugData
                     {
                         Id = d.StkDrugId,
                         Name = d.StkDrug.Name,

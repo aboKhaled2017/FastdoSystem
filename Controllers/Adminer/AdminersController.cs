@@ -12,26 +12,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core;
+using Fastdo.Core.Utilities;
+using UnprocessableEntityObjectResult = Fastdo.Core.UnprocessableEntityObjectResult;
 
-namespace Fastdo.backendsys.Controllers.Adminer
+namespace Fastdo.API.Controllers.Adminer
 {
     [Route("api/admins", Name = "AdminAccount")]
     [ApiController]
     [Authorize(Policy = "ControlOnAdministratorsPagePolicy")]
     public class AdminerCRUDController : MainAdminController
     {
-        #region constructor and properties
-        IAdminRepository _adminRepository;
-        public AdminerCRUDController(UserManager<AppUser> userManager, IEmailSender emailSender, IAdminRepository adminRepository,
-            AccountService accountService, IMapper mapper, TransactionService transactionService)
-            : base(userManager, emailSender, accountService, mapper, transactionService)
+        public AdminerCRUDController(UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, Core.IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _adminRepository = adminRepository;
         }
+        #region constructor and properties
+
         #endregion
 
         #region ovveride methods
@@ -47,7 +49,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
 
         #region override methods from parent class
         [ApiExplorerSettings(IgnoreApi = true)]
-        public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        public override string Create_BMs_ResourceUri(IResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
             var _cardParams = _params as AdminersResourceParameters;
             switch (resourceUriType)
@@ -87,7 +89,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [Produces(typeof(ShowAdminModel))]
         public async Task<IActionResult> GetAdminByIdAsync(string id)
         {
-            var _admin = await _adminRepository.GetAdminsShownModelById(id);
+            var _admin = await _unitOfWork.AdminRepository.GetAdminsShownModelById(id);
             if (_admin == null)
                 return NotFound();
             return Ok(_admin);
@@ -96,7 +98,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [HttpGet("all",Name ="GEt_PageOFAdminers_ADM")]
         public async Task<ActionResult<IList<ShowAdminModel>>> GetAllAdminsAsync([FromQuery]AdminersResourceParameters _params)
         {
-            var adminers=await _adminRepository.GET_PageOfAdminers_ShowModels_ADM(_params);
+            var adminers=await _unitOfWork.AdminRepository.GET_PageOfAdminers_ShowModels_ADM(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<ShowAdminModel, AdminersResourceParameters>(
                adminers, "GEt_PageOFAdminers_ADM", _params, Create_BMs_ResourceUri
                ).Generate();
@@ -129,12 +131,12 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAdminSync(string id)
         {
-            var adminToDelete = await _adminRepository.GetByIdAsync(id);
+            var adminToDelete = await _unitOfWork.AdminRepository.GetByIdAsync(id);
             if (adminToDelete.SuperAdminId == null)
-                return BadRequest(Functions.MakeError("لايمكن حذف المسؤل الاساسى بشكل مباشر"));
-             _adminRepository.Remove(adminToDelete);
-            if (!await _adminRepository.SaveAsync())
-                return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
+                return BadRequest(BasicUtility.MakeError("لايمكن حذف المسؤل الاساسى بشكل مباشر"));
+             _unitOfWork.AdminRepository.Remove(adminToDelete);
+            if (!await _unitOfWork.AdminRepository.SaveAsync())
+                return StatusCode(500, BasicUtility.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
             return NoContent();
         }
         #endregion
@@ -146,7 +148,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
             if (model == null)
                 return BadRequest();
             if (!ModelState.IsValid)
-                return new UnprocessableEntityObjectResult(ModelState);
+                return new Core.UnprocessableEntityObjectResult(ModelState);
             var user =await _userManager.FindByIdAsync(id);
             if (user == null)
                 return NotFound();
@@ -168,7 +170,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
                 return NoContent();
             var res=await _accountService.UpdateSubAdminUserName(user, model);
             if (!res.Succeeded)
-                return BadRequest(Functions.MakeError(res.Errors.First().Description));
+                return BadRequest(BasicUtility.MakeError(res.Errors.First().Description));
             if (id == _userManager.GetUserId(User))
             {//it is the same user
 
@@ -195,7 +197,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
                 return NoContent();
             var res = await _accountService.UpdateSubAdminPhoneNumber(user, model);
             if (!res.Succeeded)
-                return BadRequest(Functions.MakeError(res.Errors.First().Description));
+                return BadRequest(BasicUtility.MakeError(res.Errors.First().Description));
             if (id == _userManager.GetUserId(User))
             {//it is the same user
 
@@ -219,7 +221,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
             if (user == null)
                 return NotFound();
             if(! await _accountService.UpdateSubAdmin(user, model))
-                return BadRequest(Functions.MakeError("لقد حدثت مشكلة فى قاعدة البيانات اثناء التعديل"));
+                return BadRequest(BasicUtility.MakeError("لقد حدثت مشكلة فى قاعدة البيانات اثناء التعديل"));
             if (id == _userManager.GetUserId(User))
             {//it is the same user
 

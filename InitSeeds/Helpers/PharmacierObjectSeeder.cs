@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fastdo.Core.Models;
-namespace Fastdo.backendsys.InitSeeds.Helpers
+namespace Fastdo.API.InitSeeds.Helpers
 {
     public class PharmacierObjectSeeder:Pharmacy
     {

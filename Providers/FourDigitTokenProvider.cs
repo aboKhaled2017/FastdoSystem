@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Providers
+namespace Fastdo.API.Providers
 {
     public class FourDigitTokenProvider : PhoneNumberTokenProvider<AppUser>
     {

@@ -13,6 +13,7 @@ namespace Fastdo.Core.Models
         public StkDrugPackageRequest()
         {
             CreateAt = DateTime.Now;
+            PackageDrugs = new HashSet<StkDrugInStkDrgPackageReq>();
         }
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
@@ -20,15 +21,12 @@ namespace Fastdo.Core.Models
         public string Name { get; set; }
         [Required]
         public string PharmacyId { get; set; }
-        [Required]
-        [DataType(DataType.Text)]
-        public string PackageDetails { get; set; }
         public DateTime CreateAt { get; set; }
 
         [ForeignKey("PharmacyId")]
         [InverseProperty("RequestedStkDrugsPackages")]
         public virtual Pharmacy Pharmacy { get; set; }
         [InverseProperty("Package")]
-        public virtual ICollection<StockInStkDrgPackageReq> AssignedStocks { get; set; }
+        public virtual ICollection<StkDrugInStkDrgPackageReq> PackageDrugs { get; set; }
     }
 }

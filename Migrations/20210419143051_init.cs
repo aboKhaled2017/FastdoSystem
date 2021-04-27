@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Fastdo.backendsys.Migrations
+namespace Fastdo.API.Migrations
 {
     public partial class init : Migration
     {

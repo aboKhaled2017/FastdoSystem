@@ -9,42 +9,35 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core.Utilities;
+using Fastdo.Core.Services;
+using Fastdo.Core;
+using Fastdo.Core.Services.Auth;
 
-namespace Fastdo.backendsys.Controllers
+namespace Fastdo.API.Controllers
 {
     [Route("api/lzdrugs")]
     [ApiController]
     [Authorize(Policy = "PharmacyPolicy")]
     public class LzDrugsController : SharedAPIController
     {
-        #region constructor and properties
-        private ILzDrugRepository _lzDrugsRepository { get; }
         private IUrlHelper _urlHelper { get; }
-
-        public LzDrugsController(
-            UserManager<AppUser> userManager, IEmailSender emailSender,
-            AccountService accountService, IMapper mapper,
-            ILzDrugRepository lzDrugsRepository,
-            IUrlHelper urlHelper,
-            TransactionService transactionService) 
-            : base(userManager, emailSender, accountService, mapper, transactionService)
+        public LzDrugsController(UserManager<AppUser> userManager, IEmailSender emailSender, 
+            IAccountService accountService, IMapper mapper, 
+            ITransactionService transactionService, Core.IUnitOfWork unitOfWork,  IUrlHelper urlHelper) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _lzDrugsRepository = lzDrugsRepository;
             _urlHelper = urlHelper;
         }
-        #endregion
+
 
         #region get
 
         [HttpGet(Name ="GetAllLzDrugsForCurrentUser")]
         public async Task<IActionResult> GetAllDrugs([FromQuery]LzDrgResourceParameters _params)
         {
-            var allDrugsData =await  _lzDrugsRepository.GetAll_BM(_params);
+            var allDrugsData =await  _unitOfWork.LzDrugRepository.GetAll_BM(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<LzDrugModel_BM, LzDrgResourceParameters>(
                 allDrugsData, "GetAllLzDrugsForCurrentUser", _params, Create_BMs_ResourceUri
                 ).Generate();
@@ -56,7 +49,7 @@ namespace Fastdo.backendsys.Controllers
         [HttpGet("{id}", Name = "GetDrugById")]
         public async Task<IActionResult> GetDrugById(Guid id)
         {
-            var drug = await _lzDrugsRepository.Get_BM_ByIdAsync(id);
+            var drug = await _unitOfWork.LzDrugRepository.Get_BM_ByIdAsync(id);
             if (drug == null)
                 return NotFound();
             return Ok(drug);
@@ -69,11 +62,11 @@ namespace Fastdo.backendsys.Controllers
         public async Task<IActionResult> PostDrug([FromBody] AddLzDrugModel drugModel)
         {
             if (!ModelState.IsValid)
-                return new UnprocessableEntityObjectResult(ModelState);
+                return new Microsoft.AspNetCore.Mvc.UnprocessableEntityObjectResult(ModelState);
             var drug = _mapper.Map<LzDrug>(drugModel);
-            _lzDrugsRepository.Add(drug);
-            if (!await _lzDrugsRepository.SaveAsync())
-                return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
+            _unitOfWork.LzDrugRepository.Add(drug);
+            if (! _unitOfWork.Save())
+                return StatusCode(500, BasicUtility.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
             return CreatedAtRoute(
                 routeName: "GetDrugById",
                 routeValues: new { id = drug.Id}, 
@@ -88,15 +81,15 @@ namespace Fastdo.backendsys.Controllers
         public async Task<IActionResult> PutDrug(Guid id, [FromBody] UpdateLzDrugModel drugModel)
         {
             if (!ModelState.IsValid)
-                return new UnprocessableEntityObjectResult(ModelState);
+                return new Core.UnprocessableEntityObjectResult(ModelState);
             if (id != drugModel.Id)
                 return BadRequest();
-            if (!await _lzDrugsRepository.IsUserHas(id))
+            if (!await _unitOfWork.LzDrugRepository.IsUserHas(id))
                 return NotFound();
             var drug = _mapper.Map<LzDrug>(drugModel);
-            _lzDrugsRepository.Update(drug);
-            if (!await _lzDrugsRepository.SaveAsync())
-                return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
+            _unitOfWork.LzDrugRepository.Update(drug);
+            if (!await _unitOfWork.LzDrugRepository.SaveAsync())
+                return StatusCode(500, BasicUtility.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
             return NoContent();
         }
 
@@ -107,12 +100,12 @@ namespace Fastdo.backendsys.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDrug(Guid id)
         {
-            if (!await _lzDrugsRepository.IsUserHas(id))
+            if (!await _unitOfWork.LzDrugRepository.IsUserHas(id))
                 return NotFound();
-            var drugToDelete =await _lzDrugsRepository.GetByIdAsync(id);
-            _lzDrugsRepository.Remove(drugToDelete);
-            if (!await _lzDrugsRepository.SaveAsync())
-                return StatusCode(500, Functions.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
+            var drugToDelete =await _unitOfWork.LzDrugRepository.GetByIdAsync(id);
+            _unitOfWork.LzDrugRepository.Remove(drugToDelete);
+            if (!await _unitOfWork.LzDrugRepository.SaveAsync())
+                return StatusCode(500, BasicUtility.MakeError("حدثت مشكلة اثناء معالجة طلبك"));
             return NoContent();
         }
         #endregion

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Data.Common;
 using Fastdo.Core.Models;
+using Fastdo.Core.Services;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
-    public class TransactionService
+    public class TransactionService: ITransactionService
     {
         private SysDbContext _context { get; set; }
         private IDbContextTransaction _actionOnDbTransaction { get; set; }
@@ -13,7 +14,7 @@ namespace Fastdo.backendsys.Services
         {
             _context = context;
         }
-        public TransactionService TakeActionOnDb(Action<SysDbContext> option)
+        public ITransactionService TakeActionOnDb(Action<SysDbContext> option)
         {
             try
             {
@@ -26,7 +27,7 @@ namespace Fastdo.backendsys.Services
 
             return this;
         }
-        public TransactionService TakeActionOnDb(Action option)
+        public ITransactionService TakeActionOnDb(Action option)
         {
             try
             {
@@ -39,7 +40,7 @@ namespace Fastdo.backendsys.Services
             }
             return this;
         }
-        public TransactionService CommitChanges()
+        public ITransactionService CommitChanges()
         {
             _actionOnDbTransaction.Commit();
             return this;
@@ -48,7 +49,7 @@ namespace Fastdo.backendsys.Services
         {
            return _actionOnDbTransaction.GetDbTransaction().Connection;
         }
-        public TransactionService RollBackChanges()
+        public ITransactionService RollBackChanges()
         {
             _actionOnDbTransaction.Rollback();
             return this;

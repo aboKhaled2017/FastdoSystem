@@ -1,4 +1,4 @@
-﻿using Fastdo.backendsys.Models;
+﻿using Fastdo.Core.ViewModels;
 using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
@@ -7,8 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Fastdo.Core.Services;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
     public class StockUserServices
     {

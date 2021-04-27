@@ -3,48 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Fastdo.backendsys.Controllers.Pharmacies;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
-using Fastdo.Core.Models;
+using astdo.Core.ViewModels.Pharmacies;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Fastdo.Core.Models;
+using Fastdo.Core.Services;
+using Fastdo.Core;
+using UnprocessableEntityObjectResult = Fastdo.Core.UnprocessableEntityObjectResult;
+using Fastdo.Core.ViewModels;
+using Fastdo.Core.Services.Auth;
 
-namespace Fastdo.backendsys.Controllers
+namespace Fastdo.API.Controllers
 {
     [Route("api/pharmas")]
     [ApiController]
     [Authorize(Policy = "PharmacyPolicy")]
     public class PharmaciesController : SharedAPIController
     {
-        #region constructor and properties
-        public IStockRepository _stockRepository { get; private set; }
-        public IStkDrugsRepository _stkDrugsRepository { get; private set; }
-        public IPharmacyRepository _pharmacyRepository { get; private set; }
-
-        public PharmaciesController(
-            UserManager<AppUser> userManager, IEmailSender emailSender,
-            AccountService accountService, IMapper mapper,
-            IStockRepository stockRepository,
-            IStkDrugsRepository stkDrugsRepository,
-            IPharmacyRepository pharmacyRepository,
-            TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
+        public PharmaciesController(UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, Core.IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _stockRepository = stockRepository;
-            _pharmacyRepository = pharmacyRepository;
-            _stkDrugsRepository = stkDrugsRepository;
         }
 
-        #endregion
 
         #region override methods from parent class
         [ApiExplorerSettings(IgnoreApi = true)]
-        public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        public override string Create_BMs_ResourceUri(IResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
             var _cardParams = _params as StockSearchResourceParameters;
             switch (resourceUriType)
@@ -158,7 +147,7 @@ namespace Fastdo.backendsys.Controllers
         public async Task<IActionResult> SearchForStocks([FromQuery]StockSearchResourceParameters _params)
         {
 
-            var BM_Cards = await _stockRepository.GetPageOfSearchedStocks(_params);
+            var BM_Cards = await _unitOfWork.StockRepository.GetPageOfSearchedStocks(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<GetPageOfSearchedStocks, StockSearchResourceParameters>(
                 BM_Cards, "GetPageOfSearchedStocks", _params, Create_BMs_ResourceUri
                 ).Generate();
@@ -168,18 +157,18 @@ namespace Fastdo.backendsys.Controllers
         [HttpGet("sentReqsStks")]
         public async Task<IActionResult> GetSentReqiestsToStocks()
         {
-            return Ok(await _pharmacyRepository.GetSentRequestsToStocks());
+            return Ok(await _unitOfWork.PharmacyRepository.GetSentRequestsToStocks());
         }
         [HttpGet("joinedStks")]
         public async Task<IActionResult> GetJoinedStocks()
         {
-            return Ok(await _pharmacyRepository.GetUserJoinedStocks());
+            return Ok(await _unitOfWork.PharmacyRepository.GetUserJoinedStocks());
         }
 
         [HttpGet("stkdrugs", Name = "GetPageOfStockDrugsOfReportOfAllStocksFPH")]
         public async Task<IActionResult> GetStockDrugsOfReportForPharma([FromQuery] StkDrugResourceParameters _params)
         {
-            var data = await _stkDrugsRepository.GetSearchedPageOfStockDrugsFPH(_params);
+            var data = await _unitOfWork.StkDrugsRepository.GetSearchedPageOfStockDrugsFPH(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<SearchGenralStkDrugModel_TargetPharma, StkDrugResourceParameters>(
                 data, "GetPageOfStockDrugsOfReportOfAllStocksFPH", _params, CreateResourceUri_ForStkDrugs
                 ).Generate();
@@ -194,14 +183,14 @@ namespace Fastdo.backendsys.Controllers
         public async Task<IActionResult> GetStocksNames()
         {
             
-            var data = await _stockRepository.GetAllStocksNames();           
+            var data = await _unitOfWork.StockRepository.GetAllStocksNames();           
             return Ok(data);
         }
         public async Task<IActionResult> GetStockDrugsOfReportForPharma([FromQuery] StkDrugResourceParameters _params, [FromRoute] string stockId)
         {
             if (string.IsNullOrEmpty(stockId))
                 return BadRequest();
-            var data = await _stkDrugsRepository.GetSearchedPageOfStockDrugsFPH(stockId, _params);
+            var data = await _unitOfWork.StkDrugsRepository.GetSearchedPageOfStockDrugsFPH(stockId, _params);
             var paginationMetaData = new PaginationMetaDataGenerator<SearchStkDrugModel_TargetPharma, StkDrugResourceParameters>(
                 data, "GetPageOfStockDrugsOfReportOfParticulatStockFPH", _params, CreateResourceUri_ForStkDrugs
                 ).Generate();
@@ -213,13 +202,13 @@ namespace Fastdo.backendsys.Controllers
         {
             if (string.IsNullOrEmpty(stkDrugName))
                 return BadRequest();
-            return Ok(await _stkDrugsRepository.GetStocksOfSpecifiedStkDrug(stkDrugName.Trim()));
+            return Ok(await _unitOfWork.StkDrugsRepository.GetStocksOfSpecifiedStkDrug(stkDrugName.Trim()));
         }
 
         [HttpGet("stkdrugpackage", Name = "GETPageOfStkDrugsPackagesPh")]
         public async Task<IActionResult> GETPageOfStkDrugsPackagesPh([FromQuery] StkDrugPackagePhResourceParameters _params)
         {
-            var data = await _stkDrugsRepository.GetPageOfStkDrugsPackagesPh(_params);
+            var data = await _unitOfWork.StkDrugsRepository.GetPageOfStkDrugsPackagesPh(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<ShowStkDrugsPackagePhModel, StkDrugPackagePhResourceParameters>(
                 data, "GETPageOfStkDrugsPackagesPh", _params, CreateResourceUri_ForStkDrugsPackage
                 ).Generate();
@@ -239,7 +228,7 @@ namespace Fastdo.backendsys.Controllers
                 return BadRequest();*/
             dynamic _error = null,_addedPackage=null;
 
-            await _stkDrugsRepository.MakeRequestForStkDrugsPackage(model,package=> {
+            await _unitOfWork.StkDrugsRepository.MakeRequestForStkDrugsPackage(model,package=> {
                 _addedPackage = package;
             },error => {
                 _error = error;
@@ -256,7 +245,7 @@ namespace Fastdo.backendsys.Controllers
         [HttpPut("stkRequests/{stockId}")]
         public async Task<IActionResult> MakeRequestToStock(string stockId)
         {
-            if(await _stockRepository.MakeRequestToStock(stockId))
+            if(await _unitOfWork.StockRepository.MakeRequestToStock(stockId))
                return NoContent();
             return NotFound();
         }
@@ -264,7 +253,7 @@ namespace Fastdo.backendsys.Controllers
         [HttpDelete("stkRequests/{stockId}")]
         public async Task<IActionResult> CancelRequestToStock(string stockId)
         {
-            if (await _stockRepository.CancelRequestToStock(stockId))
+            if (await _unitOfWork.StockRepository.CancelRequestToStock(stockId))
                 return NoContent();
             return NotFound();
         }
@@ -278,7 +267,7 @@ namespace Fastdo.backendsys.Controllers
                 return BadRequest();
             dynamic _error = null;
 
-            await _stkDrugsRepository.UpdateRequestForStkDrugsPackage(packageId,model, error => {
+            await _unitOfWork.StkDrugsRepository.UpdateRequestForStkDrugsPackage(packageId,model, error => {
                 _error = error;
             });
             if (_error != null)
@@ -297,7 +286,7 @@ namespace Fastdo.backendsys.Controllers
                 return BadRequest();
             dynamic _error = null;
 
-            await _stkDrugsRepository.DeleteRequestForStkDrugsPackage_FromStk(packageId, error => {
+            await _unitOfWork.StkDrugsRepository.DeleteRequestForStkDrugsPackage_FromStk(packageId, error => {
                 _error = error;
             });
             if (_error != null)

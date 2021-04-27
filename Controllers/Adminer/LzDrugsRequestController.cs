@@ -4,37 +4,33 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services.Auth;
 using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Fastdo.Core.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Controllers.Adminer
+namespace Fastdo.API.Controllers.Adminer
 {
     [Route("api/admins/drgsReq",Name = "AdminLzDrugRequests")]
     [ApiController]
     [Authorize(Policy = "ControlOnDrugsRequestsPagePolicy")]
     public class AdminLzDrugsRequestController : MainAdminController
     {
-        #region constructor and properties
-        private readonly ILzDrgRequestsRepository _lzDrgRequestsRepository;
-        private readonly ILzDrugRepository _lzDrugRepository;
-
-        public AdminLzDrugsRequestController(AccountService accountService, IMapper mapper, UserManager<AppUser> userManager,
-            ILzDrgRequestsRepository lzDrgRequestsRepository,ILzDrugRepository lzDrugRepository) 
-            : base(accountService, mapper, userManager)
+        public AdminLzDrugsRequestController(UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _lzDrgRequestsRepository = lzDrgRequestsRepository;
-            _lzDrugRepository = lzDrugRepository;
         }
-        #endregion
+
 
         #region override methods from parent class
         [ApiExplorerSettings(IgnoreApi = true)]
-        public override string Create_BMs_ResourceUri(ResourceParameters _params, ResourceUriType resourceUriType, string routeName)
+        public override string Create_BMs_ResourceUri(IResourceParameters _params, ResourceUriType resourceUriType, string routeName)
         {
             var _cardParams = _params as LzDrgReqResourceParameters;
             switch (resourceUriType)
@@ -74,7 +70,7 @@ namespace Fastdo.backendsys.Controllers.Adminer
         [HttpGet(Name = "GET_PageOf_LzDrgsRequests")]
         public async Task<IActionResult> GetPageOfLzDrgsRequests([FromQuery]LzDrgReqResourceParameters _params)
         {
-            var requests = await _lzDrgRequestsRepository.GET_PageOf_LzDrgsRequests(_params);
+            var requests = await _unitOfWork.LzDrgRequestsRepository.GET_PageOf_LzDrgsRequests(_params);
             var paginationMetaData = new PaginationMetaDataGenerator<Show_LzDrgsReq_ADM_Model, LzDrgReqResourceParameters>(
                 requests, "GET_PageOf_LzDrgsRequests", _params, Create_BMs_ResourceUri
                 ).Generate();

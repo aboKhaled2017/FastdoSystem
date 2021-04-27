@@ -8,32 +8,38 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core;
+using Fastdo.Core.Services;
+using Fastdo.Core.Services.Auth;
 
-namespace Fastdo.backendsys.Controllers
+namespace Fastdo.API.Controllers
 {
     public class SharedAPIController : Controller
     {
         #region constructor and properties
         protected readonly UserManager<AppUser> _userManager;
         protected readonly IEmailSender _emailSender;
-        protected readonly AccountService _accountService;
-        protected readonly TransactionService _transactionService;
+        protected readonly IAccountService _accountService;
+        protected readonly ITransactionService _transactionService;
+        protected readonly IUnitOfWork _unitOfWork;
         protected readonly IMapper _mapper;
         public SharedAPIController(
             UserManager<AppUser> userManager,
             IEmailSender emailSender,
-            AccountService accountService,
+            IAccountService accountService,
             IMapper mapper,
-            TransactionService transactionService)
+            ITransactionService transactionService,
+            IUnitOfWork unitOfWork)
             :this(accountService,mapper,userManager)
         {           
             _emailSender = emailSender;     
-            _transactionService = transactionService;    
+            _transactionService = transactionService;
+            _unitOfWork = unitOfWork;
         }
 
-        public SharedAPIController(AccountService accountService, IMapper mapper,UserManager<AppUser> userManager)
+        public SharedAPIController(IAccountService accountService, IMapper mapper,UserManager<AppUser> userManager)
         {
             _accountService = accountService;
             _mapper = mapper;
@@ -61,7 +67,7 @@ namespace Fastdo.backendsys.Controllers
         #region virtual methods
         [ApiExplorerSettings(IgnoreApi = true)]
         public virtual string Create_BMs_ResourceUri(
-            ResourceParameters _params,
+            IResourceParameters _params,
             ResourceUriType resourceUriType,
             string routeName) 
         {

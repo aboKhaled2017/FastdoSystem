@@ -1,11 +1,12 @@
 ﻿
 using Fastdo.Core.Models;
+using Fastdo.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     public class StkDrgInPackagesReqs : Repository<StkDrugInStkDrgPackageReq>, IStkDrgInPackagesReqsRepository
     {

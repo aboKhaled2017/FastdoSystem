@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Services;
+using Fastdo.API.Services;
 using System.Linq.Dynamic.Core;
-namespace Fastdo.backendsys
+using Fastdo.Core.Services.UserPropertyService;
+
+namespace Fastdo.API
 {
     public static class IQuerableExtensions
     {
         public static IQueryable<T> ApplySort<T>(
             this IQueryable<T>source ,
             string orderBy, 
-            IDictionary<string,PropertyMappingValue> mappingDictionary)
+            IDictionary<string,IPropertyMappingValue> mappingDictionary)
         {
             if (source == null)
                 throw new ArgumentException("source");

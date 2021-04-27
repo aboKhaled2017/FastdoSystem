@@ -9,28 +9,32 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Text;
-using Fastdo.backendsys.Models;
+using Fastdo.Core.ViewModels;
 using AutoMapper;
-using Fastdo.backendsys.Repositories;
+using Fastdo.API.Repositories;
 using System.Security.Claims;
 using Newtonsoft.Json;
+using Fastdo.Core;
+using Fastdo.Core.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core.Utilities;
+using Fastdo.Core.Enums;
+using Fastdo.API.Services.Auth;
 
-namespace Fastdo.backendsys.Services.Auth
+namespace Fastdo.API.Services.Auth
 {
-    public partial class AccountService
+    
+    public class AccountService: IAccountService
     {
         #region constructor and properties
         private readonly JWThandlerService _jWThandlerService;
         private readonly IEmailSender _emailSender;
 
-        public IAdminRepository _adminRepository { get; }
-        private IPharmacyRepository _pharmacyRepository { get; }
-        private IStockRepository _stockRepository { get;}
-
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TransactionService _transactionService { get; }
+        public ITransactionService _transactionService { get; }
         private HttpContext _httpContext { get; set; }
         private IUrlHelper _Url { get; set; }
         private readonly IConfigurationSection _JWT = RequestStaticServices.GetConfiguration().GetSection("JWT");
@@ -39,19 +43,15 @@ namespace Fastdo.backendsys.Services.Auth
             IEmailSender emailSender,
             JWThandlerService jWThandlerService,
             UserManager<AppUser> userManager,
+            ITransactionService transactionService,
             IMapper mapper,
-            IAdminRepository adminRepository,
-            IStockRepository stockRepository,
-            IPharmacyRepository pharmacyRepository,
-            TransactionService transactionService)
+            IUnitOfWork unitOfWork)
         {
             _jWThandlerService = jWThandlerService;
             _userManager = userManager;
             _emailSender = emailSender;
-            _adminRepository = adminRepository;
-            _pharmacyRepository = pharmacyRepository;
-            _stockRepository = stockRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
             _transactionService = transactionService;
         }
         #endregion
@@ -90,7 +90,7 @@ namespace Fastdo.backendsys.Services.Auth
         {
 
             var responseUser = _mapper.MergeInto<StockClientResponseModel>(user, stock);
-            var classes =_stockRepository.GetStockClassesOfJoinedPharmas(user.Id).Result;
+            var classes =_unitOfWork.StockRepository.GetStockClassesOfJoinedPharmas(user.Id).Result;
             responseUser.PharmasClasses =classes;
             return new SigningStockClientInResponseModel
             {
@@ -107,32 +107,32 @@ namespace Fastdo.backendsys.Services.Auth
         
         public async Task<ISigningResponseModel> GetSigningInResponseModelForCurrentUser(AppUser user)
         {
-            var userType = Functions.CurrentUserType();
+            var userType = BasicUtility.CurrentUserType();
             if (userType == UserType.pharmacier)
             {
-                var pharmacy = await _pharmacyRepository.GetByIdAsync(user.Id);
+                var pharmacy = await _unitOfWork.PharmacyRepository.GetByIdAsync(user.Id);
                 return GetSigningInResponseModelForPharmacy(user, pharmacy);
             }
             else
             {
-                var stock = await _stockRepository.GetByIdAsync(user.Id);
+                var stock = await _unitOfWork.StockRepository.GetByIdAsync(user.Id);
                 return GetSigningInResponseModelForStock(user, stock);
             }
         }
         public async Task<ISigningResponseModel> GetSigningInResponseModelForAdministrator(AppUser user,string adminType)
         {
-            var admin = await _adminRepository.GetByIdAsync(user.Id);
+            var admin = await _unitOfWork.AdminRepository.GetByIdAsync(user.Id);
             return await GetSigningInResponseModelForAdministrator(user, admin, adminType);
         }
         public async Task<ISigningResponseModel> GetSigningInResponseModelForPharmacy(AppUser user)
         {
-            var pharmacy = await _pharmacyRepository.GetByIdAsync(user.Id);
+            var pharmacy = await _unitOfWork.PharmacyRepository.GetByIdAsync(user.Id);
             return GetSigningInResponseModelForPharmacy(user, pharmacy);
         }
 
         public async Task<ISigningResponseModel> GetSigningInResponseModelForStock(AppUser user)
         {
-            var stock = await _stockRepository.GetByIdAsync(user.Id);
+            var stock = await _unitOfWork.StockRepository.GetByIdAsync(user.Id);
             return GetSigningInResponseModelForStock(user, stock);
         }
 
@@ -144,7 +144,7 @@ namespace Fastdo.backendsys.Services.Auth
                 UserName = model.Email,
                 Email = model.Email,
                 PhoneNumber = model.PersPhone,
-                confirmCode = Functions.GenerateConfirmationTokenCode()
+                confirmCode = BasicUtility.GenerateConfirmationTokenCode()
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -176,7 +176,7 @@ namespace Fastdo.backendsys.Services.Auth
                 UserName = model.Email,
                 Email = model.Email, 
                 PhoneNumber = model.PersPhone,
-                confirmCode=Functions.GenerateConfirmationTokenCode() };
+                confirmCode=BasicUtility.GenerateConfirmationTokenCode() };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
@@ -209,6 +209,78 @@ namespace Fastdo.backendsys.Services.Auth
             var body = new StringBuilder();
             body.Append($"<a href='${callbackUrl}'>confirm your email</a>");
             await _emailSender.SendEmailAsync(email, "confirm your email", body.ToString());
+        }
+        public async Task<bool> AddSubNewAdmin(AddNewSubAdminModel model, Action<AppUser, Admin> onAddedSuccess)
+        {
+            var user = new AppUser
+            {
+                UserName = model.UserName.Trim(),
+                PhoneNumber = model.PhoneNumber
+            };
+            _transactionService.Begin();
+            var res = await _userManager.CreateAsync(user, model.Password);
+            if (!res.Succeeded)
+            {
+                _transactionService.RollBackChanges().End();
+                throw new Exception("cannot add the default administrator");
+            }
+
+            await _userManager.AddToRoleAsync(user, Variables.adminer);
+            await _userManager.AddClaimsAsync(user, new List<Claim> {
+                new Claim(Variables.AdminClaimsTypes.AdminType,model.AdminType),
+                new Claim(Variables.AdminClaimsTypes.Priviligs.ToString(),model.Priviligs)
+            });
+            var superId = _userManager.GetUserId(_httpContext.User);
+            var admin = new Admin
+            {
+                Id = user.Id,
+                Name = model.Name,
+                SuperAdminId = superId
+            };
+            onAddedSuccess(user, admin);
+            await _unitOfWork.AdminRepository.AddAsync(admin);
+            _unitOfWork.Save();
+            _transactionService.CommitChanges().End();
+            return true;
+        }
+        public async Task UpdateSubAdminPassword(AppUser user, UpdateSubAdminPasswordModel model)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+        }
+        public async Task<IdentityResult> UpdateSubAdminUserName(AppUser user, UpdateSubAdminUserNameModel model)
+        {
+            return await _userManager.SetUserNameAsync(user, model.NewUserName);
+        }
+        public async Task<IdentityResult> UpdateSubAdminPhoneNumber(AppUser user, UpdateSubAdminPhoneNumberModel model)
+        {
+            var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
+            return await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, token);
+        }
+        public async Task<bool> UpdateSubAdmin(AppUser user, UpdateSubAdminModel model)
+        {
+            _transactionService.Begin();
+            var admin = await _unitOfWork.AdminRepository.GetByIdAsync(user.Id);
+            if (admin.SuperAdminId == null)
+                throw new Exception("لايمكن تعديل بيانات المسؤل الرئيسى");
+            admin.Name = model.Name;
+            _unitOfWork.AdminRepository.Update(admin);
+            if (!_unitOfWork.Save())
+            {
+                _transactionService.End();
+                return false;
+            }
+            var replacedClaim = (await _userManager.GetClaimsAsync(user))
+                .FirstOrDefault(c => c.Type == Variables.AdminClaimsTypes.Priviligs);
+            if (replacedClaim == null) return false;
+            var res = await _userManager.ReplaceClaimAsync(user, replacedClaim, new Claim(Variables.AdminClaimsTypes.Priviligs, model.Priviligs));
+            if (!res.Succeeded)
+            {
+                _transactionService.RollBackChanges().End();
+                return false;
+            }
+            _transactionService.CommitChanges().End();
+            return true;
         }
     }
 }

@@ -5,9 +5,11 @@ using Fastdo.Core.Enums;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Models;
+using Fastdo.Core.ViewModels;
+using Fastdo.Core.Repositories;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     public class AdminRepository : Repository<Admin>, IAdminRepository
     {

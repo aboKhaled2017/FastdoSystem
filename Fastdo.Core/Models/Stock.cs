@@ -56,8 +56,5 @@ namespace Fastdo.Core.Models
         public virtual ICollection<StkDrug> SDrugs { get; set; }
         [InverseProperty("Stock")]
         public virtual ICollection<PharmacyInStock> GoinedPharmacies { get; set; }
-        [InverseProperty("Stock")]
-        public virtual ICollection<StockInStkDrgPackageReq> RequestedPackages { get; set; }
-
     }
 }

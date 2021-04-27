@@ -1,6 +1,6 @@
 ﻿using ExcelDataReader;
-using Fastdo.backendsys.Controllers.Stocks;
-using Fastdo.backendsys.Controllers.Stocks.Models;
+using Fastdo.Core.ViewModels.Stocks;
+using Fastdo.Core.ViewModels.Stocks.Models;
 using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,8 +9,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Fastdo.Core.Services;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
     public class StkDrgsReportFromExcelResponse
     {

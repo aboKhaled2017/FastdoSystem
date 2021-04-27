@@ -9,38 +9,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core.Utilities;
+using Fastdo.Core.Services.Auth;
 
-namespace Fastdo.backendsys.Controllers.Auth
+namespace Fastdo.API.Controllers.Auth
 {
     [Route("api/ph/signup")]
     [ApiController]
     [AllowAnonymous]
     public class ParmacySignUpController : SharedAPIController
     {
+        public ParmacySignUpController(HandlingProofImgsServices proofImgsServices, IExecuterDelayer executerDelayer, UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, Core.IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
+        {
+            _executerDelayer = executerDelayer;
+            _handlingProofImgsServices = proofImgsServices;
+        }
         #region constructor and properties
         private HandlingProofImgsServices _handlingProofImgsServices { get; }
-        private IPharmacyRepository _pharmacyRepository { get; }
         public IExecuterDelayer _executerDelayer { get; }
 
-        public ParmacySignUpController(
-             UserManager<AppUser> userManager,
-             IEmailSender emailSender,
-             AccountService accountService,
-             IMapper mapper,
-             HandlingProofImgsServices handlingProofImgsServices,
-             IPharmacyRepository pharmacyRepository,
-             IExecuterDelayer executerDelayer,
-             TransactionService transactionService)
-             : base(userManager, emailSender, accountService, mapper, transactionService)
-        {
-            _handlingProofImgsServices = handlingProofImgsServices;
-            _pharmacyRepository = pharmacyRepository;
-            _executerDelayer = executerDelayer;
-        }
+     
 
         #endregion
 
@@ -60,7 +53,7 @@ namespace Fastdo.backendsys.Controllers.Auth
                 if (response == null)
                 {
                     _transactionService.RollBackChanges().End();
-                    return BadRequest(Functions.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
+                    return BadRequest(BasicUtility.MakeError("لقد فشلت عملية التسجيل,حاول مرة اخرى"));
                 }
                 pharmacyModel.Id = response.user.Id;
                 var savingImgsResponse = _handlingProofImgsServices
@@ -68,12 +61,12 @@ namespace Fastdo.backendsys.Controllers.Auth
                 if (!savingImgsResponse.Status)
                 {
                     _transactionService.RollBackChanges().End();
-                    return BadRequest(Functions.MakeError($"{savingImgsResponse.errorMess}"));
+                    return BadRequest(BasicUtility.MakeError($"{savingImgsResponse.errorMess}"));
                 }
                 pharmacyModel.LicenseImgSrc = savingImgsResponse.LicenseImgPath;
                 pharmacyModel.CommercialRegImgSrc = savingImgsResponse.CommertialRegImgPath;
-                await _pharmacyRepository.AddAsync(pharmacyModel);
-                _pharmacyRepository.Save();
+                await _unitOfWork.PharmacyRepository.AddAsync(pharmacyModel);
+                _unitOfWork.Save();
                 _executerDelayer.Execute();
                 _transactionService.CommitChanges().End();
 

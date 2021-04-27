@@ -6,24 +6,25 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Fastdo.Core.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Models;
+using Fastdo.API.Repositories;
+using Fastdo.Core.ViewModels;
 using AutoMapper;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Controllers
+namespace Fastdo.API.Controllers
 {
     [Route("api/complains")]
     [ApiController]
     public class ComplainsController : ControllerBase
     {
         #region constructor and properties
-        private IComplainsRepository _complainsRepository { get; }
+        private IUnitOfWork _unitOfWork { get; }
 
         private IMapper _mapper { get; }
 
-        public ComplainsController(IComplainsRepository complainsRepository,IMapper mapper)
+        public ComplainsController(IUnitOfWork unitOfWork,IMapper mapper)
         {
-            _complainsRepository = complainsRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
         #endregion
@@ -33,14 +34,14 @@ namespace Fastdo.backendsys.Controllers
         [HttpGet]
         public async Task<IActionResult> GetComplains()
         {
-            return Ok(await _complainsRepository.GetAll().ToListAsync());
+            return Ok(await _unitOfWork.ComplainsRepository.GetAll().ToListAsync());
         }
 
         // GET: api/Complains/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetComplain(Guid id)
         {
-            var complain = await _complainsRepository.GetByIdAsync(id);
+            var complain = await _unitOfWork.ComplainsRepository.GetByIdAsync(id);
 
             if (complain == null)
             {
@@ -65,11 +66,11 @@ namespace Fastdo.backendsys.Controllers
 
             try
             {
-                await _complainsRepository.Update(complain);
+                await _unitOfWork.ComplainsRepository.Update(complain);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await _complainsRepository.ComplainExists(id))
+                if (!await _unitOfWork.ComplainsRepository.ComplainExists(id))
                 {
                     return NotFound();
                 }
@@ -89,7 +90,7 @@ namespace Fastdo.backendsys.Controllers
         public IActionResult PostComplain(ComplainToAddModel model)
         {
             var complain = _mapper.Map<Complain>(model);
-             _complainsRepository.Add(complain);
+             _unitOfWork.ComplainsRepository.Add(complain);
 
             return CreatedAtAction("GetComplain", new { id = complain.Id }, complain);
         }
@@ -100,7 +101,7 @@ namespace Fastdo.backendsys.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Complain>> DeleteComplain(Guid id)
         {
-            var complain = await _complainsRepository.Delete(id);
+            var complain = await _unitOfWork.ComplainsRepository.Delete(id);
             if (complain==null)
             {
                 return NotFound();

@@ -3,26 +3,27 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Areas.AdminPanel.Models;
-using Fastdo.backendsys.Repositories;
+using Fastdo.API.Areas.AdminPanel.Models;
+using Fastdo.API.Repositories;
+using Fastdo.Core;
 using Fastdo.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Fastdo.backendsys.Areas.AdminPanel.Controllers
+namespace Fastdo.API.Areas.AdminPanel.Controllers
 {
     public class HomeController : MainController
     {
-        public HomeController(IAdminRepository adminRepository, UserManager<AppUser> userManager) : base(adminRepository, userManager)
+        public HomeController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager) : base(unitOfWork, userManager)
         {
         }
 
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> Index()
         {
-            return View(await _adminRepository.GetGeneralStatisOfSystem());
+            return View(await _unitOfWork.AdminRepository.GetGeneralStatisOfSystem());
         }
         [AllowAnonymous]
         public IActionResult Error()

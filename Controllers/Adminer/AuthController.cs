@@ -8,23 +8,24 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
- 
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core.Utilities;
 
-namespace Fastdo.backendsys.Controllers.Adminer
+namespace Fastdo.API.Controllers.Adminer
 {
     [Route("api/admin/auth", Name = "AdminAuth")]
     [ApiController]
     public class AdminAuthController : MainAdminController
     {
-        #region constructor and properties
-        public AdminAuthController(UserManager<AppUser> userManager, IEmailSender emailSender, AccountService accountService, IMapper mapper, TransactionService transactionService) : base(userManager, emailSender, accountService, mapper, transactionService)
+        public AdminAuthController(IAccountService accountService, IMapper mapper, UserManager<AppUser> userManager) : base(accountService, mapper, userManager)
         {
         }
-        #endregion
+
 
         #region ovveride methods
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -56,11 +57,11 @@ namespace Fastdo.backendsys.Controllers.Adminer
                     var response = await _accountService.GetSigningInResponseModelForAdministrator(user,model.AdminType);
                     return Ok(response);
                 }
-                return NotFound(Functions.MakeError("اسم المستخدم او كلمة السر غير صحيحة"));
+                return NotFound(BasicUtility.MakeError("اسم المستخدم او كلمة السر غير صحيحة"));
             }
             catch (Exception ex)
             {
-                return BadRequest(Functions.MakeError(ex.Message));
+                return BadRequest(BasicUtility.MakeError(ex.Message));
             }
 
         }

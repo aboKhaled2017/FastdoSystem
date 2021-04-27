@@ -24,10 +24,11 @@ namespace Fastdo.Core.Models
         public virtual DbSet<LzDrugRequest> LzDrugRequests { get; set; }
         public virtual DbSet<StkDrugInStkDrgPackageReq> StkDrugInStkDrgPackagesRequests { get; set; }
         public virtual DbSet<StkDrugPackageRequest> StkDrugPackagesRequests { get; set; }
-        public virtual DbSet<StockInStkDrgPackageReq> StockInStkDrgPackageReqs { get; set; }
         public virtual DbSet<AdminHistory> AdminHistoryEntries { get; set; }
 
         public virtual DbSet<PharmacyInStockClass> PharmaciesInStockClasses { get; set; }
+        public virtual DbSet<BaseDrug> BaseDrugs { get; set; }
+        public virtual DbSet<TechnicalSupportQuestion> TechnicalSupportQuestions { get; set; }
         public virtual DbSet<StockWithPharmaClass> StocksWithPharmaClasses { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -65,26 +66,22 @@ namespace Fastdo.Core.Models
                 .HasIndex(i => new { i.StockId, i.ClassName }).IsUnique();
 
             builder.Entity<StkDrugInStkDrgPackageReq>()
-                 .HasIndex(i => new { i.StkDrugId, i.StkPackageId })
+                 .HasIndex(i => new { i.StkDrugId, i.StkDrugPackageId })
                  .IsUnique();
  
 
             builder.Entity<PharmacyInStockClass>()
                .HasIndex(t => new { t.PharmacyId, t.StockClassId }).IsUnique();
+            builder.Entity<StkDrugPackageRequest>()
+                .HasOne(e => e.Pharmacy)
+                .WithMany(e => e.RequestedStkDrugsPackages)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<StockInStkDrgPackageReq>()
-                .HasIndex(t => new { t.StockId, t.PackageId }).IsUnique();
-            builder.Entity<StockInStkDrgPackageReq>()
+            builder.Entity<StkDrugInStkDrgPackageReq>()
                 .HasOne(e => e.Package)
-                .WithMany(e => e.AssignedStocks)
-                .HasForeignKey(e=>e.PackageId)
+                .WithMany(e => e.PackageDrugs)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<StockInStkDrgPackageReq>()
-                .HasOne(e => e.Stock)
-                .WithMany(e => e.RequestedPackages)
-                .HasForeignKey(e=>e.StockId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+           
             base.OnModelCreating(builder);
         }
     //*844# *319#  0333  

@@ -8,32 +8,29 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
+using Fastdo.Core.Services.Auth;
+using Fastdo.Core.Services;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Controllers.Adminer
+namespace Fastdo.API.Controllers.Adminer
 {
     [Route("api/admin", Name = "Admin")]
     [ApiController]
     public class AdminIndexController : MainAdminController
     {
-
-        #region constructor and properties
-        IAdminRepository _adminRepository;
-        public AdminIndexController(UserManager<AppUser> userManager, IEmailSender emailSender, IAdminRepository  adminRepository,
-            AccountService accountService, IMapper mapper, TransactionService transactionService) 
-            : base(userManager, emailSender, accountService, mapper, transactionService)
+        public AdminIndexController(UserManager<AppUser> userManager, IEmailSender emailSender, IAccountService accountService, IMapper mapper, ITransactionService transactionService, IUnitOfWork unitOfWork) : base(userManager, emailSender, accountService, mapper, transactionService, unitOfWork)
         {
-            _adminRepository = adminRepository;
         }
-        #endregion
+
 
         #region get
         [HttpGet("statis")]
         public async Task<IActionResult> GetGeneralStatisticsForAdmin()
         {
-            return Ok(await _adminRepository.GetGeneralStatisOfSystem());
+            return Ok(await _unitOfWork.AdminRepository.GetGeneralStatisOfSystem());
         }
         #endregion
 

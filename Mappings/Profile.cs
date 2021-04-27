@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
-using Fastdo.backendsys.InitSeeds.Helpers;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Controllers.Stocks;
-using Fastdo.backendsys.Controllers.Pharmacies;
+using Fastdo.API.InitSeeds.Helpers;
+using Fastdo.Core.ViewModels;
+using Fastdo.Core.ViewModels.Stocks;
+using astdo.Core.ViewModels.Pharmacies;
 using Newtonsoft.Json;
+using Fastdo.Core.Interfaces;
+using Fastdo.Core.Enums;
 
-namespace Fastdo.backendsys.Mappings
+namespace Fastdo.API.Mappings
 {
-    public class MappingProfile : Profile
+    public class MappingProfile : Profile, IMappingProfile
     {
         public MappingProfile()
         {

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using NLog.Web;
 
-namespace Fastdo.backendsys
+namespace Fastdo.API
 {
     public class Program
     {

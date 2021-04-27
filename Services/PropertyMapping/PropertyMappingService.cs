@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fastdo.Core.Models;
-using System.Threading.Tasks;
-using Fastdo.backendsys.Models;
+using Fastdo.Core.Services;
+using Fastdo.Core.Services.UserPropertyService;
+using Fastdo.Core.Utilities;
+using Fastdo.Core.ViewModels;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
     public class PropertyMappingService: IpropertyMappingService
     {
-        private Dictionary<string, PropertyMappingValue> _lzDrugCard_Info_BM_PropertyMapping =
-            new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
+        private Dictionary<string, IPropertyMappingValue> _lzDrugCard_Info_BM_PropertyMapping =
+            new Dictionary<string, IPropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
             {
                 {"Name",new PropertyMappingValue(new List<string>{ "Name"})},
                 {"Quantity",new PropertyMappingValue(new List<string>{ "Quantity"})},
@@ -19,8 +21,8 @@ namespace Fastdo.backendsys.Services
                 {"ValideDate",new PropertyMappingValue(new List<string>{ "ValideDate"})},
                 {"requestsCount",new PropertyMappingValue(new List<string>{"requestsCount"})}
             };
-        private Dictionary<string, PropertyMappingValue> _pharmacyCard_Info_BM_PropertyMapping =
-            new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
+        private Dictionary<string, IPropertyMappingValue> _pharmacyCard_Info_BM_PropertyMapping =
+            new Dictionary<string, IPropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
             {
                 {"Name",new PropertyMappingValue(new List<string>{ "Name"})},
             };
@@ -30,12 +32,12 @@ namespace Fastdo.backendsys.Services
             propertyMappings.Add(new PropertyMapping<LzDrugCard_Info_BM,LzDrug>(_lzDrugCard_Info_BM_PropertyMapping));
             propertyMappings.Add(new PropertyMapping<Get_PageOf_Pharmacies_ADMModel, Pharmacy>(_pharmacyCard_Info_BM_PropertyMapping));
         }
-        public Dictionary<string,PropertyMappingValue> GetPropertyMapping<TSource,TDestination>()
+        public Dictionary<string,IPropertyMappingValue> GetPropertyMapping<TSource,TDestination>()
         {
             var matchingMapping = propertyMappings.OfType<PropertyMapping<TSource, TDestination>>();
             if (matchingMapping.Count() == 1)
                 return matchingMapping.First()._mappingDictionary;
-            throw new Exception(Functions.MakeError("mapping error").ToString());
+            throw new Exception(BasicUtility.MakeError("mapping error").ToString());
         }
         public bool validMappingExistsFor<TSource,TDestination>(string fields)
         {

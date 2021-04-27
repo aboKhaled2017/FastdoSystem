@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
+using Fastdo.Core.Repositories;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     public class ComplainsRepository : Repository<Complain>, IComplainsRepository
     {

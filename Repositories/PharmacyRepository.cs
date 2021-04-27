@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Controllers.Pharmacies;
+using Fastdo.Core.ViewModels;
+using astdo.Core.ViewModels.Pharmacies;
 using Fastdo.Core.Enums;
 using System.Collections;
+using Fastdo.Core.Repositories;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     public class PharmacyRepository:Repository<Pharmacy>,IPharmacyRepository
     {

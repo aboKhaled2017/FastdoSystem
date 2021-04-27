@@ -11,23 +11,24 @@ using System.Collections.Generic;
 using Fastdo.Core.Enums;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Fastdo.backendsys;
-using Fastdo.backendsys.Global;
-using Fastdo.backendsys.Mappings;
-using Fastdo.backendsys.Repositories;
-using Fastdo.backendsys.Services;
-using Fastdo.backendsys.Services.Auth;
+using Fastdo.API.Mappings;
+using Fastdo.API.Repositories;
+using Fastdo.API.Services;
+using Fastdo.API.Services.Auth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using NSwag.Generation.Processors.Security;
 using NSwag;
-using Fastdo.backendsys.Graphql;
+using Fastdo.API.Graphql;
 using GraphQL.Types;
 using GraphQL;
 using GraphQL.Server;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Fastdo.backendsys.Configurations;
+using Fastdo.API.Configurations;
+using Fastdo.Core.Services;
+using Fastdo.Core;
+using Fastdo.CommonGlobal;
+using Fastdo.Core.Services.Auth;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -49,8 +50,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddTransient<IpropertyMappingService,PropertyMappingService>();
             services.AddTransient<JWThandlerService>();          
-            services.AddTransient<AccountService>();
-            services.AddTransient<TransactionService>();
+            services.AddTransient<IAccountService,AccountService>();
+            services.AddTransient<ITransactionService,TransactionService>();
             services.AddTransient<StockUserServices>();
             services.AddSingleton<HandlingProofImgsServices>();
             services.AddSingleton<IEmailSender,EmailSender>();
@@ -73,23 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         public static IServiceCollection _AddRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IPharmacyRepository,PharmacyRepository>();
-            services.AddScoped<IStockRepository,StockRepository>();
-            services.AddScoped<ILzDrugRepository,LzDrugRepository>();
-            services.AddScoped<ILzDrgRequestsRepository,LzDrgRequestsRepository>();
-            services.AddScoped<IComplainsRepository,ComplainsRepository>();
-            services.AddScoped<ILzDrg_Search_Repository,LzDrg_Search_Repository>();
-            services.AddScoped<IAreaRepository, AreaRepository>();
-            services.AddScoped<IAdminRepository, AdminRepository>();
-            services.AddScoped<IStkDrugsRepository, StkDrugsRepository>();
-
-            services.AddScoped<IStkDrugsRepository, StkDrugsRepository>();
-            services.AddScoped<IStockWithClassRepository, StockWithClassRepository>();
-            services.AddScoped<IPharmacyInStkRepository, PharmacyInStkRepository>();
-            services.AddScoped<IPharmacyInStkClassRepository, PharmacyInStkClassRepository>();
-            services.AddScoped<IStkDrugPackgesReqsRepository, StkDrugPackagesReqsRepository>();
-            services.AddScoped<IStockInPackagesReqsRepository, StockInPackagesReqsRepository>();
-            services.AddScoped<IStkDrgInPackagesReqsRepository, StkDrgInPackagesReqs>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
         public static IServiceCollection _AddGraphQlServices(this IServiceCollection services)

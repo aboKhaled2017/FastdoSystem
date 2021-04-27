@@ -6,8 +6,7 @@ using Fastdo.Core.Enums;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
-using Fastdo.backendsys;
-using Fastdo.backendsys.Global;
+using Fastdo.Core;
 
 namespace Microsoft.AspNetCore.Identity
 {

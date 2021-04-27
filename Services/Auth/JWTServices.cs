@@ -8,9 +8,11 @@ using Fastdo.Core.Models;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Models;
+using Fastdo.Core.ViewModels;
+using Fastdo.Core.Services;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
     public class JWThandlerService
     {

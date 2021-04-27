@@ -6,8 +6,10 @@ using System.IO;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
+using Fastdo.Core.Services;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
     public class HandlingImgResponse
     {

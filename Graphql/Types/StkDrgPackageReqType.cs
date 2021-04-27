@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Graphql
+namespace Fastdo.API.Graphql
 {
     public class StkDrgPackageReqType:ObjectGraphType<StkDrugPackageRequest>
     {

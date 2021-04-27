@@ -1,7 +1,7 @@
 
 using System;
 
-namespace Fastdo.backendsys.Areas.AdminPanel.Models
+namespace Fastdo.API.Areas.AdminPanel.Models
 {
     public class ErrorViewModel
     {

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Fastdo.Core.Services.UserPropertyService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fastdo.backendsys.Services
+namespace Fastdo.API.Services
 {
-    public class PropertyMappingValue
+    public class PropertyMappingValue: IPropertyMappingValue
     {
         public IEnumerable<string> DestinationProperties { get;private set; }
         public bool Revert { get;private set; }

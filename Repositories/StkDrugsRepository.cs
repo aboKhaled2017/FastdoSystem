@@ -1,4 +1,4 @@
-﻿using Fastdo.backendsys.Controllers.Stocks.Models;
+﻿using Fastdo.Core.ViewModels.Stocks.Models;
 using Fastdo.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 using EFCore.BulkExtensions;
-using Fastdo.backendsys.Controllers.Pharmacies;
+using astdo.Core.ViewModels.Pharmacies;
 using Newtonsoft.Json;
 using System.Text;
 using System.Data.Common;
@@ -15,13 +15,17 @@ using Fastdo.Core.Enums;
 using NHibernate.Util;
 using Microsoft.EntityFrameworkCore.Internal;
 using Namotion.Reflection;
+using Fastdo.Core.Repositories;
+using Fastdo.Core;
+using Fastdo.Core.Utilities;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     public class StkDrugsRepository : Repository<StkDrug>, IStkDrugsRepository
     {
         #region constructor and properties
         private IStkDrugPackgesReqsRepository _PackgesReqsRepository { get; }
+        private IStockRepository _stockRepo { get; }
         private IStkDrgInPackagesReqsRepository _StkDrgInPackagesReqs { get; }
         public StkDrugsRepository(SysDbContext context,
             IStkDrugPackgesReqsRepository packgesReqsRepository,
@@ -242,24 +246,23 @@ namespace Fastdo.backendsys.Repositories
             Action<dynamic> onError)
         {
             await ValidatePharmaRequestFor_StkDrugsList(model.FromStocks.ToList(), _packageDetails => {
-
+                var _drugs = model.FromStocks.Count() > 0
+                     ? GetAssignedStocksOfStkDrgPackageReq(model.FromStocks.ToList())
+                     : new List<StkDrugInStkDrgPackageReq>();
                 //create new package request
                 var newPackageRequest = new StkDrugPackageRequest
                 {
                     Id = Guid.NewGuid(),
                     Name = model.Name.Trim(),
                     PharmacyId = UserId,
-                    PackageDetails = _packageDetails,
-                    AssignedStocks = model.FromStocks.Count() > 0
-                     ? GetAssignedStocksOfStkDrgPackageReq(model.FromStocks.ToList())
-                     : new List<StockInStkDrgPackageReq>()
+                    PackageDrugs=_drugs
                 };
 
                 //add new package
                 _PackgesReqsRepository.Add(newPackageRequest);
                 SaveAsync().Wait();
 
-                onComplete(new { newPackageRequest .Id, newPackageRequest .PackageDetails});
+                onComplete(new { newPackageRequest .Id});
             }, onError);
         }
 
@@ -270,21 +273,24 @@ namespace Fastdo.backendsys.Repositories
             Action<dynamic> onError)
         {
             var updatedPackageRequest = await _PackgesReqsRepository.GetAll()
-                .Include(e=>e.AssignedStocks)
+                //.Include(e=>e.PackageDrugs)
                 .FirstOrDefaultAsync(p=>p.Id==packageId && p.PharmacyId==UserId);
             if (updatedPackageRequest == null)
             {
-                onError(Functions.MakeError("هذه الباقة غير موجودة"));
+                onError(BasicUtility.MakeError("هذه الباقة غير موجودة"));
                 return;
             }
             await ValidatePharmaRequestFor_StkDrugsList(model.FromStocks.ToList(), _packageDetails => {
                 // _context.Set<StockInStkDrgPackageReq>().RemoveRange
+                
+                var drugs = _StkDrgInPackagesReqs.Where(d => d.StkDrugPackageId == updatedPackageRequest.Id);
+                _StkDrgInPackagesReqs.RemoveRange(drugs);
+                Save();
                 updatedPackageRequest.Name = model.Name;
-                updatedPackageRequest.PackageDetails = _packageDetails;
-                updatedPackageRequest.AssignedStocks.Clear();
-                updatedPackageRequest.AssignedStocks = model.FromStocks.Count() > 0
+                updatedPackageRequest.PackageDrugs.Clear();
+                updatedPackageRequest.PackageDrugs = model.FromStocks.Count() > 0
                 ? GetAssignedStocksOfStkDrgPackageReq(model.FromStocks.ToList())
-                : new List<StockInStkDrgPackageReq>();
+                : new List<StkDrugInStkDrgPackageReq>();
                 _context.Entry(updatedPackageRequest).State = EntityState.Modified;
                 //update the package
                 SaveAsync().Wait();
@@ -296,20 +302,20 @@ namespace Fastdo.backendsys.Repositories
         public async Task DeleteRequestForStkDrugsPackage_FromStk(Guid packageId, Action<dynamic> onError)
         {
             var package =await _PackgesReqsRepository.GetAll()
-                .Include(e=>e.AssignedStocks)
+                .Include(e=>e.PackageDrugs)
                 .FirstOrDefaultAsync(e=>e.Id.Equals(packageId) && e.PharmacyId==UserId);
             if (package == null)
             {
-                onError(Functions.MakeError("هذه الباقة لم تعد موجودة"));
+                onError(BasicUtility.MakeError("هذه الباقة لم تعد موجودة"));
                 return;
             }
-            package.AssignedStocks = new List<StockInStkDrgPackageReq>();
+            package.PackageDrugs = new List<StkDrugInStkDrgPackageReq>();
             _context.Entry(package).State = EntityState.Modified;
             await SaveAsync();
             _context.StkDrugPackagesRequests.Remove(package);
             await SaveAsync();
         }
-
+        public class L { public int id { get; set; } public string name { get; set; } }
         public async Task<PagedList<ShowStkDrugsPackagePhModel>> GetPageOfStkDrugsPackagesPh(StkDrugPackagePhResourceParameters _params)
         {
             var originalData = _PackgesReqsRepository.GetAll()
@@ -319,35 +325,65 @@ namespace Fastdo.backendsys.Repositories
                 var searchQueryForWhereClause = _params.S.Trim().ToLowerInvariant();
                 originalData = originalData
                      .Where(d => d.Name.ToLowerInvariant().Contains(searchQueryForWhereClause));
-            }            
-            var data = originalData.Select(e => new ShowStkDrugsPackagePhModel(e.CreateAt)
+            }
+
+            //originalData = originalData.Include(e => e.PackageDrugs);
+            var _dataBeforeGrouping = originalData.Select(e => new
             {
-                PackageId=e.Id,
+                PackageId = e.Id,
                 Name = e.Name,
-                 
-                FromStocks = e.AssignedStocks.Select(a => new ShowStkDrugsPackagePh_FromStockModel
+                CreatedAt = e.CreateAt,
+                FromStocks = e.PackageDrugs
+                .Select(a => new
                 {
-                    Id = a.StockId,
-                    Name = a.Stock.Name,
-                    StockClassId=a.Stock.PharmasClasses
-                    .Where(e1=>e1.PharmaciesOfThatClass.Any(e2=>e2.PharmacyId==UserId))
-                    .Select(e3=>e3.Id)
+
+                    StockId = a.StkDrug.StockId,
+                    Name = a.StkDrug.Stock.Name,
+                    StockClassId = a.StkDrug.Stock.PharmasClasses
+                    .Where(e1 => e1.PharmaciesOfThatClass.Any(e2 => e2.PharmacyId == UserId))
+                    .Select(e3 => e3.Id)
                     .FirstOrDefault(),
-                    Address = $"{a.Stock.Area.Name} / {a.Stock.Area.SuperArea.Name}",
-                    AddressInDetails = a.Stock.Address,
+                    Address = $"{a.StkDrug.Stock.Area.Name} / {a.StkDrug.Stock.Area.SuperArea.Name}",
+                    AddressInDetails = a.StkDrug.Stock.Address,
                     Seen = a.Seen,
                     Status = a.Status,
-                    Drugs = a.AssignedStkDrugs.Select(d => new ShowStkDrugsPackagePh_FromStock_DrugModel
+                    Drug = new
                     {
-                        Id = d.StkDrugId,
-                        Name = d.StkDrug.Name,
-                        Price = d.StkDrug.Price,
-                        Quantity = d.Quantity,
-                        Discount=d.StkDrug.Discount
-                    })
+                        Id = a.StkDrugId,
+                        Name = a.StkDrug.Name,
+                        Price = a.StkDrug.Price,
+                        Quantity = a.Quantity,
+                        Discount = a.StkDrug.Discount
+                    }
                 })
-            });            
-            var returnedData =await PagedList<ShowStkDrugsPackagePhModel>.CreateAsync(data, _params);
+                .GroupBy(g => g.StockId)
+                .Select(q => new ShowStkDrugsPackagePh_FromStockModel
+                {
+                    Id = q.Key,
+                    Name = q.FirstOrDefault().Name,
+                    Address = q.FirstOrDefault().Address,
+                    AddressInDetails = q.FirstOrDefault().AddressInDetails,
+                    Seen = q.FirstOrDefault().Seen,
+                    Status = q.FirstOrDefault().Status,
+                    StockClassId = q.FirstOrDefault().StockClassId,
+                    Drugs = q.Select(c => c.Drug)
+                        .Select(d => new ShowStkDrugsPackagePh_FromStock_DrugModel
+                        {
+                            Id = d.Id,
+                            Name = d.Name,
+                            Price = d.Price,
+                            Quantity = d.Quantity,
+                            Discount = d.Discount
+                        })
+                })
+                
+            });
+            var data = _dataBeforeGrouping.Select(f => new ShowStkDrugsPackagePhModel(f.CreatedAt) { 
+            Name=f.Name,
+            PackageId=f.PackageId,
+            FromStocks=f.FromStocks
+            });
+            var returnedData = await PagedList<ShowStkDrugsPackagePhModel>.CreateAsync(data, _params);
             List<Tuple<string, double>> entries = null;
             List<ShowStkDrugsPackagePh_FromStock_DrugModel> _Drugs = null;
             List<ShowStkDrugsPackagePh_FromStockModel> _FromStocks = null;
@@ -367,6 +403,7 @@ namespace Fastdo.backendsys.Repositories
                 });
                 d.FromStocks = _FromStocks;
             });
+          
             return returnedData;
         }
         #endregion
@@ -420,7 +457,7 @@ namespace Fastdo.backendsys.Repositories
             var expectedResult = stksDrugsList.Select(s => s.DrugsList.Count()).Aggregate(0, (prev, val) => prev + val);
             if (await ExecuteScaler<int>(stringBuilder) != expectedResult)
             {
-                onError(Functions.MakeError("لقد حاولت ادخال بيانات غير صحيحة"));
+                onError(BasicUtility.MakeError("لقد حاولت ادخال بيانات غير صحيحة"));
                 return;
             }
 
@@ -432,12 +469,12 @@ namespace Fastdo.backendsys.Repositories
                 var isAnyOfDrugsRequestedBefore = await _StkDrgInPackagesReqs
                     .GetAll()
                     .AnyAsync(e =>
-                    e.StockPackage.Package.PharmacyId == UserId &&
+                    e.Package.PharmacyId == UserId &&
                     AllDrugsIds.Contains(e.StkDrugId) &&
-                    e.StockPackage.Status != StkDrugPackageRequestStatus.Completed);
+                    e.Status != StkDrugPackageRequestStatus.Completed);
                 if (isAnyOfDrugsRequestedBefore)
                 {
-                    onError(Functions.MakeError("هذه الباقة تحتوى على راكد تم طلبه بالفعل"));
+                    onError(BasicUtility.MakeError("هذه الباقة تحتوى على راكد تم طلبه بالفعل"));
                     return;
                 }
             }
@@ -445,7 +482,7 @@ namespace Fastdo.backendsys.Repositories
         }
         
 
-        private List<StkDrugInStkDrgPackageReq> GetAssignedStkDrugsForStockInPackage(List<IEnumerable<dynamic>> drugsWithProps,string stockId)
+        private List<StkDrugInStkDrgPackageReq> GetAssignedStkDrugsForStockInPackage(List<IEnumerable<dynamic>> drugsWithProps)
         {
             var assignedDrugs = new List<StkDrugInStkDrgPackageReq>();
             drugsWithProps.ForEach(drugProps =>
@@ -453,24 +490,20 @@ namespace Fastdo.backendsys.Repositories
                 assignedDrugs.Add(new StkDrugInStkDrgPackageReq
                 {
                     StkDrugId=Guid.Parse(drugProps.First()),
-                    Quantity=(int)drugProps.Last(),
-                    StockId=stockId
+                    Quantity=(int)drugProps.Last()
                 });
             });
             return assignedDrugs;
         }
        
-        private List<StockInStkDrgPackageReq> GetAssignedStocksOfStkDrgPackageReq(List<ShowStkDrugsPackageReqPh_fromStockModel> stksDrugsListPerStock)
+        private List<StkDrugInStkDrgPackageReq> GetAssignedStocksOfStkDrgPackageReq(List<ShowStkDrugsPackageReqPh_fromStockModel> stksDrugsListPerStock)
         {
-            var assignedStocks = new List<StockInStkDrgPackageReq>();
+            var allDrugs = new List<StkDrugInStkDrgPackageReq>();
             stksDrugsListPerStock.ForEach(stkDrugs => {
-                assignedStocks.Add(new StockInStkDrgPackageReq
-                {
-                    StockId = stkDrugs.StockId,
-                    AssignedStkDrugs = GetAssignedStkDrugsForStockInPackage(stkDrugs.DrugsList.ToList(), stkDrugs.StockId)
-                }); ;
+                var _drugs = GetAssignedStkDrugsForStockInPackage(stkDrugs.DrugsList.ToList());
+                allDrugs.AddRange(_drugs);
             });
-            return assignedStocks;
+            return allDrugs;
         }
      
         #endregion

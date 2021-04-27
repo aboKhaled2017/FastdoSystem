@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Fastdo.Core.Models;
 using System.Threading.Tasks;
-using Fastdo.backendsys.Models;
-using Fastdo.backendsys.Services;
+using Fastdo.Core.ViewModels;
+using Fastdo.API.Services;
+using Fastdo.Core.Repositories;
+using Fastdo.Core.Services;
+using Fastdo.Core;
 
-namespace Fastdo.backendsys.Repositories
+namespace Fastdo.API.Repositories
 {
     //all class will be moved from here/not suitable
     public class LzDrg_Search_Repository : Repository<LzDrug>, ILzDrg_Search_Repository
@@ -18,7 +21,7 @@ namespace Fastdo.backendsys.Repositories
             _propertyMappingService = propertyMappingService;
         }
         
-        public async Task<PagedList<LzDrugCard_Info_BM>> Get_All_LzDrug_Cards_BMs(LzDrg_Card_Info_BM_ResourceParameters _params)
+        public async Task<PagedList<LzDrugCard_Info_BM>> Get_All_LzDrug_Cards_BMs(ILzDrg_Card_Info_BM_ResourceParameters _params)
         {
             var generalQuerableData_BeforePaging = GetAll()
                 
