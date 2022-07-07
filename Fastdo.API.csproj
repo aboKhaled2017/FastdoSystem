@@ -104,7 +104,7 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.5" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
-	  <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.0">
+	  <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.6">
 		  <AllowExplicitVersion>true</AllowExplicitVersion>
 	  </PackageReference>
   </ItemGroup>
